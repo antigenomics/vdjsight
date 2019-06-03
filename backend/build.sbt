@@ -15,13 +15,13 @@ lazy val root = (project in file("."))
 
 libraryDependencies ++= Seq(
   evolutions,
-  jdbc,
   guice,
   ws,
   filters
 )
 
 libraryDependencies ++= Seq(
+  "org.postgresql" % "postgresql" % "42.2.5",
   "com.typesafe.slick" %% "slick" % "3.3.0",
   "org.slf4j" % "slf4j-nop" % "1.7.26",
   "com.typesafe.play" %% "play-slick" % "4.0.0",
