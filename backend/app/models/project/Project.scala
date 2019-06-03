@@ -18,7 +18,7 @@ class ProjectTable(tag: Tag)(implicit up: UserProvider) extends Table[Project](t
   def uuid = column[UUID]("UUID", O.PrimaryKey, O.SqlType("UUID"))
   def name = column[String]("NAME", O.Length(255))
   def ownerID = column[UUID]("OWNER_ID", O.SqlType("UUID"))
-  def folder = column[String]("FOLDER", O.Length(510))
+  def folder = column[String]("FOLDER", O.Length(510), O.Unique)
   def maxFileSize = column[Long]("MAX_FILE_SIZE")
   def maxFilesCount = column[Long]("MAX_FILES_COUNT")
 
