@@ -39,6 +39,8 @@ function script_help() {
     echo "                                                             "
     echo "  dev-environment                                            "
     echo "     start             -     :Start develop environment      "
+    echo "     stop              -     :Stop  develop environment      "
+    echo "     down              -     :Down  develop environment      "
     echo "                                                             "
 }
 
@@ -125,7 +127,13 @@ function dev_environment() {
 
     case ${dev_environment_action} in
         start)
-            docker-compose up;
+            docker-compose up -d;
+            ;;
+        stop)
+            docker-compose stop;
+            ;;
+        down)
+            docker-compose down;
             ;;
         *)
             script_help;
