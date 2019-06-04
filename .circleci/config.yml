@@ -41,10 +41,10 @@ jobs:
           key: sbt-cache
       - run:
           name: Compile dist package
-          command: sbt clean update dist
+          command: ./vdjsight.sh backend build
       - run:
           name: Test package
-          command: sbt test
+          command: ./vdjsight.sh backend test
       - save_cache:
           key: sbt-cache
           paths:
