@@ -7,17 +7,20 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - frontend-libs-1-{{ checksum "frontend/yarn.lock" }}
+            - frontend-libs-1-{{ checksum "frontend/yarn.lock" }}\
+      - run:
+          name: Install frontend dependencies
+          command: ./vdjsight.sh frontend install
+      - save_cache:
+          key: frontend-libs-1-{{ checksum "frontend/yarn.lock" }}
+          paths:
+            - frontend/node_modules
       - run:
           name: Testing frontend
           command: ./vdjsight.sh frontend test-ci
       - run:
           name: Building frontend
           command: ./vdjsight.sh frontend build
-      - save_cache:
-          key: frontend-libs-1-{{ checksum "frontend/yarn.lock" }}
-          paths:
-            - frontend/node_modules
 
   backend:
     docker:
