@@ -52,4 +52,21 @@ jobs:
             - "~/.sbt"
             - "~/.m2"
 
+workflows:
+  version: 2
+  main:
+    jobs:
+      - frontend:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
+
+      - backend:
+          filters:
+            branches:
+              only:
+                - master
+                - develop
 
