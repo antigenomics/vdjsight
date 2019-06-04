@@ -3,13 +3,15 @@ package models.project
 import java.util.UUID
 
 import javax.inject.{Inject, Singleton}
-import models.user.UserProvider
+import models.user.{User, UserProvider, UserTable}
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.db.NamedDatabase
 import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcProfile
 import slick.lifted.Tag
+
+import scala.language.higherKinds
 
 case class Project(uuid: UUID, name: String, ownerID: UUID, folder: String, maxFileSize: Long, maxFilesCount: Long)
 
@@ -34,6 +36,10 @@ class ProjectTable(tag: Tag)(implicit up: UserProvider) extends Table[Project](t
 
 object ProjectTable {
   final val TABLE_NAME = "PROJECT"
+
+  implicit class ProjectTableExtensions[C[_]](q: Query[ProjectTable, Project, C]) {
+    def withOwner(implicit up: UserProvider): Query[(ProjectTable, UserTable), (Project, User), C] = q.join(up.getTable).on(_.ownerID === _.uuid)
+  }
 }
 
 @Singleton

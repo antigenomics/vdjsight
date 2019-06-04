@@ -1,0 +1,55 @@
+version: 2.1
+jobs:
+  frontend:
+    docker:
+      - image: circleci/node:11
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - frontend-libs-1-{{ checksum "frontend/yarn.lock" }}
+      - run:
+          name: Testing frontend
+          command: ./vdjsight.sh frontend test-ci
+      - run:
+          name: Building frontend
+          command: ./vdjsight.sh frontend build
+      - save_cache:
+          key: frontend-libs-1-{{ checksum "frontend/yarn.lock" }}
+          paths:
+            - frontend/node_modules
+
+  backend:
+    docker:
+      - image: openjdk:11
+    environment:
+      SBT_VERSION: 1.2.8
+    steps:
+      - run:
+          name: Get SBT binaries
+          command: |
+            apt update && apt install -y curl
+            curl -L -o sbt-$SBT_VERSION.deb https://dl.bintray.com/sbt/debian/sbt-$SBT_VERSION.deb
+            dpkg -i sbt-$SBT_VERSION.deb
+            rm sbt-$SBT_VERSION.deb
+            apt-get update
+            apt-get install -y sbt python-pip git
+            pip install awscli
+            apt-get clean && apt-get autoclean
+      - checkout
+      - restore_cache:
+          key: sbt-cache
+      - run:
+          name: Compile dist package
+          command: sbt clean update dist
+      - run:
+          name: Test package
+          command: sbt test
+      - save_cache:
+          key: sbt-cache
+          paths:
+            - "~/.ivy2/cache"
+            - "~/.sbt"
+            - "~/.m2"
+
+

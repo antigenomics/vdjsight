@@ -36,6 +36,7 @@ function script_help() {
     echo "     serve             -     :Serve dev version              "
     echo "     build             -     :Build prod version             "
     echo "     test              -     :Test backend                   "
+    echo "     test-ci           -     :Test backend with CI           "
     echo "                                                             "
     echo "  dev-environment                                            "
     echo "     start             -     :Start develop environment      "
@@ -79,6 +80,10 @@ function frontend() {
             ;;
         test)
             yarn test
+            ;;
+        test-ci)
+            yarn run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+            yarn run e2e -- --protractor-config=e2e/protractor-ci.conf.js
             ;;
         *)
             script_help;
