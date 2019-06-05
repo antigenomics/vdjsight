@@ -85,7 +85,7 @@ jobs:
       - run:
           name: Creating backend docker image
           command: |
-            ./vdjsight backend docker ${CIRCLE_BRANCH}
+            ./vdjsight.sh backend docker ${CIRCLE_BRANCH}
             touch .docker-created
       - docker-publish:
           project: bvdmitri/vdjsight-backend
