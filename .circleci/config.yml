@@ -29,10 +29,6 @@ commands:
 
 jobs:
   frontend:
-    parameters:
-      tag:
-        type: string
-        default: "develop"
     docker:
       - image: circleci/node:11-browsers
     steps:
@@ -53,9 +49,6 @@ jobs:
       - run:
           name: Building frontend
           command: ./vdjsight.sh frontend build
-      - run:
-          name: Docker frontend
-          command: ./vdjsight frontend docker << parameters.tag >>
 
   frontend-publish:
     executor: frontend-docker-publisher
@@ -119,7 +112,7 @@ workflows:
                 - master
                 - develop
 
-      - frontend-publish:
+      - frontend-publish-develop:
           tag: develop
           context: docker-hub-registry
           requires:
@@ -128,6 +121,16 @@ workflows:
             branches:
               only:
                 - develop
+
+      - frontend-publish-master:
+          tag: latest
+          context: docker-hub-registry
+          requires:
+            - frontend
+          filters:
+            branches:
+              only:
+                - master
 
       - backend:
           filters:
