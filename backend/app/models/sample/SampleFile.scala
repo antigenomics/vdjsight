@@ -23,11 +23,11 @@ class SampleFileTable(tag: Tag)(implicit up: UserProvider) extends Table[SampleF
 
   def * = (uuid, ownerID, name, software) <> (SampleFile.tupled, SampleFile.unapply)
 
-  def ownerID_idx = index("OWNER_ID_IDX", ownerID, unique = false)
-
-  def owner = foreignKey("OWNER_FK", ownerID, up.getTable)(_.uuid,
+  def owner = foreignKey("SAMPLE_FILE_TABLE_OWNER_FK", ownerID, up.getTable)(_.uuid,
     onUpdate = ForeignKeyAction.Cascade, onDelete = ForeignKeyAction.Restrict
   )
+
+  def ownerID_idx = index("SAMPLE_FILE_TABLE_OWNER_ID_IDX", ownerID, unique = false)
 }
 
 object SampleFileTable {

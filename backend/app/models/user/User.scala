@@ -16,14 +16,14 @@ case class User(uuid: UUID, login: String, email: String, verified: Boolean, pas
 
 class UserTable(tag: Tag) extends Table[User](tag, UserTable.TABLE_NAME) {
   def uuid = column[UUID]("UUID", O.PrimaryKey, O.SqlType("UUID"))
-  def login = column[String]("LOGIN", O.Length(64))
+  def login = column[String]("LOGIN", O.Unique, O.Length(64))
   def email = column[String]("EMAIL", O.Unique, O.Length(255))
   def verified = column[Boolean]("VERIFIED")
   def password = column[String]("PASSWORD", O.Length(255))
 
   def * = (uuid, login, email, verified, password) <> (User.tupled, User.unapply)
 
-  def email_idx = index("EMAIL_IDX", email, unique = true)
+  def email_idx = index("USER_TABLE_EMAIL_IDX", email, unique = true)
 }
 
 object UserTable {

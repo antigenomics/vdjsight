@@ -18,11 +18,11 @@ class SampleFileLinkTable(tag: Tag)(implicit sfp: SampleFileProvider) extends Ta
 
   def * = (uuid, sampleID) <> (SampleFileLink.tupled, SampleFileLink.unapply)
 
-  def sampleID_idx = index("SAMPLE_ID_IDX", sampleID, unique = false)
-
-  def sample = foreignKey("SAMPLE_FK", sampleID, sfp.getTable)(_.uuid,
+  def sample = foreignKey("SAMPLE_FILE_LINK_TABLE_SAMPLE_FK", sampleID, sfp.getTable)(_.uuid,
     onUpdate = ForeignKeyAction.Cascade, onDelete = ForeignKeyAction.Restrict
   )
+
+  def sampleID_idx = index("SAMPLE_FILE_LINK_TABLE_SAMPLE_ID_IDX", sampleID, unique = false)
 }
 
 object SampleFileLinkTable {

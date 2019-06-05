@@ -18,7 +18,7 @@ object ServerResponse {
   final val EMPTY = ServerResponse("null")
 }
 
-case class ServerResponseError(error: String, extra: Option[List[String]] = None)
+case class ServerResponseError(error: String, extra: Option[Seq[String]] = None)
 
 object ServerResponseError {
   implicit def serverResponseErrorWrites: Writes[ServerResponseError] = Json.writes[ServerResponseError]

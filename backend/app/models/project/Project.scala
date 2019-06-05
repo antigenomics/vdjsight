@@ -26,11 +26,11 @@ class ProjectTable(tag: Tag)(implicit up: UserProvider) extends Table[Project](t
 
   def * = (uuid, name, ownerID, folder, maxFileSize, maxFilesCount) <> (Project.tupled, Project.unapply)
 
-  def owner = foreignKey("OWNER_FK", ownerID, up.getTable)(_.uuid,
+  def owner = foreignKey("PROJECT_TABLE_OWNER_FK", ownerID, up.getTable)(_.uuid,
     onUpdate = ForeignKeyAction.Cascade, onDelete = ForeignKeyAction.Restrict
   )
 
-  def owner_idx = index("OWNER_INDEX", ownerID, unique = false)
+  def owner_idx = index("PROJECT_TABLE_OWNER_INDEX", ownerID, unique = false)
 
 }
 

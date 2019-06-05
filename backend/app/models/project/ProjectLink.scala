@@ -22,11 +22,11 @@ class ProjectLinkTable(tag: Tag)(implicit pp: ProjectProvider) extends Table[Pro
 
   def * = (uuid, projectID, isShared, isUploadAllowed, isDeleteAllowed, isModificationAllowed) <> (ProjectLink.tupled, ProjectLink.unapply)
 
-  def projectID_idx = index("PROJECT_ID_IDX", projectID, unique = false)
-
-  def project = foreignKey("PROJECT_FK", projectID, pp.getTable)(_.uuid,
+  def project = foreignKey("PROJECT_LINK_TABLE_PROJECT_FK", projectID, pp.getTable)(_.uuid,
     onUpdate = ForeignKeyAction.Cascade, onDelete = ForeignKeyAction.Restrict
   )
+
+  def projectID_idx = index("PROJECT_LINK_TABLE_PROJECT_ID_IDX", projectID, unique = false)
 }
 
 object ProjectLinkTable {
