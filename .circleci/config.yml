@@ -58,6 +58,7 @@ jobs:
         default: "develop"
     steps:
       - checkout
+      - setup_remote_docker
       - restore_cache:
           keys:
             - frontend-libs-1-{{ checksum "frontend/yarn.lock" }}
