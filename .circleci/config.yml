@@ -7,7 +7,7 @@ executors:
 
   backend-executor:
     docker:
-      - image: hseeberger/scala-sbt
+      - image: bvdmitri/scala-sbt-docker:latest
 
 
 commands:
