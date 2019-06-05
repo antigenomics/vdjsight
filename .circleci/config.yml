@@ -27,8 +27,6 @@ commands:
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push << parameters.project >>:<< parameters.tag >>
 
-
-
 jobs:
   frontend:
     parameters:
@@ -109,25 +107,6 @@ jobs:
             - "~/.ivy2/cache"
             - "~/.sbt"
             - "~/.m2"
-
-  docker:
-    executor: docker-publisher
-    parameters:
-      project:
-        description: "Which project should be published?"
-        type: string
-        default: "nothing"
-      name:
-        description: "Which name should be used for publishing?"
-        type: string
-        default: "nothing"
-      tag:
-        description: "Which tag should be used for publishing?"
-        type: string
-        default: "develop"
-    steps:
-      - checkout
-      - setup_remote_docker
 
 workflows:
   version: 2
