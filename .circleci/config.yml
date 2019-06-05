@@ -112,7 +112,7 @@ workflows:
                 - master
                 - develop
 
-      - frontend-publish-develop:
+      - frontend-publish:
           tag: develop
           context: docker-hub-registry
           requires:
@@ -122,7 +122,7 @@ workflows:
               only:
                 - develop
 
-      - frontend-publish-master:
+      - frontend-publish:
           tag: latest
           context: docker-hub-registry
           requires:
