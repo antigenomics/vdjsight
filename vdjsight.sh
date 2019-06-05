@@ -23,26 +23,28 @@ cd ${scriptDirectory}
 script="${scriptDirectory}/vdjsight.sh"
 
 function script_help() {
-    echo " Commands                                                    "
-    echo "                                                             "
-    echo "  frontend             -   Frontend related commands         "
-    echo "     install           -     :Install dependencies using yarn"
-    echo "     clean             -     :Clean installed dependencies   "
-    echo "     serve             -     :Serve dev version              "
-    echo "     build             -     :Build prod version             "
-    echo "     test              -     :Test frontend                  "
-    echo "     test-ci           -     :Test frontend with CI          "
-    echo "                                                             "
-    echo "  backend              -   Backend related commands          "
-    echo "     serve             -     :Serve dev version              "
-    echo "     build             -     :Build prod version             "
-    echo "     test              -     :Test backend                   "
-    echo "                                                             "
-    echo "  dev-environment                                            "
-    echo "     start             -     :Start develop environment      "
-    echo "     stop              -     :Stop  develop environment      "
-    echo "     down              -     :Down  develop environment      "
-    echo "                                                             "
+    echo " Commands                                                            "
+    echo "                                                                     "
+    echo "  frontend             -   Frontend related commands                 "
+    echo "     install           -     :Install dependencies using yarn        "
+    echo "     clean             -     :Clean installed dependencies           "
+    echo "     serve             -     :Serve dev version                      "
+    echo "     build             -     :Build prod version                     "
+    echo "     test              -     :Test frontend                          "
+    echo "     test-ci           -     :Test frontend with CI                  "
+    echo "     docker   <tag>    -     :Create Docker image with tag specified "
+    echo "                                                                     "
+    echo "  backend              -   Backend related commands                  "
+    echo "     serve             -     :Serve dev version                      "
+    echo "     build             -     :Build prod version                     "
+    echo "     test              -     :Test backend                           "
+    echo "     docker   <tag>    -     :Create Docker image with tag specified "
+    echo "                                                                     "
+    echo "  dev-environment                                                    "
+    echo "     start             -     :Start develop environment              "
+    echo "     stop              -     :Stop  develop environment              "
+    echo "     down              -     :Down  develop environment              "
+    echo "                                                                     "
 }
 
 function ensure_non_empty_input() {
@@ -85,6 +87,10 @@ function frontend() {
             yarn run test --no-watch --no-progress --browsers=ChromeHeadlessCI
             # yarn run e2e --protractor-config=e2e/protractor-ci.conf.js
             ;;
+        docker)
+            [[ -z "$1" ]] && echo "Tag parameters is required" && exit;
+            docker build -t vdjsight-frontend:$1 .
+            ;;
         *)
             script_help;
             ;;
@@ -111,6 +117,10 @@ function backend() {
             ;;
         test)
             sbt test;
+            ;;
+        docker)
+            [[ -z "$1" ]] && echo "Tag parameters is required" && exit;
+            docker build -t vdjsight-backend:$1 .
             ;;
         *)
             script_help;

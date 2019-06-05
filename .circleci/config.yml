@@ -1,13 +1,47 @@
 version: 2.1
+
+executors:
+  frontend-docker-publisher:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+  backend-docker-publisher:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+
+
+commands:
+
+  docker-publish:
+    description: "A command to publish docker image to public registry"
+    parameters:
+      project:
+        type: string
+        default: "nothing"
+      tag:
+        type: string
+        default: "develop"
+    steps:
+      run:
+        name: Publish Docker Image to Docker Hub
+        command: |
+          echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+          docker push << parameters.project >>:<< parameters.tag >>
+
+
+
 jobs:
   frontend:
+    parameters:
+      tag:
+        type: string
+        default: "develop"
     docker:
       - image: circleci/node:11-browsers
     steps:
       - checkout
       - restore_cache:
           keys:
-            - frontend-libs-1-{{ checksum "frontend/yarn.lock" }}\
+            - frontend-libs-1-{{ checksum "frontend/yarn.lock" }}
       - run:
           name: Install frontend dependencies
           command: ./vdjsight.sh frontend install
@@ -21,6 +55,28 @@ jobs:
       - run:
           name: Building frontend
           command: ./vdjsight.sh frontend build
+      - run:
+          name: Docker frontend
+          command: ./vdjsight frontend docker << parameters.tag >>
+
+  frontend-publish:
+    context: docker-hub-registry
+    executor: frontend-docker-publisher
+    parameters:
+      tag:
+        type: string
+        default: "develop"
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - frontend-libs-1-{{ checksum "frontend/yarn.lock" }}
+      - run:
+          name: Build frontend docker
+          command: ./vdjsight frontend docker << parameters.tag >>
+      - docker-publish:
+          project: "vdjsight-frontend"
+          tag: << parameters.tag >>
 
   backend:
     docker:
@@ -55,6 +111,25 @@ jobs:
             - "~/.sbt"
             - "~/.m2"
 
+  docker:
+    executor: docker-publisher
+    parameters:
+      project:
+        description: "Which project should be published?"
+        type: string
+        default: "nothing"
+      name:
+        description: "Which name should be used for publishing?"
+        type: string
+        default: "nothing"
+      tag:
+        description: "Which tag should be used for publishing?"
+        type: string
+        default: "develop"
+    steps:
+      - checkout
+      - setup_remote_docker
+
 workflows:
   version: 2
   main:
@@ -64,6 +139,13 @@ workflows:
             branches:
               only:
                 - master
+                - develop
+
+      - frontend-publish:
+          tag: develop
+          filters:
+            branches:
+              only:
                 - develop
 
       - backend:
