@@ -77,7 +77,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: sbt-cache
+          key: backend-cache-1
       - run:
           name: Compile dist package
           command: ./vdjsight.sh backend build
@@ -85,15 +85,12 @@ jobs:
           name: Test package
           command: ./vdjsight.sh backend test
       - save_cache:
-          key: sbt-cache
+          key: backend-cache-1
           paths:
             - "~/.ivy2/cache"
             - "~/.sbt"
             - "~/.m2"
-      - persist_to_workspace:
-          root: ~/project/backend
-          paths:
-            - target
+            - "~/project/backend/target"
 
   backend-publish:
     executor: backend-executor
@@ -104,10 +101,8 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - attach_workspace:
-          at: ~/project/backend
       - restore_cache:
-          key: sbt-cache
+          key: backend-cache-1
       - run:
           name: Build backend docker
           command: ./vdjsight.sh backend docker << parameters.tag >>

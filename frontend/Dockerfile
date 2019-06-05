@@ -40,7 +40,7 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 RUN rm -rf /usr/share/nginx/html/*
 
 ## From ‘builder’ stage copy over the artifacts in dist folder to default nginx public folder
-COPY --from=builder /build-context/ng-app/dist /usr/share/nginx/html
+COPY --from=builder /build-context/ng-app/dist/frontend /usr/share/nginx/html
 
 EXPOSE 80
 
