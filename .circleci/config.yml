@@ -49,6 +49,10 @@ jobs:
       - run:
           name: Building frontend
           command: ./vdjsight.sh frontend build
+      - persist_to_workspace:
+          root: ~/project/frontend
+          paths:
+            - dist
 
   frontend-publish:
     executor: frontend-executor
@@ -58,14 +62,12 @@ jobs:
         default: "develop"
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - restore_cache:
-          keys:
-            - frontend-cache-1-{{ checksum "frontend/yarn.lock" }}
+      - setup_remote_docker
+      - attach_workspace:
+          at: ~/project/frontend
       - run:
           name: Build frontend docker
-          command: ./vdjsight.sh frontend docker << parameters.tag >>
+          command: ./vdjsight.sh frontend docker << parameters.tag >> --fast
       - docker-publish:
           project: "vdjsight-frontend"
           tag: << parameters.tag >>
@@ -88,6 +90,10 @@ jobs:
             - "~/.ivy2/cache"
             - "~/.sbt"
             - "~/.m2"
+      - persist_to_workspace:
+          root: ~/project/backend
+          paths:
+            - target
 
   backend-publish:
     executor: backend-executor
@@ -97,8 +103,9 @@ jobs:
         default: "develop"
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - setup_remote_docker
+      - attach_workspace:
+          at: ~/project/backend
       - restore_cache:
           key: sbt-cache
       - run:

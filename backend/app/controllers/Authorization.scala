@@ -5,6 +5,7 @@ import java.util.UUID
 import actions.{SessionRequest, SessionRequestAction}
 import javax.inject.Inject
 import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents}
+import server.ServerResponseError
 
 import scala.concurrent.ExecutionContext
 
@@ -15,6 +16,8 @@ class Authorization @Inject()(cc: ControllerComponents, session: SessionRequestA
     Ok(request.request.session.data.toString).withSession(SessionRequest.SESSION_REQUEST_USER_ID_KEY -> UUID.randomUUID().toString)
   }
 
-  def onLogout: Action[AnyContent] = Action { Ok("").withNewSession }
+  def onLogout: Action[AnyContent] = Action {
+    Ok(ServerResponseError("asd")).withNewSession
+  }
 
 }

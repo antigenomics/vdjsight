@@ -1,13 +1,6 @@
 .git
 .idea
 
-frontend/.idea
-frontend/frontend.iml
-frontend/node_modules
-
-backend/.idea
-backend/backend.iml
-
 environment/.idea
 environment/environment.iml
 
