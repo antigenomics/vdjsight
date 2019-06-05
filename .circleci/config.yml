@@ -1,12 +1,13 @@
 version: 2.1
 
 executors:
-  frontend-docker-publisher:
+  frontend-executor:
     docker:
-      - image: circleci/buildpack-deps:stretch
-  backend-docker-publisher:
+      - image: circleci/node:11-browsers
+
+  backend-executor:
     docker:
-      - image: circleci/buildpack-deps:stretch
+      - image: circleci/openjdk:11.0-stretch
 
 
 commands:
@@ -29,8 +30,7 @@ commands:
 
 jobs:
   frontend:
-    docker:
-      - image: circleci/node:11-browsers
+    executor: frontend-executor
     steps:
       - checkout
       - restore_cache:
@@ -51,13 +51,12 @@ jobs:
           command: ./vdjsight.sh frontend build
 
   frontend-publish:
-    executor: frontend-docker-publisher
+    executor: frontend-executor
     parameters:
       tag:
         type: string
         default: "develop"
     steps:
-      - checkout
       - setup_remote_docker:
           docker_layer_caching: true
       - restore_cache:
@@ -71,8 +70,7 @@ jobs:
           tag: << parameters.tag >>
 
   backend:
-    docker:
-      - image: openjdk:11
+    executor: backend-executor
     environment:
       SBT_VERSION: 1.2.8
     steps:
@@ -104,13 +102,12 @@ jobs:
             - "~/.m2"
 
   backend-publish:
-    executor: backend-docker-publisher
+    executor: backend-executor
     parameters:
       tag:
         type: string
         default: "develop"
     steps:
-      - checkout
       - setup_remote_docker:
           docker_layer_caching: true
       - restore_cache:
