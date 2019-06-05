@@ -21,11 +21,11 @@ commands:
         type: string
         default: "develop"
     steps:
-      run:
-        name: Publish Docker Image to Docker Hub
-        command: |
-          echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-          docker push << parameters.project >>:<< parameters.tag >>
+      - run:
+          name: Publish Docker Image to Docker Hub
+          command: |
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker push << parameters.project >>:<< parameters.tag >>
 
 
 
