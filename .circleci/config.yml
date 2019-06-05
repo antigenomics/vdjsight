@@ -25,8 +25,12 @@ commands:
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
-            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push bvdmitri/<< parameters.project >>:<< parameters.tag >>
+            if [[ -f ".docker-created" ]]; then
+              echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+              docker push << parameters.project >>:${CIRCLE_BRANCH}
+            else
+              echo "Skipping publishing because there is no .docker-created file"
+            fi
 
 jobs:
   frontend:
@@ -49,28 +53,14 @@ jobs:
       - run:
           name: Building frontend
           command: ./vdjsight.sh frontend build
-      - persist_to_workspace:
-          root: ~/project/frontend
-          paths:
-            - dist
-
-  frontend-publish:
-    executor: frontend-executor
-    parameters:
-      tag:
-        type: string
-        default: "develop"
-    steps:
-      - checkout
       - setup_remote_docker
-      - attach_workspace:
-          at: ~/project/frontend
       - run:
-          name: Build frontend docker
-          command: ./vdjsight.sh frontend docker << parameters.tag >> --fast
+          name: Creating frontend docker image
+          command: |
+            ./vdjsight.sh frontend docker ${CIRCLE_BRANCH} --fast
+            touch .docker-created
       - docker-publish:
-          project: "vdjsight-frontend"
-          tag: << parameters.tag >>
+          project: bvdmitri/vdjsight-frontend
 
   backend:
     executor: backend-executor
@@ -91,24 +81,14 @@ jobs:
             - "~/.sbt"
             - "~/.m2"
             - "~/project/backend/target"
-
-  backend-publish:
-    executor: backend-executor
-    parameters:
-      tag:
-        type: string
-        default: "develop"
-    steps:
-      - checkout
       - setup_remote_docker
-      - restore_cache:
-          key: backend-cache-1
       - run:
-          name: Build backend docker
-          command: ./vdjsight.sh backend docker << parameters.tag >>
+          name: Creating backend docker image
+          command: |
+            ./vdjsight backend docker ${CIRCLE_BRANCH}
+            touch .docker-created
       - docker-publish:
-          project: "vdjsight-backend"
-          tag: << parameters.tag >>
+          project: bvdmitri/vdjsight-backend
 
 
 workflows:
@@ -116,57 +96,18 @@ workflows:
   main:
     jobs:
       - frontend:
+          context: docker-hub-registry
           filters:
             branches:
               only:
                 - master
                 - develop
-
-      - frontend-publish:
-          tag: develop
-          context: docker-hub-registry
-          requires:
-            - frontend
-          filters:
-            branches:
-              only:
-                - develop
-
-      - frontend-publish:
-          tag: latest
-          context: docker-hub-registry
-          requires:
-            - frontend
-          filters:
-            branches:
-              only:
-                - master
 
       - backend:
+          context: docker-hub-registry
           filters:
             branches:
               only:
                 - master
                 - develop
-
-      - backend-publish:
-          tag: develop
-          context: docker-hub-registry
-          requires:
-            - backend
-          filters:
-            branches:
-              only:
-                - develop
-
-      - backend-publish:
-          tag: latest
-          context: docker-hub-registry
-          requires:
-            - backend
-          filters:
-            branches:
-              only:
-                - master
-
 
