@@ -60,7 +60,6 @@ jobs:
           command: ./vdjsight frontend docker << parameters.tag >>
 
   frontend-publish:
-    context: docker-hub-registry
     executor: frontend-docker-publisher
     parameters:
       tag:
@@ -143,6 +142,9 @@ workflows:
 
       - frontend-publish:
           tag: develop
+          context: docker-hub-registry
+          requires:
+            - frontend
           filters:
             branches:
               only:
