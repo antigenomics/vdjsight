@@ -63,7 +63,7 @@ jobs:
             - frontend-libs-1-{{ checksum "frontend/yarn.lock" }}
       - run:
           name: Build frontend docker
-          command: ./vdjsight frontend docker << parameters.tag >>
+          command: ./vdjsight.sh frontend docker << parameters.tag >>
       - docker-publish:
           project: "vdjsight-frontend"
           tag: << parameters.tag >>
