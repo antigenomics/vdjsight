@@ -35,12 +35,12 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - frontend-libs-1-{{ checksum "frontend/yarn.lock" }}
+            - frontend-cache-1-{{ checksum "frontend/yarn.lock" }}
       - run:
           name: Install frontend dependencies
           command: ./vdjsight.sh frontend install
       - save_cache:
-          key: frontend-libs-1-{{ checksum "frontend/yarn.lock" }}
+          key: frontend-cache-1-{{ checksum "frontend/yarn.lock" }}
           paths:
             - frontend/node_modules
       - run:
@@ -58,10 +58,11 @@ jobs:
         default: "develop"
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          docker_layer_caching: true
       - restore_cache:
           keys:
-            - frontend-libs-1-{{ checksum "frontend/yarn.lock" }}
+            - frontend-cache-1-{{ checksum "frontend/yarn.lock" }}
       - run:
           name: Build frontend docker
           command: ./vdjsight.sh frontend docker << parameters.tag >>
@@ -102,6 +103,26 @@ jobs:
             - "~/.sbt"
             - "~/.m2"
 
+  backend-publish:
+    executor: backend-docker-publisher
+    parameters:
+      tag:
+        type: string
+        default: "develop"
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - restore_cache:
+          key: sbt-cache
+      - run:
+          name: Build backend docker
+          command: ./vdjsight.sh backend docker << parameters.tag >>
+      - docker-publish:
+          project: "vdjsight-backend"
+          tag: << parameters.tag >>
+
+
 workflows:
   version: 2
   main:
@@ -139,4 +160,25 @@ workflows:
               only:
                 - master
                 - develop
+
+      - backend-publish:
+          tag: develop
+          context: docker-hub-registry
+          requires:
+            - backend
+          filters:
+            branches:
+              only:
+                - develop
+
+      - backend-publish:
+          tag: latest
+          context: docker-hub-registry
+          requires:
+            - backend
+          filters:
+            branches:
+              only:
+                - master
+
 

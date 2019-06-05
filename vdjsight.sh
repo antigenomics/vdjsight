@@ -89,7 +89,7 @@ function frontend() {
             ;;
         docker)
             [[ -z "$1" ]] && echo "Tag parameters is required" && exit;
-            docker build -t vdjsight-frontend:$1 .
+            docker build -t bvdmitri/vdjsight-frontend:$1 .
             ;;
         *)
             script_help;
@@ -120,7 +120,7 @@ function backend() {
             ;;
         docker)
             [[ -z "$1" ]] && echo "Tag parameters is required" && exit;
-            docker build -t vdjsight-backend:$1 .
+            sbt "set version in Docker := \"$1\"" docker:publishLocal
             ;;
         *)
             script_help;
