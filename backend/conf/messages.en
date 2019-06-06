@@ -8,9 +8,11 @@ authorization.signup.validation.login.maxlength      = Login (user name) field i
 authorization.signup.validation.email.valid          = Valid email required
 authorization.signup.validation.email.minlength      = Email field should not be blank
 authorization.signup.validation.email.maxlength      = Email field is too long
+authorization.signup.validation.email.exist          = This email address has already been registered
 authorization.signup.validation.password.minlength   = Password length should be greater than {0}
 authorization.signup.validation.password.maxlength   = Password length should be less than {0}
 authorization.signup.validation.passwords.equal      = Passwords should be equal
+
 
 
 

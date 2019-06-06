@@ -25,7 +25,8 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "42.2.5",
   "com.typesafe.slick" %% "slick" % "3.3.0",
   "com.typesafe.play" %% "play-slick" % "4.0.0",
-  "com.typesafe.play" %% "play-slick-evolutions" % "4.0.0"
+  "com.typesafe.play" %% "play-slick-evolutions" % "4.0.0",
+  "io.github.nremond" %% "pbkdf2-scala" % "0.6.3"
 )
 
 scalacOptions ++= Seq(

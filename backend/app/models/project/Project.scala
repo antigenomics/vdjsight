@@ -40,6 +40,7 @@ object ProjectTable {
   implicit class ProjectTableExtensions[C[_]](q: Query[ProjectTable, Project, C]) {
     def withOwner(implicit up: UserProvider): Query[(ProjectTable, UserTable), (Project, User), C] = q.join(up.getTable).on(_.ownerID === _.uuid)
   }
+
 }
 
 @Singleton

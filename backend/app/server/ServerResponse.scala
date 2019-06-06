@@ -15,7 +15,8 @@ object ServerResponse {
     Writeable(Writeable.writeableOf_JsValue.transform compose fmt.writes)
   }
 
-  final val EMPTY = ServerResponse("null")
+  final val EMPTY   = ServerResponse("null")
+  final val SUCCESS = ServerResponse("success")
 }
 
 case class ServerResponseError(error: String, extra: Option[Seq[String]] = None)

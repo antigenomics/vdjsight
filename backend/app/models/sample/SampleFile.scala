@@ -36,6 +36,7 @@ object SampleFileTable {
   implicit class SampleFileTableExtensions[C[_]](q: Query[SampleFileTable, SampleFile, C]) {
     def withOwner(implicit up: UserProvider): Query[(SampleFileTable, UserTable), (SampleFile, User), C] = q.join(up.getTable).on(_.ownerID === _.uuid)
   }
+
 }
 
 @Singleton
