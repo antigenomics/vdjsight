@@ -58,7 +58,8 @@ javaOptions in Test ++= Seq(
   "-Dslick.dbs.default.db.driver=org.h2.Driver",
   "-Dslick.dbs.default.db.profile=org.h2.Driver",
   "-Dslick.dbs.default.db.url=jdbc:h2:mem:play;DB_CLOSE_DELAY=-1",
-  "-Dapplication.temporary.interval=0"
+  "-Dapplication.temporary.interval=0",
+  "-Dapplication.auth.verification.method=noop"
 )
 
 libraryDependencies ++= Seq(

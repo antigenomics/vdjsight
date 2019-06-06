@@ -1,7 +1,6 @@
 package models.token
 
 import models.SQLDatabaseTestTag
-import models.user.UserProvider
 
 class ResetTokenSpec extends BaseTokenTestSpec {
 

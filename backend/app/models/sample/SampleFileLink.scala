@@ -13,13 +13,15 @@ import slick.lifted.Tag
 case class SampleFileLink(uuid: UUID, sampleID: UUID)
 
 class SampleFileLinkTable(tag: Tag)(implicit sfp: SampleFileProvider) extends Table[SampleFileLink](tag, SampleFileLinkTable.TABLE_NAME) {
-  def uuid = column[UUID]("UUID", O.PrimaryKey, O.SqlType("UUID"))
+  def uuid     = column[UUID]("UUID", O.PrimaryKey, O.SqlType("UUID"))
   def sampleID = column[UUID]("SAMPLE_ID", O.SqlType("UUID"))
 
   def * = (uuid, sampleID) <> (SampleFileLink.tupled, SampleFileLink.unapply)
 
-  def sample = foreignKey("SAMPLE_FILE_LINK_TABLE_SAMPLE_FK", sampleID, sfp.getTable)(_.uuid,
-    onUpdate = ForeignKeyAction.Cascade, onDelete = ForeignKeyAction.Restrict
+  def sample = foreignKey("SAMPLE_FILE_LINK_TABLE_SAMPLE_FK", sampleID, sfp.getTable)(
+    _.uuid,
+    onUpdate = ForeignKeyAction.Cascade,
+    onDelete = ForeignKeyAction.Restrict
   )
 
   def sampleID_idx = index("SAMPLE_FILE_LINK_TABLE_SAMPLE_ID_IDX", sampleID, unique = false)
@@ -31,7 +33,7 @@ object SampleFileLinkTable {
 
 @Singleton
 class SampleFileLinkProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider)(implicit sfp: SampleFileProvider)
-  extends HasDatabaseConfigProvider[JdbcProfile] {
+    extends HasDatabaseConfigProvider[JdbcProfile] {
 
   private final val logger = LoggerFactory.getLogger(this.getClass)
 

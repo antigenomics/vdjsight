@@ -14,7 +14,8 @@ object SessionRequest {
 }
 
 class SessionRequestAction @Inject()(val parser: BodyParsers.Default)(implicit val ec: ExecutionContext)
-  extends ActionBuilder[SessionRequest, AnyContent] with ActionTransformer[Request, SessionRequest] {
+    extends ActionBuilder[SessionRequest, AnyContent]
+    with ActionTransformer[Request, SessionRequest] {
 
   override protected def executionContext: ExecutionContext = ec
 

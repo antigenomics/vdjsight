@@ -16,15 +16,17 @@ import scala.language.higherKinds
 case class SampleFile(uuid: UUID, ownerID: UUID, name: String, software: String)
 
 class SampleFileTable(tag: Tag)(implicit up: UserProvider) extends Table[SampleFile](tag, SampleFileTable.TABLE_NAME) {
-  def uuid = column[UUID]("UUID", O.PrimaryKey, O.SqlType("UUID"))
-  def ownerID = column[UUID]("OWNER_ID", O.SqlType("UUID"))
-  def name = column[String]("NAME", O.Length(255))
+  def uuid     = column[UUID]("UUID", O.PrimaryKey, O.SqlType("UUID"))
+  def ownerID  = column[UUID]("OWNER_ID", O.SqlType("UUID"))
+  def name     = column[String]("NAME", O.Length(255))
   def software = column[String]("SOFTWARE", O.Length(64))
 
   def * = (uuid, ownerID, name, software) <> (SampleFile.tupled, SampleFile.unapply)
 
-  def owner = foreignKey("SAMPLE_FILE_TABLE_OWNER_FK", ownerID, up.getTable)(_.uuid,
-    onUpdate = ForeignKeyAction.Cascade, onDelete = ForeignKeyAction.Restrict
+  def owner = foreignKey("SAMPLE_FILE_TABLE_OWNER_FK", ownerID, up.getTable)(
+    _.uuid,
+    onUpdate = ForeignKeyAction.Cascade,
+    onDelete = ForeignKeyAction.Restrict
   )
 
   def ownerID_idx = index("SAMPLE_FILE_TABLE_OWNER_ID_IDX", ownerID, unique = false)
@@ -41,7 +43,7 @@ object SampleFileTable {
 
 @Singleton
 class SampleFileProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider)(implicit up: UserProvider)
-  extends HasDatabaseConfigProvider[JdbcProfile] {
+    extends HasDatabaseConfigProvider[JdbcProfile] {
 
   private final val logger = LoggerFactory.getLogger(this.getClass)
 

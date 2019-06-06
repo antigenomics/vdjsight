@@ -17,17 +17,19 @@ case class Project(uuid: UUID, name: String, ownerID: UUID, folder: String, maxF
 
 class ProjectTable(tag: Tag)(implicit up: UserProvider) extends Table[Project](tag, ProjectTable.TABLE_NAME) {
 
-  def uuid = column[UUID]("UUID", O.PrimaryKey, O.SqlType("UUID"))
-  def name = column[String]("NAME", O.Length(255))
-  def ownerID = column[UUID]("OWNER_ID", O.SqlType("UUID"))
-  def folder = column[String]("FOLDER", O.Length(510), O.Unique)
-  def maxFileSize = column[Long]("MAX_FILE_SIZE")
+  def uuid          = column[UUID]("UUID", O.PrimaryKey, O.SqlType("UUID"))
+  def name          = column[String]("NAME", O.Length(255))
+  def ownerID       = column[UUID]("OWNER_ID", O.SqlType("UUID"))
+  def folder        = column[String]("FOLDER", O.Length(510), O.Unique)
+  def maxFileSize   = column[Long]("MAX_FILE_SIZE")
   def maxFilesCount = column[Long]("MAX_FILES_COUNT")
 
   def * = (uuid, name, ownerID, folder, maxFileSize, maxFilesCount) <> (Project.tupled, Project.unapply)
 
-  def owner = foreignKey("PROJECT_TABLE_OWNER_FK", ownerID, up.getTable)(_.uuid,
-    onUpdate = ForeignKeyAction.Cascade, onDelete = ForeignKeyAction.Restrict
+  def owner = foreignKey("PROJECT_TABLE_OWNER_FK", ownerID, up.getTable)(
+    _.uuid,
+    onUpdate = ForeignKeyAction.Cascade,
+    onDelete = ForeignKeyAction.Restrict
   )
 
   def owner_idx = index("PROJECT_TABLE_OWNER_INDEX", ownerID, unique = false)
@@ -45,7 +47,7 @@ object ProjectTable {
 
 @Singleton
 class ProjectProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider)(implicit up: UserProvider)
-  extends HasDatabaseConfigProvider[JdbcProfile] {
+    extends HasDatabaseConfigProvider[JdbcProfile] {
 
   private final val logger = LoggerFactory.getLogger(this.getClass)
 
@@ -55,5 +57,3 @@ class ProjectProvider @Inject()(@NamedDatabase("default") protected val dbConfig
 
   def getTable: TableQuery[ProjectTable] = table
 }
-
-

@@ -18,25 +18,30 @@ import play.db.NamedDatabase
 import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcProfile
 import slick.lifted.Tag
+import utils.FutureUtils._
 import utils.TimeUtils
 
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
-import scala.language.{higherKinds, postfixOps}
+import scala.language.{higherKinds, implicitConversions, postfixOps}
 import scala.util.Failure
 
 object VerificationMethod extends Enumeration {
   type VerificationMethod = Value
-  val EMAIL  : token.VerificationMethod.Value = Value("email")
+  val EMAIL: token.VerificationMethod.Value   = Value("email")
   val CONSOLE: token.VerificationMethod.Value = Value("console")
-  val AUTO   : token.VerificationMethod.Value = Value("auto")
+  val AUTO: token.VerificationMethod.Value    = Value("auto")
+  val NOOP: token.VerificationMethod.Value    = Value("noop")
 
-  def convert(value: String): VerificationMethod.Value = {
+  def convert(value: String): VerificationMethod = {
     values.find(_.toString == value) match {
       case Some(v) => v
-      case None => throw new RuntimeException("Invalid verification method provided in configuration file")
+      case None    => throw new RuntimeException(s"Invalid verification method: $value")
     }
   }
+
+  implicit def Method2String(value: VerificationMethod): String = value.toString
+  implicit def String2Method(value: String): VerificationMethod = VerificationMethod.convert(value)
 }
 
 case class VerificationTokenConfiguration(method: VerificationMethod, server: String, keep: Duration, interval: Duration)
@@ -56,14 +61,16 @@ object VerificationTokenConfiguration {
 case class VerificationToken(token: UUID, userID: UUID, expiredAt: Timestamp)
 
 class VerificationTokenTable(tag: Tag)(implicit up: UserProvider) extends Table[VerificationToken](tag, VerificationTokenTable.TABLE_NAME) {
-  def token = column[UUID]("TOKEN", O.PrimaryKey, O.SqlType("UUID"))
-  def userID = column[UUID]("USER_ID", O.SqlType("UUID"))
+  def token     = column[UUID]("TOKEN", O.PrimaryKey, O.SqlType("UUID"))
+  def userID    = column[UUID]("USER_ID", O.SqlType("UUID"))
   def expiredAt = column[Timestamp]("EXPIRED_AT")
 
   def * = (token, userID, expiredAt) <> (VerificationToken.tupled, VerificationToken.unapply)
 
-  def user = foreignKey("VERIFICATION_TOKEN_TABLE_USER_FK", userID, up.getTable)(_.uuid,
-    onUpdate = ForeignKeyAction.Cascade, onDelete = ForeignKeyAction.Cascade
+  def user = foreignKey("VERIFICATION_TOKEN_TABLE_USER_FK", userID, up.getTable)(
+    _.uuid,
+    onUpdate = ForeignKeyAction.Cascade,
+    onDelete = ForeignKeyAction.Cascade
   )
 }
 
@@ -71,6 +78,7 @@ object VerificationTokenTable {
   final val TABLE_NAME = "VERIFICATION_TOKEN"
 
   implicit class VerificationTokenExtension[C[_]](q: Query[VerificationTokenTable, VerificationToken, C]) {
+
     def withUser(implicit up: UserProvider): Query[(VerificationTokenTable, UserTable), (VerificationToken, User), C] = {
       q.join(up.getTable).on(_.userID === _.uuid)
     }
@@ -80,8 +88,10 @@ object VerificationTokenTable {
 
 @Singleton
 class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider,
-                                          conf: Configuration, lifecycle: ApplicationLifecycle, system: ActorSystem)
-                                         (implicit up: UserProvider, ec: ExecutionContext) extends HasDatabaseConfigProvider[JdbcProfile] {
+                                          conf: Configuration,
+                                          lifecycle: ApplicationLifecycle,
+                                          system: ActorSystem)(implicit ec: ExecutionContext, up: UserProvider)
+    extends HasDatabaseConfigProvider[JdbcProfile] {
 
   private final val logger        = LoggerFactory.getLogger(this.getClass)
   private final val configuration = conf.get[VerificationTokenConfiguration]("application.auth.verification")
@@ -91,15 +101,18 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
   private final val tokens = TableQuery[VerificationTokenTable]
 
   private final val expiredTokensDeleteScheduler: Option[Cancellable] = Option(configuration.interval.getSeconds != 0).collect {
-    case true => system.scheduler.schedule(configuration.interval.getSeconds seconds, configuration.interval.getSeconds seconds) {
-      expired().map(delete) onComplete {
-        case Failure(exception) => logger.warn("Cannot delete expired tokens", exception)
-        case _ =>
+    case true =>
+      system.scheduler.schedule(configuration.interval.getSeconds seconds, configuration.interval.getSeconds seconds) {
+        expired().map(delete) onComplete {
+          case Failure(exception) => logger.warn("Cannot delete expired tokens", exception)
+          case _                  =>
+        }
       }
-    }
   }
 
-  lifecycle.addStopHook { () => Future.successful(expiredTokensDeleteScheduler.foreach(_.cancel())) }
+  lifecycle.addStopHook { () =>
+    Future.successful(expiredTokensDeleteScheduler.foreach(_.cancel()))
+  }
 
   def getTable: TableQuery[VerificationTokenTable] = tokens
 
@@ -113,15 +126,24 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
 
   def findForUser(userID: Future[UUID]): Future[Option[VerificationToken]] = userID.flatMap(findForUser)
 
-  def getWithUser(token: UUID): Future[Option[(VerificationToken, User)]] = db.run(tokens.withUser.filter(_._1.token === token).result.headOption)
+  def getWithUser(token: UUID): Future[Option[(VerificationToken, User)]] =
+    db.run(tokens.withUser.filter(_._1.token === token).result.headOption)
 
   def getWithUser(token: Future[UUID]): Future[Option[(VerificationToken, User)]] = token.flatMap(getWithUser)
 
   def create(userID: UUID): Future[UUID] = {
-    val token = UUID.randomUUID()
-    db.run(tokens += VerificationToken(token, userID, TimeUtils.getExpiredAt(configuration.keep))).map {
-      case 1 => token
-      case _ => throw new RuntimeException("Cannot create VerificationToken instance in database: Internal error")
+    val check = for {
+      token <- tokens if token.userID === userID
+    } yield token
+
+    db.run(check.result.headOption) flatMap {
+      case Some(token) => Future.successful(token.token)
+      case None =>
+        val token = UUID.randomUUID()
+        db.run(tokens += VerificationToken(token, userID, TimeUtils.getExpiredAt(configuration.keep))) map {
+          case 1 => token
+          case _ => throw new RuntimeException("Cannot create VerificationToken instance in database: Internal error")
+        } onSuccessSideEffect processToken
     }
   }
 
@@ -133,7 +155,15 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
 
   def delete(set: Seq[VerificationToken]): Future[Int] = db.run(tokens.filter(t => t.token inSet set.map(_.token)).delete)
 
-  def expired(date: Timestamp = TimeUtils.getCurrentTimestamp): Future[Seq[VerificationToken]] = db.run(tokens.filter(_.expiredAt < date).result)
+  def expired(date: Timestamp = TimeUtils.getCurrentTimestamp): Future[Seq[VerificationToken]] =
+    db.run(tokens.filter(_.expiredAt < date).result)
+
+  private def processToken(tokenID: UUID) = {
+    configuration.method match {
+      case VerificationMethod.EMAIL   => throw new NotImplementedError("Email verification method not implemented")
+      case VerificationMethod.CONSOLE => throw new NotImplementedError("Console verification method not implemented")
+      case VerificationMethod.AUTO    => up.verify(tokenID)(this)
+      case VerificationMethod.NOOP    =>
+    }
+  }
 }
-
-
