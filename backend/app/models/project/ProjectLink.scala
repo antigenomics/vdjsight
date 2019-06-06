@@ -6,7 +6,7 @@ import javax.inject.{Inject, Singleton}
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.db.NamedDatabase
-import slick.jdbc.H2Profile.api._
+import slick.jdbc.PostgresProfile.api._
 import slick.jdbc.JdbcProfile
 import slick.lifted.Tag
 
@@ -22,7 +22,7 @@ class ProjectLinkTable(tag: Tag)(implicit pp: ProjectProvider) extends Table[Pro
 
   def * = (uuid, projectID, isShared, isUploadAllowed, isDeleteAllowed, isModificationAllowed) <> (ProjectLink.tupled, ProjectLink.unapply)
 
-  def project = foreignKey("PROJECT_LINK_TABLE_PROJECT_FK", projectID, pp.getTable)(
+  def project = foreignKey("PROJECT_LINK_TABLE_PROJECT_FK", projectID, pp.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Restrict
@@ -43,7 +43,7 @@ class ProjectLinkProvider @Inject()(@NamedDatabase("default") protected val dbCo
 
   import dbConfig.profile.api._
 
-  private final val table = TableQuery[ProjectLinkTable]
+  private final val links = TableQuery[ProjectLinkTable]
 
-  def getTable: TableQuery[ProjectLinkTable] = table
+  def table: TableQuery[ProjectLinkTable] = links
 }

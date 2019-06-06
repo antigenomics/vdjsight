@@ -8,7 +8,7 @@ import models.token.VerificationTokenProvider
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.db.NamedDatabase
-import slick.jdbc.H2Profile.api._
+import slick.jdbc.PostgresProfile.api._
 import slick.jdbc.JdbcProfile
 import slick.lifted.Tag
 
@@ -44,7 +44,7 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
 
   private final val users = TableQuery[UserTable]
 
-  def getTable: TableQuery[UserTable] = users
+  def table: TableQuery[UserTable] = users
 
   def isVerifiedUserWithEmailExist(email: String): Future[Boolean] = {
     db.run(users.filter(_.email === email).result.headOption).map(_.map(_.verified)).map(_.getOrElse(false))
@@ -82,7 +82,7 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
 
   def verify(tokenID: UUID)(implicit vtp: VerificationTokenProvider): Future[Option[User]] = {
     val query = for {
-      token <- vtp.getTable if token.token === tokenID
+      token <- vtp.table if token.token === tokenID
       user  <- users if user.uuid === token.userID
     } yield (token, user)
 

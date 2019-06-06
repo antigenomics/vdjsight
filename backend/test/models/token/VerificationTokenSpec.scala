@@ -30,7 +30,7 @@ class VerificationTokenSpec extends BaseTokenTestSpec {
   "VerificationTokenProvider" should {
 
     "have proper table name" taggedAs SQLDatabaseTestTag in {
-      vtp.getTable.baseTableRow.tableName shouldEqual VerificationTokenTable.TABLE_NAME
+      vtp.table.baseTableRow.tableName shouldEqual VerificationTokenTable.TABLE_NAME
     }
 
     "get empty list on empty table" taggedAs SQLDatabaseTestTag in {

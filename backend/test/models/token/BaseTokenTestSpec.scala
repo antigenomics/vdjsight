@@ -2,17 +2,25 @@ package models.token
 
 import java.util.UUID
 
+import models.DatabaseProviderTestSpec
 import models.user.UserProvider
-import specs.BaseTestSpecWithApplication
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
+import play.api.db.evolutions.Evolutions
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import scala.language.reflectiveCalls
 
-abstract class BaseTokenTestSpec extends BaseTestSpecWithApplication {
+abstract class BaseTokenTestSpec extends DatabaseProviderTestSpec with BeforeAndAfterAll {
   implicit lazy val up: UserProvider               = app.injector.instanceOf[UserProvider]
   implicit lazy val rtp: ResetTokenProvider        = app.injector.instanceOf[ResetTokenProvider]
   implicit lazy val vtp: VerificationTokenProvider = app.injector.instanceOf[VerificationTokenProvider]
+
+  override def afterAll(): Unit = {
+    Evolutions.cleanupEvolutions(database)
+    Evolutions.applyEvolutions(database)
+    super.afterAll()
+  }
 
   trait NotExistingUser {
     private final val _uuid = UUID.randomUUID()

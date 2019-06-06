@@ -6,7 +6,7 @@ import javax.inject.{Inject, Singleton}
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.db.NamedDatabase
-import slick.jdbc.H2Profile.api._
+import slick.jdbc.PostgresProfile.api._
 import slick.jdbc.JdbcProfile
 import slick.lifted.Tag
 
@@ -18,7 +18,7 @@ class SampleFileLinkTable(tag: Tag)(implicit sfp: SampleFileProvider) extends Ta
 
   def * = (uuid, sampleID) <> (SampleFileLink.tupled, SampleFileLink.unapply)
 
-  def sample = foreignKey("SAMPLE_FILE_LINK_TABLE_SAMPLE_FK", sampleID, sfp.getTable)(
+  def sample = foreignKey("SAMPLE_FILE_LINK_TABLE_SAMPLE_FK", sampleID, sfp.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Restrict
@@ -39,8 +39,8 @@ class SampleFileLinkProvider @Inject()(@NamedDatabase("default") protected val d
 
   import dbConfig.profile.api._
 
-  private final val table = TableQuery[SampleFileLinkTable]
+  private final val links = TableQuery[SampleFileLinkTable]
 
-  def getTable: TableQuery[SampleFileLinkTable] = table
+  def table: TableQuery[SampleFileLinkTable] = links
 
 }

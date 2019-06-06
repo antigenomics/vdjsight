@@ -7,7 +7,7 @@ import models.user.{User, UserProvider, UserTable}
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.db.NamedDatabase
-import slick.jdbc.H2Profile.api._
+import slick.jdbc.PostgresProfile.api._
 import slick.jdbc.JdbcProfile
 import slick.lifted.Tag
 
@@ -26,7 +26,7 @@ class ProjectTable(tag: Tag)(implicit up: UserProvider) extends Table[Project](t
 
   def * = (uuid, name, ownerID, folder, maxFileSize, maxFilesCount) <> (Project.tupled, Project.unapply)
 
-  def owner = foreignKey("PROJECT_TABLE_OWNER_FK", ownerID, up.getTable)(
+  def owner = foreignKey("PROJECT_TABLE_OWNER_FK", ownerID, up.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Restrict
@@ -40,7 +40,7 @@ object ProjectTable {
   final val TABLE_NAME = "PROJECT"
 
   implicit class ProjectTableExtensions[C[_]](q: Query[ProjectTable, Project, C]) {
-    def withOwner(implicit up: UserProvider): Query[(ProjectTable, UserTable), (Project, User), C] = q.join(up.getTable).on(_.ownerID === _.uuid)
+    def withOwner(implicit up: UserProvider): Query[(ProjectTable, UserTable), (Project, User), C] = q.join(up.table).on(_.ownerID === _.uuid)
   }
 
 }
@@ -53,7 +53,7 @@ class ProjectProvider @Inject()(@NamedDatabase("default") protected val dbConfig
 
   import dbConfig.profile.api._
 
-  private final val table = TableQuery[ProjectTable]
+  private final val projects = TableQuery[ProjectTable]
 
-  def getTable: TableQuery[ProjectTable] = table
+  def table: TableQuery[ProjectTable] = projects
 }

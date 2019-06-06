@@ -15,8 +15,8 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.inject.ApplicationLifecycle
 import play.api.{ConfigLoader, Configuration}
 import play.db.NamedDatabase
-import slick.jdbc.H2Profile.api._
 import slick.jdbc.JdbcProfile
+import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
 import utils.FutureUtils._
 import utils.TimeUtils
@@ -44,14 +44,14 @@ object VerificationMethod extends Enumeration {
   implicit def String2Method(value: String): VerificationMethod = VerificationMethod.convert(value)
 }
 
-case class VerificationTokenConfiguration(method: VerificationMethod, server: String, keep: Duration, interval: Duration)
+case class VerificationTokenConfiguration(method: VerificationMethod, link: String, keep: Duration, interval: Duration)
 
 object VerificationTokenConfiguration {
-  implicit val verificationTokenConfigurationLoader: ConfigLoader[VerificationTokenConfiguration] = (rootConfig: Config, path: String) => {
-    val config = rootConfig.getConfig(path)
+  implicit val verificationTokenConfigurationLoader: ConfigLoader[VerificationTokenConfiguration] = (root: Config, path: String) => {
+    val config = root.getConfig(path)
     VerificationTokenConfiguration(
       method = VerificationMethod.convert(config.getString("method")),
-      server = config.getString("server"),
+      link = config.getString("link"),
       keep = config.getDuration("keep"),
       interval = config.getDuration("interval")
     )
@@ -67,7 +67,7 @@ class VerificationTokenTable(tag: Tag)(implicit up: UserProvider) extends Table[
 
   def * = (token, userID, expiredAt) <> (VerificationToken.tupled, VerificationToken.unapply)
 
-  def user = foreignKey("VERIFICATION_TOKEN_TABLE_USER_FK", userID, up.getTable)(
+  def user = foreignKey("VERIFICATION_TOKEN_TABLE_USER_FK", userID, up.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Cascade
@@ -80,7 +80,7 @@ object VerificationTokenTable {
   implicit class VerificationTokenExtension[C[_]](q: Query[VerificationTokenTable, VerificationToken, C]) {
 
     def withUser(implicit up: UserProvider): Query[(VerificationTokenTable, UserTable), (VerificationToken, User), C] = {
-      q.join(up.getTable).on(_.userID === _.uuid)
+      q.join(up.table).on(_.userID === _.uuid)
     }
   }
 
@@ -104,7 +104,7 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
     case true =>
       system.scheduler.schedule(configuration.interval.getSeconds seconds, configuration.interval.getSeconds seconds) {
         expired().map(delete) onComplete {
-          case Failure(exception) => logger.warn("Cannot delete expired tokens", exception)
+          case Failure(exception) => logger.warn("Cannot delete expired verification tokens", exception)
           case _                  =>
         }
       }
@@ -114,7 +114,7 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
     Future.successful(expiredTokensDeleteScheduler.foreach(_.cancel()))
   }
 
-  def getTable: TableQuery[VerificationTokenTable] = tokens
+  def table: TableQuery[VerificationTokenTable] = tokens
 
   def all: Future[Seq[VerificationToken]] = db.run(tokens.result)
 
@@ -126,8 +126,7 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
 
   def findForUser(userID: Future[UUID]): Future[Option[VerificationToken]] = userID.flatMap(findForUser)
 
-  def getWithUser(token: UUID): Future[Option[(VerificationToken, User)]] =
-    db.run(tokens.withUser.filter(_._1.token === token).result.headOption)
+  def getWithUser(token: UUID): Future[Option[(VerificationToken, User)]] = db.run(tokens.withUser.filter(_._1.token === token).result.headOption)
 
   def getWithUser(token: Future[UUID]): Future[Option[(VerificationToken, User)]] = token.flatMap(getWithUser)
 
@@ -143,7 +142,9 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
         db.run(tokens += VerificationToken(token, userID, TimeUtils.getExpiredAt(configuration.keep))) map {
           case 1 => token
           case _ => throw new RuntimeException("Cannot create VerificationToken instance in database: Internal error")
-        } onSuccessSideEffect processToken
+        } onSuccessSideEffect { tokenID =>
+          processToken(userID, tokenID)
+        }
     }
   }
 
@@ -155,13 +156,12 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
 
   def delete(set: Seq[VerificationToken]): Future[Int] = db.run(tokens.filter(t => t.token inSet set.map(_.token)).delete)
 
-  def expired(date: Timestamp = TimeUtils.getCurrentTimestamp): Future[Seq[VerificationToken]] =
-    db.run(tokens.filter(_.expiredAt < date).result)
+  def expired(date: Timestamp = TimeUtils.getCurrentTimestamp): Future[Seq[VerificationToken]] = db.run(tokens.filter(_.expiredAt < date).result)
 
-  private def processToken(tokenID: UUID) = {
+  private def processToken(userID: UUID, tokenID: UUID): Unit = {
     configuration.method match {
       case VerificationMethod.EMAIL   => throw new NotImplementedError("Email verification method not implemented")
-      case VerificationMethod.CONSOLE => throw new NotImplementedError("Console verification method not implemented")
+      case VerificationMethod.CONSOLE => logger.info(s"VerificationToken for user $userID: $tokenID")
       case VerificationMethod.AUTO    => up.verify(tokenID)(this)
       case VerificationMethod.NOOP    =>
     }
