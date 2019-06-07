@@ -1,13 +1,14 @@
 package models.token
 
-import models.SQLDatabaseTestTag
+import models.{DatabaseProviderTestSpec, SQLDatabaseTestTag}
 import org.scalatest.Assertions
+import traits.DatabaseUsersTestTrait
 
 import scala.concurrent.Future
 import scala.language.reflectiveCalls
 import scala.util.{Failure, Success}
 
-class VerificationTokenSpec extends BaseTokenTestSpec {
+class VerificationTokenSpec extends DatabaseProviderTestSpec with DatabaseUsersTestTrait {
 
   "VerificationMethod" should {
 
@@ -40,14 +41,14 @@ class VerificationTokenSpec extends BaseTokenTestSpec {
     }
 
     "not be able to create verification token for not existing user" taggedAs SQLDatabaseTestTag in {
-      vtp.create(fixtures.notExistingUser.uuid).map(_ => w.dismiss())
+      vtp.create(users.notExistingUser.uuid).map(_ => w.dismiss())
       assertThrows[Exception] {
         w.await()
       }
     }
 
     "be able to create verification token for not verified user" taggedAs SQLDatabaseTestTag in {
-      vtp.create(fixtures.notVerifiedUser.uuid).transform {
+      vtp.create(users.notVerifiedUser.uuid).transform {
         case Success(_) => Success(Assertions.succeed)
         case Failure(_) => Assertions.fail
       }
@@ -55,8 +56,8 @@ class VerificationTokenSpec extends BaseTokenTestSpec {
 
     "not create many tokens for one user and return the single one" taggedAs SQLDatabaseTestTag in {
       val tokens = for {
-        token1 <- vtp.create(fixtures.notVerifiedUser.uuid)
-        token2 <- vtp.create(fixtures.notVerifiedUser.uuid)
+        token1 <- vtp.create(users.notVerifiedUser.uuid)
+        token2 <- vtp.create(users.notVerifiedUser.uuid)
       } yield (token1, token2)
 
       tokens.map {
@@ -66,14 +67,14 @@ class VerificationTokenSpec extends BaseTokenTestSpec {
 
     "get not empty list on not empty table" taggedAs SQLDatabaseTestTag in {
       for {
-        _ <- vtp.create(fixtures.notVerifiedUser.uuid)
+        _ <- vtp.create(users.notVerifiedUser.uuid)
         s <- vtp.all
       } yield s should not be empty
     }
 
     "be able to delete verification token" taggedAs SQLDatabaseTestTag in {
       for {
-        createdToken <- vtp.create(fixtures.notVerifiedUser.uuid)
+        createdToken <- vtp.create(users.notVerifiedUser.uuid)
         _            <- vtp.delete(createdToken)
         deletedToken <- vtp.get(createdToken)
       } yield deletedToken should be(empty)

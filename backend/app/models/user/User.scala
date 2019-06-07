@@ -8,8 +8,8 @@ import models.token.VerificationTokenProvider
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.db.NamedDatabase
-import slick.jdbc.PostgresProfile.api._
 import slick.jdbc.JdbcProfile
+import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -81,21 +81,15 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
   }
 
   def verify(tokenID: UUID)(implicit vtp: VerificationTokenProvider): Future[Option[User]] = {
-    val query = for {
-      token <- vtp.table if token.token === tokenID
-      user  <- users if user.uuid === token.userID
-    } yield (token, user)
-
-    val actions = DBIO.seq(
-      query.map(_._2).map(_.verified).update(true),
-      query.map(_._1).delete
-    )
-
-    db.run(actions)
-      .transform {
-        case Success(_) => Success(db.run(query.map(_._2).result.headOption))
-        case Failure(_) => throw new RuntimeException("Cannot verify user instance in database: Internal error")
-      }
-      .flatten
+    vtp.get(tokenID) flatMap {
+      case Some(token) =>
+        db.run(DBIO.seq(users.filter(_.uuid === token.userID).map(_.verified).update(true), vtp.table.filter(_.token === token.token).delete))
+          .transform {
+            case Success(_) => Success(get(token.userID))
+            case Failure(_) => throw new RuntimeException("Cannot verify user instance in database: Internal error")
+          }
+          .flatten
+      case None => Future.successful(None)
+    }
   }
 }

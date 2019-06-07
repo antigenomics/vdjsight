@@ -1,13 +1,14 @@
 package models.token
 
-import models.SQLDatabaseTestTag
+import models.{DatabaseProviderTestSpec, SQLDatabaseTestTag}
 import org.scalatest.Assertions
+import traits.DatabaseUsersTestTrait
 
 import scala.concurrent.Future
 import scala.language.reflectiveCalls
 import scala.util.{Failure, Success}
 
-class ResetTokenSpec extends BaseTokenTestSpec {
+class ResetTokenSpec extends DatabaseProviderTestSpec with DatabaseUsersTestTrait {
 
   "ResetMethod" should {
 
@@ -40,14 +41,21 @@ class ResetTokenSpec extends BaseTokenTestSpec {
     }
 
     "not be able to create reset token for not existing user" taggedAs SQLDatabaseTestTag in {
-      rtp.create(fixtures.notExistingUser.uuid).map(_ => w.dismiss())
+      rtp.create(users.notExistingUser.uuid).map(_ => w.dismiss())
       assertThrows[Exception] {
         w.await()
       }
     }
 
     "be able to create reset token for not verified user" taggedAs SQLDatabaseTestTag in {
-      rtp.create(fixtures.notVerifiedUser.uuid).transform {
+      rtp.create(users.notVerifiedUser.uuid).transform {
+        case Success(_) => Success(Assertions.succeed)
+        case Failure(_) => Assertions.fail
+      }
+    }
+
+    "be able to create reset token for verified user" taggedAs SQLDatabaseTestTag in {
+      rtp.create(users.verifiedUser.uuid).transform {
         case Success(_) => Success(Assertions.succeed)
         case Failure(_) => Assertions.fail
       }
@@ -55,8 +63,8 @@ class ResetTokenSpec extends BaseTokenTestSpec {
 
     "not create many tokens for one user and return the single one" taggedAs SQLDatabaseTestTag in {
       val tokens = for {
-        token1 <- rtp.create(fixtures.notVerifiedUser.uuid)
-        token2 <- rtp.create(fixtures.notVerifiedUser.uuid)
+        token1 <- rtp.create(users.notVerifiedUser.uuid)
+        token2 <- rtp.create(users.notVerifiedUser.uuid)
       } yield (token1, token2)
 
       tokens.map {
@@ -66,14 +74,14 @@ class ResetTokenSpec extends BaseTokenTestSpec {
 
     "get not empty list on not empty table" taggedAs SQLDatabaseTestTag in {
       for {
-        _ <- rtp.create(fixtures.notVerifiedUser.uuid)
+        _ <- rtp.create(users.notVerifiedUser.uuid)
         s <- rtp.all
       } yield s should not be empty
     }
 
     "be able to delete verification token" taggedAs SQLDatabaseTestTag in {
       for {
-        createdToken <- rtp.create(fixtures.notVerifiedUser.uuid)
+        createdToken <- rtp.create(users.notVerifiedUser.uuid)
         _            <- rtp.delete(createdToken)
         deletedToken <- rtp.get(createdToken)
       } yield deletedToken should be(empty)
