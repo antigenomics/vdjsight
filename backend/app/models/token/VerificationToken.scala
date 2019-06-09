@@ -24,7 +24,7 @@ import utils.TimeUtils
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.{higherKinds, implicitConversions, postfixOps}
-import scala.util.Failure
+import scala.util.{Failure, Success}
 
 object VerificationMethod extends Enumeration {
   type VerificationMethod = Value
@@ -100,18 +100,31 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
 
   private final val tokens = TableQuery[VerificationTokenTable]
 
-  private final val expiredTokensDeleteScheduler: Option[Cancellable] = Option(configuration.interval.getSeconds != 0).collect {
+  private final val expiredTokensWithUsersDeleteScheduler: Option[Cancellable] = Option(configuration.interval.getSeconds != 0).collect {
     case true =>
       system.scheduler.schedule(configuration.interval.getSeconds seconds, configuration.interval.getSeconds seconds) {
-        expired().map(delete) onComplete {
-          case Failure(exception) => logger.warn("Cannot delete expired verification tokens", exception)
-          case _                  =>
+        expired() onComplete {
+          case Failure(exception) => logger.warn("Cannot obtain expired verification tokens", exception)
+          case Success(expiredTokens) =>
+            delete(expiredTokens.map(_.token).toSet) onComplete {
+              case Failure(exception) => logger.warn("Cannot delete expired verification tokens", exception)
+              case _ =>
+                up.get(expiredTokens.map(_.userID).toSet).map(_.filter(!_.verified)) onComplete {
+                  case Failure(exception) => logger.warn("Cannot obtain not verified users", exception)
+                  case Success(users) =>
+                    up.delete(users.map(_.uuid).toSet) onComplete {
+                      case Failure(exception) => logger.warn("Cannot delete not verified users", exception)
+                      case _                  =>
+                    }
+                }
+            }
         }
+
       }
   }
 
   lifecycle.addStopHook { () =>
-    Future.successful(expiredTokensDeleteScheduler.foreach(_.cancel()))
+    Future.successful(expiredTokensWithUsersDeleteScheduler.foreach(_.cancel()))
   }
 
   def table: TableQuery[VerificationTokenTable] = tokens
@@ -154,7 +167,7 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
 
   def delete(token: Future[UUID]): Future[Int] = token.flatMap(delete)
 
-  def delete(set: Seq[VerificationToken]): Future[Int] = db.run(tokens.filter(t => t.token inSet set.map(_.token)).delete)
+  def delete(tokenSet: Set[UUID]): Future[Int] = db.run(tokens.filter(t => t.token inSet tokenSet).delete)
 
   def expired(date: Timestamp = TimeUtils.getCurrentTimestamp): Future[Seq[VerificationToken]] = db.run(tokens.filter(_.expiredAt < date).result)
 

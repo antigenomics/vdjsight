@@ -56,6 +56,8 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
 
   def get(uuid: Future[UUID]): Future[Option[User]] = uuid.flatMap(get)
 
+  def get(uuidSet: Set[UUID]): Future[Seq[User]] = db.run(users.filter(u => u.uuid inSet uuidSet).result)
+
   def getByEmail(email: String): Future[Option[User]] = db.run(users.filter(_.email === email).result.headOption)
 
   def getByEmail(email: Future[String]): Future[Option[User]] = email.flatMap(getByEmail)
@@ -92,4 +94,10 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
       case None => Future.successful(None)
     }
   }
+
+  def delete(uuid: UUID): Future[Int] = db.run(users.filter(_.uuid === uuid).delete)
+
+  def delete(uuid: Future[UUID]): Future[Int] = uuid.flatMap(delete)
+
+  def delete(uuidSet: Set[UUID]): Future[Int] = db.run(users.filter(t => t.uuid inSet uuidSet).delete)
 }

@@ -55,14 +55,11 @@ class VerificationTokenSpec extends DatabaseProviderTestSpec with DatabaseUsersT
     }
 
     "not create many tokens for one user and return the single one" taggedAs SQLDatabaseTestTag in {
-      val tokens = for {
+      for {
         token1 <- vtp.create(users.notVerifiedUser.uuid)
         token2 <- vtp.create(users.notVerifiedUser.uuid)
-      } yield (token1, token2)
-
-      tokens.map {
-        case (t1, t2) => t1 shouldEqual t2
-      }
+        check  <- token1 shouldEqual token2
+      } yield check
     }
 
     "get not empty list on not empty table" taggedAs SQLDatabaseTestTag in {
@@ -78,6 +75,21 @@ class VerificationTokenSpec extends DatabaseProviderTestSpec with DatabaseUsersT
         _            <- vtp.delete(createdToken)
         deletedToken <- vtp.get(createdToken)
       } yield deletedToken should be(empty)
+    }
+
+    "be able to find proper token associated user" taggedAs SQLDatabaseTestTag in {
+      for {
+        token <- vtp.create(users.notVerifiedUser.uuid)
+        uwt   <- vtp.getWithUser(token)
+        found <- vtp.findForUser(uwt.get._2.uuid)
+        _     <- uwt should not be empty
+        _     <- uwt.get._1.token shouldEqual token
+        _     <- uwt.get._2.uuid shouldEqual users.notVerifiedUser.uuid
+        _     <- uwt.get._2.login shouldEqual users.notVerifiedUser.credentials.login
+        _     <- uwt.get._2.email shouldEqual users.notVerifiedUser.credentials.email
+        _     <- found should not be empty
+        check <- found.get.token shouldEqual token
+      } yield check
     }
 
   }
