@@ -57,13 +57,13 @@ javaOptions in Test ++= Seq(
   "-Dslick.dbs.default.profile=slick.jdbc.H2Profile$",
   "-Dslick.dbs.default.db.driver=org.h2.Driver",
   "-Dslick.dbs.default.db.profile=org.h2.Driver",
-  "-Dslick.dbs.default.db.url=jdbc:h2:mem:play;DB_CLOSE_DELAY=-1",
+  "-Dslick.dbs.default.db.url=jdbc:h2:mem:play;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_UPPER=FALSE;DATABASE_TO_LOWER=TRUE",
   "-Dapplication.temporary.interval=0",
   "-Dapplication.auth.verification.method=noop"
 )
 
 libraryDependencies ++= Seq(
-  "com.h2database" % "h2" % "1.4.197" % Test,
+  "com.h2database" % "h2" % "1.4.199" % Test,
   "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.2" % Test
 )
 // Ends.

@@ -3,6 +3,7 @@ package actions
 import java.util.UUID
 
 import javax.inject.Inject
+import play.api.libs.json.JsValue
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -13,18 +14,17 @@ object SessionRequest {
   final val SESSION_REQUEST_USER_ID_KEY = "user-id"
 }
 
-class SessionRequestAction @Inject()(val parser: BodyParsers.Default)(implicit val ec: ExecutionContext)
-    extends ActionBuilder[SessionRequest, AnyContent]
+class SessionRequestAction @Inject()(implicit val ec: ExecutionContext, parsers: PlayBodyParsers)
+    extends ActionBuilder[SessionRequest, JsValue]
     with ActionTransformer[Request, SessionRequest] {
+
+  override def parser: BodyParser[JsValue] = parsers.json
 
   override protected def executionContext: ExecutionContext = ec
 
   override protected def transform[A](request: Request[A]): Future[SessionRequest[A]] = Future.successful {
     SessionRequest(request.session.get(SessionRequest.SESSION_REQUEST_USER_ID_KEY).map(UUID.fromString), request)
   }
-}
-
-object SessionRequestAction {
 
   def authorizedOnly(implicit ec: ExecutionContext): ActionFilter[SessionRequest] = new ActionFilter[SessionRequest] {
     override protected def executionContext: ExecutionContext = ec
@@ -49,5 +49,4 @@ object SessionRequestAction {
       }
     }
   }
-
 }

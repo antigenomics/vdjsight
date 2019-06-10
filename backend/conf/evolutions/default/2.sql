@@ -4,30 +4,30 @@
 
 -- noinspection SqlResolve
 
-CREATE TABLE "SAMPLE_FILE"
+create table "sample_file"
 (
-    UUID     UUID         NOT NULL PRIMARY KEY,
-    OWNER_ID UUID         NOT NULL,
-    NAME     VARCHAR(255) NOT NULL,
-    SOFTWARE VARCHAR(64)  NOT NULL,
-    FOREIGN KEY (OWNER_ID) REFERENCES "USER" (UUID) ON UPDATE CASCADE ON DELETE RESTRICT
+    uuid     uuid         not null primary key,
+    owner_id uuid         not null,
+    name     varchar(255) not null,
+    software varchar(64)  not null,
+    foreign key (owner_id) references "user" (uuid) on update cascade on delete restrict
 );
 
-CREATE INDEX SAMPLE_FILE_TABLE_OWNER_ID_IDX on "SAMPLE_FILE" (OWNER_ID);
+create index sample_file_table_owner_id_idx on "sample_file" (owner_id);
 
-CREATE TABLE "SAMPLE_FILE_LINK"
+create table "sample_file_link"
 (
-    UUID            UUID         NOT NULL PRIMARY KEY,
-    SAMPLE_ID       UUID         NOT NULL,
-    FOREIGN KEY (SAMPLE_ID) REFERENCES "SAMPLE_FILE" (UUID) ON UPDATE CASCADE ON DELETE RESTRICT
+    uuid      uuid not null primary key,
+    sample_id uuid not null,
+    foreign key (sample_id) references "sample_file" (uuid) on update cascade on delete restrict
 );
 
-CREATE INDEX SAMPLE_FILE_LINK_TABLE_SAMPLE_ID_IDX on "SAMPLE_FILE_LINK" (SAMPLE_ID);
+create index sample_file_link_table_sample_id_idx on "sample_file_link" (sample_id);
 
 # --- !Downs
 
-DROP INDEX SAMPLE_FILE_LINK_TABLE_SAMPLE_ID_IDX;
-DROP TABLE "SAMPLE_FILE_LINK";
+drop index sample_file_link_table_sample_id_idx;
+drop table "sample_file_link";
 
-DROP INDEX SAMPLE_FILE_TABLE_OWNER_ID_IDX;
-DROP TABLE "SAMPLE_FILE";
+drop index SAMPLE_FILE_TABLE_OWNER_ID_IDX;
+drop table "sample_file";

@@ -60,13 +60,13 @@ object ResetTokenConfiguration {
 case class ResetToken(token: UUID, userID: UUID, expiredAt: Timestamp)
 
 class ResetTokenTable(tag: Tag)(implicit up: UserProvider) extends Table[ResetToken](tag, ResetTokenTable.TABLE_NAME) {
-  def token     = column[UUID]("TOKEN", O.PrimaryKey, O.SqlType("UUID"))
-  def userID    = column[UUID]("USER_ID", O.SqlType("UUID"))
-  def expiredAt = column[Timestamp]("EXPIRED_AT")
+  def token     = column[UUID]("token", O.PrimaryKey, O.SqlType("uuid"))
+  def userID    = column[UUID]("user_id", O.SqlType("uuid"))
+  def expiredAt = column[Timestamp]("expired_at")
 
   def * = (token, userID, expiredAt) <> (ResetToken.tupled, ResetToken.unapply)
 
-  def user = foreignKey("RESET_TOKEN_TABLE_USER_FK", userID, up.table)(
+  def user = foreignKey("reset_token_table_user_fk", userID, up.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Cascade
@@ -74,7 +74,7 @@ class ResetTokenTable(tag: Tag)(implicit up: UserProvider) extends Table[ResetTo
 }
 
 object ResetTokenTable {
-  final val TABLE_NAME = "RESET_TOKEN"
+  final val TABLE_NAME = "reset_token"
 
   implicit class ResetTokenExtension[C[_]](q: Query[ResetTokenTable, ResetToken, C]) {
 

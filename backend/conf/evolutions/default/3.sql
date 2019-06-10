@@ -4,24 +4,24 @@
 
 # --- !Ups
 
-CREATE TABLE "VERIFICATION_TOKEN"
+create table "verification_token"
 (
-    TOKEN      UUID      NOT NULL PRIMARY KEY,
-    USER_ID    UUID      NOT NULL,
-    EXPIRED_AT TIMESTAMP NOT NULL,
-    FOREIGN KEY (USER_ID) REFERENCES "USER" (UUID) ON UPDATE CASCADE ON DELETE CASCADE
+    token      uuid      not null primary key,
+    user_id    uuid      not null,
+    expired_at timestamp not null,
+    foreign key (user_id) references "user" (uuid) on update cascade on delete cascade
 );
 
-CREATE TABLE "RESET_TOKEN"
+create table "reset_token"
 (
-    TOKEN      UUID      NOT NULL PRIMARY KEY,
-    USER_ID    UUID      NOT NULL,
-    EXPIRED_AT TIMESTAMP NOT NULL,
-    FOREIGN KEY (USER_ID) REFERENCES "USER" (UUID) ON UPDATE CASCADE ON DELETE CASCADE
+    token      uuid      not null primary key,
+    user_id    uuid      not null,
+    expired_at timestamp not null,
+    foreign key (user_id) references "user" (uuid) on update cascade on delete cascade
 );
 
 # --- !Downs
 
-DROP TABLE "RESET_TOKEN";
+drop table "reset_token";
 
-DROP TABLE "VERIFICATION_TOKEN";
+drop table "verification_token";

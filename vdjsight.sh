@@ -41,7 +41,7 @@ function script_help() {
     echo "     docker   <tag>            -     :Create Docker image with tag specified                                                  "
     echo "                                                                                                                              "
     echo "  dev-environment                                                                                                             "
-    echo "     start                     -     :Start develop environment                                                               "
+    echo "     up                        -     :Up    develop environment                                                               "
     echo "     stop                      -     :Stop  develop environment                                                               "
     echo "     down                      -     :Down  develop environment                                                               "
     echo "                                                                                                                              "
@@ -142,7 +142,7 @@ function dev_environment() {
     shift
 
     case ${dev_environment_action} in
-        start)
+        up)
             docker-compose up -d;
             ;;
         stop)

@@ -4,50 +4,47 @@
 
 # --- !Ups
 
-CREATE TABLE "USER"
+create table "user"
 (
-    UUID     UUID         NOT NULL PRIMARY KEY,
-    LOGIN    VARCHAR(64)  NOT NULL UNIQUE,
-    EMAIL    VARCHAR(255) NOT NULL UNIQUE,
-    VERIFIED BOOLEAN      NOT NULL,
-    PASSWORD VARCHAR(255) NOT NULL
+    uuid     uuid         not null primary key,
+    login    varchar(64)  not null unique,
+    email    varchar(255) not null unique,
+    verified boolean      not null,
+    password varchar(255) not null
 );
 
-CREATE UNIQUE INDEX USER_TABLE_EMAIL_IDX on "USER" (EMAIL);
-
-CREATE TABLE "PROJECT"
+create table "project"
 (
-    UUID            UUID         NOT NULL PRIMARY KEY,
-    NAME            VARCHAR(255) NOT NULL,
-    OWNER_ID        UUID         NOT NULL,
-    FOLDER          VARCHAR(510) NOT NULL UNIQUE,
-    MAX_FILE_SIZE   BIGINT       NOT NULL,
-    MAX_FILES_COUNT BIGINT       NOT NULL,
-    FOREIGN KEY (OWNER_ID) REFERENCES "USER" (UUID) ON UPDATE CASCADE ON DELETE RESTRICT
+    uuid            uuid         not null primary key,
+    name            varchar(255) not null,
+    owner_id        uuid         not null,
+    folder          varchar(510) not null unique,
+    max_file_size   bigint       not null,
+    max_files_count bigint       not null,
+    foreign key (owner_id) references "user" (uuid) on update cascade on delete restrict
 );
 
-CREATE INDEX PROJECT_TABLE_OWNER_INDEX on "PROJECT" (OWNER_ID);
+create index project_table_owner_index on "project" (owner_id);
 
-CREATE TABLE "PROJECT_LINK"
+create table "project_link"
 (
-    UUID                    UUID    NOT NULL PRIMARY KEY,
-    PROJECT_ID              UUID    NOT NULL,
-    IS_SHARED               BOOLEAN NOT NULL,
-    IS_UPLOAD_ALLOWED       BOOLEAN NOT NULL,
-    IS_DELETE_ALLOWED       BOOLEAN NOT NULL,
-    IS_MODIFICATION_ALLOWED BOOLEAN NOT NULL,
-    FOREIGN KEY (PROJECT_ID) REFERENCES "PROJECT" (UUID) ON UPDATE CASCADE ON DELETE RESTRICT
+    uuid                    uuid    not null primary key,
+    project_id              uuid    not null,
+    is_shared               boolean not null,
+    is_upload_allowed       boolean not null,
+    is_delete_allowed       boolean not null,
+    is_modification_allowed boolean not null,
+    foreign key (project_id) REFERENCES "project" (uuid) on update cascade on delete restrict
 );
 
-CREATE INDEX PROJECT_LINK_TABLE_PROJECT_ID_IDX on "PROJECT_LINK" (PROJECT_ID);
+create index project_link_table_project_id_idx on "project_link" (project_id);
 
 # --- !Downs
 
-DROP INDEX PROJECT_LINK_TABLE_PROJECT_ID_IDX;
-DROP TABLE "PROJECT_LINK";
+drop index project_link_table_project_id_idx;
+drop table "project_link";
 
-DROP INDEX PROJECT_TABLE_OWNER_INDEX;
-DROP TABLE "PROJECT";
+drop index project_table_owner_index;
+drop table "project";
 
-DROP INDEX USER_TABLE_EMAIL_IDX;
-DROP TABLE "USER";
+drop table "user";

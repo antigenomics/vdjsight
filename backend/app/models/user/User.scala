@@ -19,19 +19,17 @@ import scala.util.{Failure, Success}
 case class User(uuid: UUID, login: String, email: String, verified: Boolean, password: String)
 
 class UserTable(tag: Tag) extends Table[User](tag, UserTable.TABLE_NAME) {
-  def uuid     = column[UUID]("UUID", O.PrimaryKey, O.SqlType("UUID"))
-  def login    = column[String]("LOGIN", O.Unique, O.Length(64))
-  def email    = column[String]("EMAIL", O.Unique, O.Length(255))
-  def verified = column[Boolean]("VERIFIED")
-  def password = column[String]("PASSWORD", O.Length(255))
+  def uuid     = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
+  def login    = column[String]("login", O.Unique, O.Length(64))
+  def email    = column[String]("email", O.Unique, O.Length(255))
+  def verified = column[Boolean]("verified")
+  def password = column[String]("password", O.Length(255))
 
   def * = (uuid, login, email, verified, password) <> (User.tupled, User.unapply)
-
-  def email_idx = index("USER_TABLE_EMAIL_IDX", email, unique = true)
 }
 
 object UserTable {
-  final val TABLE_NAME = "USER"
+  final val TABLE_NAME = "user"
 }
 
 @Singleton
@@ -46,8 +44,20 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
 
   def table: TableQuery[UserTable] = users
 
-  def isVerifiedUserWithEmailExist(email: String): Future[Boolean] = {
-    db.run(users.filter(_.email === email).result.headOption).map(_.map(_.verified)).map(_.getOrElse(false))
+  def isUserWithEmailExist(email: String): Future[Boolean] = {
+    db.run(users.filter(_.email === email).result.headOption.map(_.isDefined))
+  }
+
+  def isUserWithLoginExist(login: String): Future[Boolean] = {
+    db.run(users.filter(_.email === login).result.headOption.map(_.isDefined))
+  }
+
+  def isUserWithEmailOrLoginExist(email: String, login: String): Future[(Boolean, Boolean)] = {
+    val byEmail = users.filter(_.email === email).result.headOption.map(_.isDefined)
+    val byLogin = users.filter(_.login === login).result.headOption.map(_.isDefined)
+    val actions = byEmail zip byLogin
+
+    db.run(actions.transactionally)
   }
 
   def all: Future[Seq[User]] = db.run(users.result)

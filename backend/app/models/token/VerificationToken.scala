@@ -61,13 +61,13 @@ object VerificationTokenConfiguration {
 case class VerificationToken(token: UUID, userID: UUID, expiredAt: Timestamp)
 
 class VerificationTokenTable(tag: Tag)(implicit up: UserProvider) extends Table[VerificationToken](tag, VerificationTokenTable.TABLE_NAME) {
-  def token     = column[UUID]("TOKEN", O.PrimaryKey, O.SqlType("UUID"))
-  def userID    = column[UUID]("USER_ID", O.SqlType("UUID"))
-  def expiredAt = column[Timestamp]("EXPIRED_AT")
+  def token     = column[UUID]("token", O.PrimaryKey, O.SqlType("uuid"))
+  def userID    = column[UUID]("user_id", O.SqlType("uuid"))
+  def expiredAt = column[Timestamp]("expired_at")
 
   def * = (token, userID, expiredAt) <> (VerificationToken.tupled, VerificationToken.unapply)
 
-  def user = foreignKey("VERIFICATION_TOKEN_TABLE_USER_FK", userID, up.table)(
+  def user = foreignKey("verification_token_table_user_fk", userID, up.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Cascade
@@ -75,7 +75,7 @@ class VerificationTokenTable(tag: Tag)(implicit up: UserProvider) extends Table[
 }
 
 object VerificationTokenTable {
-  final val TABLE_NAME = "VERIFICATION_TOKEN"
+  final val TABLE_NAME = "verification_token"
 
   implicit class VerificationTokenExtension[C[_]](q: Query[VerificationTokenTable, VerificationToken, C]) {
 
@@ -174,7 +174,7 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
   private def processToken(userID: UUID, tokenID: UUID): Unit = {
     configuration.method match {
       case VerificationMethod.EMAIL   => throw new NotImplementedError("Email verification method not implemented")
-      case VerificationMethod.CONSOLE => logger.info(s"VerificationToken for user $userID: $tokenID")
+      case VerificationMethod.CONSOLE => println(s"[VerificationToken] For user $userID: $tokenID")
       case VerificationMethod.AUTO    => up.verify(tokenID)(this)
       case VerificationMethod.NOOP    =>
     }

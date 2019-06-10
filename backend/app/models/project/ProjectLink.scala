@@ -6,33 +6,33 @@ import javax.inject.{Inject, Singleton}
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.db.NamedDatabase
-import slick.jdbc.PostgresProfile.api._
 import slick.jdbc.JdbcProfile
+import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
 
 case class ProjectLink(uuid: UUID, projectID: UUID, isShared: Boolean, isUploadAllowed: Boolean, isDeleteAllowed: Boolean, isModificationAllowed: Boolean)
 
 class ProjectLinkTable(tag: Tag)(implicit pp: ProjectProvider) extends Table[ProjectLink](tag, ProjectLinkTable.TABLE_NAME) {
-  def uuid                  = column[UUID]("UUID", O.PrimaryKey, O.SqlType("UUID"))
-  def projectID             = column[UUID]("PROJECT_ID", O.SqlType("UUID"))
-  def isShared              = column[Boolean]("IS_SHARED")
-  def isUploadAllowed       = column[Boolean]("IS_UPLOAD_ALLOWED")
-  def isDeleteAllowed       = column[Boolean]("IS_DELETE_ALLOWED")
-  def isModificationAllowed = column[Boolean]("IS_MODIFICATION_ALLOWED")
+  def uuid                  = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
+  def projectID             = column[UUID]("project_id", O.SqlType("uuid"))
+  def isShared              = column[Boolean]("is_shared")
+  def isUploadAllowed       = column[Boolean]("is_upload_allowed")
+  def isDeleteAllowed       = column[Boolean]("is_delete_allowed")
+  def isModificationAllowed = column[Boolean]("is_modification_allowed")
 
   def * = (uuid, projectID, isShared, isUploadAllowed, isDeleteAllowed, isModificationAllowed) <> (ProjectLink.tupled, ProjectLink.unapply)
 
-  def project = foreignKey("PROJECT_LINK_TABLE_PROJECT_FK", projectID, pp.table)(
+  def project = foreignKey("project_link_table_project_fk", projectID, pp.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Restrict
   )
 
-  def projectID_idx = index("PROJECT_LINK_TABLE_PROJECT_ID_IDX", projectID, unique = false)
+  def project_id_idx = index("project_link_table_project_id_idx", projectID, unique = false)
 }
 
 object ProjectLinkTable {
-  final val TABLE_NAME = "PROJECT_LINK"
+  final val TABLE_NAME = "project_link"
 }
 
 @Singleton

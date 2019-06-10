@@ -7,8 +7,8 @@ import models.user.{User, UserProvider, UserTable}
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.db.NamedDatabase
-import slick.jdbc.PostgresProfile.api._
 import slick.jdbc.JdbcProfile
+import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
 
 import scala.language.higherKinds
@@ -17,27 +17,27 @@ case class Project(uuid: UUID, name: String, ownerID: UUID, folder: String, maxF
 
 class ProjectTable(tag: Tag)(implicit up: UserProvider) extends Table[Project](tag, ProjectTable.TABLE_NAME) {
 
-  def uuid          = column[UUID]("UUID", O.PrimaryKey, O.SqlType("UUID"))
-  def name          = column[String]("NAME", O.Length(255))
-  def ownerID       = column[UUID]("OWNER_ID", O.SqlType("UUID"))
-  def folder        = column[String]("FOLDER", O.Length(510), O.Unique)
-  def maxFileSize   = column[Long]("MAX_FILE_SIZE")
-  def maxFilesCount = column[Long]("MAX_FILES_COUNT")
+  def uuid          = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
+  def name          = column[String]("name", O.Length(255))
+  def ownerID       = column[UUID]("owner_id", O.SqlType("uuid"))
+  def folder        = column[String]("folder", O.Length(510), O.Unique)
+  def maxFileSize   = column[Long]("max_file_size")
+  def maxFilesCount = column[Long]("max_files_count")
 
   def * = (uuid, name, ownerID, folder, maxFileSize, maxFilesCount) <> (Project.tupled, Project.unapply)
 
-  def owner = foreignKey("PROJECT_TABLE_OWNER_FK", ownerID, up.table)(
+  def owner = foreignKey("project_table_owner_fk", ownerID, up.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Restrict
   )
 
-  def owner_idx = index("PROJECT_TABLE_OWNER_INDEX", ownerID, unique = false)
+  def owner_idx = index("project_table_owner_index", ownerID, unique = false)
 
 }
 
 object ProjectTable {
-  final val TABLE_NAME = "PROJECT"
+  final val TABLE_NAME = "project"
 
   implicit class ProjectTableExtensions[C[_]](q: Query[ProjectTable, Project, C]) {
     def withOwner(implicit up: UserProvider): Query[(ProjectTable, UserTable), (Project, User), C] = q.join(up.table).on(_.ownerID === _.uuid)
