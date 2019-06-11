@@ -118,7 +118,7 @@ function backend() {
             sbt dist;
             ;;
         test)
-            sbt test;
+            sbt coverage test coverageReport;
             ;;
         docker)
             [[ -z "$1" ]] && echo "Tag parameters is required" && exit;
