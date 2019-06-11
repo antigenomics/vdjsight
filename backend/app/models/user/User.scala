@@ -6,7 +6,7 @@ import akka.actor.{ActorRef, ActorSystem}
 import com.google.inject.{Inject, Singleton}
 import effects.EventStreaming
 import io.github.nremond.SecureHash
-import models.token.VerificationTokenProvider
+import models.token.{ResetTokenProvider, VerificationTokenProvider}
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.db.NamedDatabase
@@ -17,7 +17,6 @@ import utils.FutureUtils._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
-import scala.util.{Failure, Success}
 
 case class User(uuid: UUID, login: String, email: String, verified: Boolean, password: String)
 
@@ -40,12 +39,14 @@ trait UserProviderEvent
 object UserProviderEvents {
   case class UserCreated(uuid: UUID)  extends UserProviderEvent
   case class UserVerified(uuid: UUID) extends UserProviderEvent
+  case class UserReset(uuid: UUID)    extends UserProviderEvent
   case class UserDeleted(uuid: UUID)  extends UserProviderEvent
 }
 
 @Singleton
 class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
-    extends HasDatabaseConfigProvider[JdbcProfile] with EventStreaming[UserProviderEvent] {
+    extends HasDatabaseConfigProvider[JdbcProfile]
+    with EventStreaming[UserProviderEvent] {
 
   private final val logger      = LoggerFactory.getLogger(this.getClass)
   private final val actorSystem = ActorSystem.create("UserProviderActorSystem")
@@ -81,17 +82,9 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
 
   def get(uuid: UUID): Future[Option[User]] = db.run(users.filter(_.uuid === uuid).result.headOption)
 
-  def get(uuid: Future[UUID]): Future[Option[User]] = uuid.flatMap(get)
-
-  def get(uuidSet: Set[UUID]): Future[Seq[User]] = db.run(users.filter(u => u.uuid inSet uuidSet).result)
-
   def getByEmail(email: String): Future[Option[User]] = db.run(users.filter(_.email === email).result.headOption)
 
-  def getByEmail(email: Future[String]): Future[Option[User]] = email.flatMap(getByEmail)
-
   def getByLogin(login: String): Future[Option[User]] = db.run(users.filter(_.login === login).result.headOption)
-
-  def getByLogin(login: Future[String]): Future[Option[User]] = login.flatMap(getByLogin)
 
   def create(login: String, email: String, password: String): Future[UUID] = {
     val check = for {
@@ -111,18 +104,21 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
     }
   }
 
-  def verify(tokenID: UUID)(implicit vtp: VerificationTokenProvider): Future[Option[User]] = {
-    vtp.get(tokenID) flatMap {
-      case Some(token) =>
-        db.run(DBIO.seq(users.filter(_.uuid === token.userID).map(_.verified).update(true), vtp.table.filter(_.token === token.token).delete))
-          .transform {
-            case Success(_) => Success(get(token.userID))
-            case Failure(_) => throw new RuntimeException("Cannot verify user instance in database: Internal error")
-          }
-          .flatten
-      case None => Future.successful(None)
+  def verify(verificationTokenID: UUID)(implicit vtp: VerificationTokenProvider): Future[Option[User]] = {
+    vtp.get(verificationTokenID) flatMap {
+      case Some(token) => db.run(users.filter(_.uuid === token.userID).map(_.verified).update(true)).flatMap(_ => get(token.userID))
+      case None        => Future.successful(None)
     } onSuccessSideEffect { user =>
       user.foreach(u => eventStream.publish(UserProviderEvents.UserVerified(u.uuid)))
+    }
+  }
+
+  def reset(resetTokenID: UUID, password: String)(implicit rtp: ResetTokenProvider): Future[Option[User]] = {
+    rtp.get(resetTokenID) flatMap {
+      case Some(token) => db.run(users.filter(_.uuid === token.userID).map(_.password).update(SecureHash.createHash(password))).flatMap(_ => get(token.userID))
+      case None        => Future.successful(None)
+    } onSuccessSideEffect { user =>
+      user.foreach(u => eventStream.publish(UserProviderEvents.UserReset(u.uuid)))
     }
   }
 
@@ -131,10 +127,5 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
       eventStream.publish(UserProviderEvents.UserDeleted(uuid))
     }
 
-  def delete(uuid: Future[UUID]): Future[Int] = uuid.flatMap(delete)
-
-  def delete(uuidSet: Set[UUID]): Future[Int] =
-    db.run(users.filter(t => t.uuid inSet uuidSet).delete) onSuccessSideEffect { _ =>
-      uuidSet.foreach(uuid => eventStream.publish(UserProviderEvents.UserDeleted(uuid)))
-    }
+  def delete(uuidSet: Set[UUID]): Future[Int] = Future.sequence(uuidSet.map(delete)).map(_.sum)
 }

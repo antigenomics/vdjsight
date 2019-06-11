@@ -1,8 +1,14 @@
 package server
 
 import play.api.http.{ContentTypeOf, ContentTypes, Writeable}
-import play.api.libs.json.{Json, Reads, Writes}
+import play.api.libs.json.{Format, Json, Reads, Writes}
 import play.api.mvc.Codec
+
+case class ServerResponseMessage(message: String)
+
+object ServerResponseMessage {
+  implicit val serverResponseMessageFormat: Format[ServerResponseMessage] = Json.format[ServerResponseMessage]
+}
 
 case class ServerResponse[T](data: T)
 
@@ -15,8 +21,8 @@ object ServerResponse {
     Writeable(Writeable.writeableOf_JsValue.transform compose fmt.writes)
   }
 
-  final val EMPTY   = ServerResponse("null")
-  final val SUCCESS = ServerResponse("success")
+  final val EMPTY                    = ServerResponse("null")
+  final def MESSAGE(message: String) = ServerResponse(ServerResponseMessage(message))
 }
 
 case class ServerResponseError(error: String, extra: Option[Seq[String]] = None)

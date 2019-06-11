@@ -1,4 +1,4 @@
-package controllers.authorization
+package controllers.authorization.requests
 
 import play.api.i18n.Messages
 import play.api.libs.functional.syntax._
@@ -45,5 +45,3 @@ object AuthorizationSignupRequest {
 
   }
 }
-
-

@@ -4,9 +4,10 @@ import java.sql.Timestamp
 import java.time.Duration
 import java.util.UUID
 
-import akka.actor.{ActorSystem, Cancellable}
+import akka.actor.{ActorRef, ActorSystem, Cancellable}
 import com.google.inject.{Inject, Singleton}
 import com.typesafe.config.Config
+import effects.EventStreaming
 import models.token
 import models.token.ResetMethod.ResetMethod
 import models.user.{User, UserProvider, UserTable}
@@ -77,23 +78,30 @@ object ResetTokenTable {
   final val TABLE_NAME = "reset_token"
 
   implicit class ResetTokenExtension[C[_]](q: Query[ResetTokenTable, ResetToken, C]) {
-
     def withUser(implicit up: UserProvider): Query[(ResetTokenTable, UserTable), (ResetToken, User), C] = {
       q.join(up.table).on(_.userID === _.uuid)
     }
   }
+}
 
+trait ResetTokenProviderEvent
+
+object ResetTokenProviderEvents {
+  case class TokenCreated(token: UUID, userID: UUID, configuration: ResetTokenConfiguration) extends ResetTokenProviderEvent
+  case class TokenDeleted(token: UUID, userID: UUID, configuration: ResetTokenConfiguration) extends ResetTokenProviderEvent
 }
 
 @Singleton
 class ResetTokenProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider,
                                    conf: Configuration,
-                                   lifecycle: ApplicationLifecycle,
-                                   system: ActorSystem)(implicit ec: ExecutionContext, up: UserProvider)
-    extends HasDatabaseConfigProvider[JdbcProfile] {
+                                   lifecycle: ApplicationLifecycle)(implicit ec: ExecutionContext, up: UserProvider)
+    extends HasDatabaseConfigProvider[JdbcProfile]
+    with EventStreaming[ResetTokenProviderEvent] {
 
   private final val logger        = LoggerFactory.getLogger(this.getClass)
   private final val configuration = conf.get[ResetTokenConfiguration]("application.auth.reset")
+  private final val actorSystem   = ActorSystem.create("ResetTokenProviderActorSystem")
+  private final val eventStream   = actorSystem.eventStream
 
   import dbConfig.profile.api._
 
@@ -101,13 +109,21 @@ class ResetTokenProvider @Inject()(@NamedDatabase("default") protected val dbCon
 
   private final val expiredTokensDeleteScheduler: Option[Cancellable] = Option(configuration.interval.getSeconds != 0).collect {
     case true =>
-      system.scheduler.schedule(configuration.interval.getSeconds seconds, configuration.interval.getSeconds seconds) {
-        expired().map(delete) onComplete {
+      actorSystem.scheduler.schedule(configuration.interval.getSeconds seconds, configuration.interval.getSeconds seconds) {
+        expired().map(_.map(_.token)).flatMap(delete) onComplete {
           case Failure(exception) => logger.warn("Cannot delete expired reset tokens", exception)
           case _                  =>
         }
       }
   }
+
+  lifecycle.addStopHook { () =>
+    Future.successful(expiredTokensDeleteScheduler.foreach(_.cancel()))
+  }
+
+  def subscribe(subscriber: ActorRef): Unit = eventStream.subscribe(subscriber, classOf[ResetTokenProviderEvent])
+
+  def unsubscribe(subscriber: ActorRef): Unit = eventStream.unsubscribe(subscriber)
 
   def table: TableQuery[ResetTokenTable] = tokens
 
@@ -115,15 +131,9 @@ class ResetTokenProvider @Inject()(@NamedDatabase("default") protected val dbCon
 
   def get(token: UUID): Future[Option[ResetToken]] = db.run(tokens.filter(_.token === token).result.headOption)
 
-  def get(token: Future[UUID]): Future[Option[ResetToken]] = token.flatMap(get)
-
-  def findForUser(userID: UUID): Future[Option[ResetToken]] = db.run(tokens.filter(_.userID === userID).result.headOption)
-
-  def findForUser(userID: Future[UUID]): Future[Option[ResetToken]] = userID.flatMap(findForUser)
+  def findForUser(userID: UUID): Future[Set[ResetToken]] = db.run(tokens.filter(_.userID === userID).result).map(_.toSet)
 
   def getWithUser(token: UUID): Future[Option[(ResetToken, User)]] = db.run(tokens.withUser.filter(_._1.token === token).result.headOption)
-
-  def getWithUser(token: Future[UUID]): Future[Option[(ResetToken, User)]] = token.flatMap(getWithUser)
 
   def create(userID: UUID): Future[UUID] = {
     val checkUserExist  = up.table.filter(_.uuid === userID).result.headOption
@@ -136,28 +146,26 @@ class ResetTokenProvider @Inject()(@NamedDatabase("default") protected val dbCon
         db.run(tokens += ResetToken(token, userID, TimeUtils.getExpiredAt(configuration.keep))) map {
           case 1 => token
           case _ => throw new RuntimeException("Cannot create ResetToken instance in database: Internal error")
-        } onSuccessSideEffect { tokenID =>
-          processToken(userID, tokenID)
+        } onSuccessSideEffect { token =>
+          eventStream.publish(ResetTokenProviderEvents.TokenCreated(token, userID, configuration))
         }
       case (None, _) => throw new RuntimeException("Cannot create ResetToken instance in database: User does not exist")
     }
   }
 
-  def create(userID: Future[UUID]): Future[UUID] = userID.flatMap(create)
+  def delete(token: UUID): Future[Int] = {
+    val userIDAction = tokens.filter(_.token === token).map(_.userID).result.headOption
+    val deleteAction = tokens.filter(_.token === token).delete
 
-  def delete(token: UUID): Future[Int] = db.run(tokens.filter(_.token === token).delete)
-
-  def delete(token: Future[UUID]): Future[Int] = token.flatMap(delete)
-
-  def delete(set: Seq[ResetToken]): Future[Int] = db.run(tokens.filter(t => t.token inSet set.map(_.token)).delete)
-
-  def expired(date: Timestamp = TimeUtils.getCurrentTimestamp): Future[Seq[ResetToken]] = db.run(tokens.filter(_.expiredAt < date).result)
-
-  private def processToken(userID: UUID, tokenID: UUID): Unit = {
-    configuration.method match {
-      case ResetMethod.EMAIL   => throw new NotImplementedError("Email reset method not implemented")
-      case ResetMethod.CONSOLE => logger.info(s"Reset token for user $userID: $tokenID")
-      case ResetMethod.NOOP    =>
-    }
+    db.run((userIDAction zip deleteAction).transactionally) onSuccessSideEffect {
+      case (Some(userID), _) => eventStream.publish(ResetTokenProviderEvents.TokenDeleted(token, userID, configuration))
+      case (None, _)         => logger.warn(s"Empty user for reset token: $token")
+    } map (_._2)
   }
+
+  def delete(tokenSet: Set[UUID]): Future[Int] = Future.sequence(tokenSet.map(delete)).map(_.sum)
+
+  def deleteForUser(userID: UUID): Future[Int] = findForUser(userID).map(_.map(_.token)).flatMap(delete)
+
+  def expired(date: Timestamp = TimeUtils.getCurrentTimestamp): Future[Set[ResetToken]] = db.run(tokens.filter(_.expiredAt < date).result).map(_.toSet)
 }

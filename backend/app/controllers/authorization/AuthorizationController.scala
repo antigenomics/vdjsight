@@ -5,7 +5,8 @@ import java.util.UUID
 import actions.{SessionRequest, SessionRequestAction}
 import com.google.inject.{Inject, Singleton}
 import controllers.ControllerHelpers
-import models.token.VerificationTokenProvider
+import controllers.authorization.requests.{AuthorizationBeforeResetRequest, AuthorizationResetRequest, AuthorizationSignupRequest, AuthorizationVerifyRequest}
+import models.token.{ResetTokenProvider, VerificationTokenProvider}
 import models.user.UserProvider
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.i18n._
@@ -16,23 +17,21 @@ import server.{ServerResponse, ServerResponseError}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AuthorizationController @Inject()(cc: ControllerComponents,
-                                        sessionAction: SessionRequestAction,
-                                        messagesAPI: MessagesApi,
-                                        up: UserProvider,
-                                        vtp: VerificationTokenProvider)(implicit ec: ExecutionContext)
+class AuthorizationController @Inject()(cc: ControllerComponents, sessionAction: SessionRequestAction, messagesAPI: MessagesApi, up: UserProvider)(
+    implicit ec: ExecutionContext,
+    vtp: VerificationTokenProvider,
+    rtp: ResetTokenProvider)
     extends AbstractController(cc) {
 
-  private final val logger: Logger = LoggerFactory.getLogger(this.getClass)
+  private implicit final val logger: Logger     = LoggerFactory.getLogger(this.getClass)
+  private implicit final val messages: Messages = messagesAPI.preferred(Seq(Lang.defaultLang))
 
-  implicit val messages: Messages = messagesAPI.preferred(Seq(Lang.defaultLang))
-
-  def onLogin: Action[JsValue] = (sessionAction andThen sessionAction.unauthorizedOnly) { implicit request =>
-    Ok(request.request.session.data.toString).withSession(SessionRequest.SESSION_REQUEST_USER_ID_KEY -> UUID.randomUUID().toString)
+  def login: Action[JsValue] = (sessionAction andThen sessionAction.unauthorizedOnly) { implicit request =>
+    Ok(ServerResponse.EMPTY).withSession(SessionRequest.SESSION_REQUEST_USER_ID_KEY -> UUID.randomUUID().toString)
   }
 
-  def onSignup: Action[JsValue] = (sessionAction andThen sessionAction.unauthorizedOnly)(parse.json).async { implicit request =>
-    ControllerHelpers.validateRequest[AuthorizationSignupRequest](error = "authorization.signup.validation.failed") { signup =>
+  def signup: Action[JsValue] = (sessionAction andThen sessionAction.unauthorizedOnly)(parse.json).async { implicit request =>
+    ControllerHelpers.validateRequestWithRecover[AuthorizationSignupRequest](error = AuthorizationSignupRequest.failedValidationMessage) { signup =>
       up.isUserWithEmailOrLoginExist(signup.email, signup.login).flatMap {
         case (isExistWithEmail, isExistWithLogin) =>
           if (isExistWithEmail) {
@@ -40,24 +39,43 @@ class AuthorizationController @Inject()(cc: ControllerComponents,
           } else if (isExistWithLogin) {
             Future.successful(BadRequest(ServerResponseError(messages("authorization.signup.validation.login.exist"))))
           } else {
-            val result = for {
-              _      <- up.create(signup.login, signup.email, signup.password1)
-              result <- Future.successful(Ok(ServerResponse.SUCCESS))
-            } yield result
-
-            result recover {
-              case e: Exception =>
-                logger.error(s"Server error with onSignup", e)
-                InternalServerError(ServerResponseError("Cannot create user"))
+            up.create(signup.login, signup.email, signup.password1) map { _ =>
+              Ok(ServerResponse.MESSAGE(messages("authorization.signup.success")))
             }
-
           }
       }
     }
   }
 
-  def onLogout: Action[AnyContent] = Action {
-    Ok(ServerResponseError("asd")).withNewSession
+  def beforeReset: Action[JsValue] = (sessionAction andThen sessionAction.unauthorizedOnly)(parse.json).async { implicit request =>
+    ControllerHelpers.validateRequestWithRecover[AuthorizationBeforeResetRequest](error = AuthorizationBeforeResetRequest.failedValidationMessage) { reset =>
+      up.getByEmail(reset.email).map { user =>
+        user.foreach(u => rtp.create(u.uuid))
+        Ok(ServerResponse.MESSAGE(messages("authorization.before-reset.success")))
+      }
+    }
+  }
+
+  def reset: Action[JsValue] = (sessionAction andThen sessionAction.unauthorizedOnly)(parse.json).async { implicit request =>
+    ControllerHelpers.validateRequestWithRecover[AuthorizationResetRequest](error = AuthorizationResetRequest.failedValidationMessage) { reset =>
+      up.reset(reset.token, reset.password1).map {
+        case Some(_) => Ok(ServerResponse.MESSAGE(messages("authorization.reset.success")))
+        case None    => BadRequest(ServerResponseError("Invalid reset token provided"))
+      }
+    }
+  }
+
+  def verify: Action[JsValue] = (sessionAction andThen sessionAction.unauthorizedOnly)(parse.json).async { implicit request =>
+    ControllerHelpers.validateRequestWithRecover[AuthorizationVerifyRequest]() { verify =>
+      up.verify(verify.token).map {
+        case Some(_) => Ok(ServerResponse.MESSAGE(messages("authorization.verify.success")))
+        case None    => BadRequest(ServerResponseError("Invalid verification token provided"))
+      }
+    }
+  }
+
+  def logout: Action[AnyContent] = Action {
+    Ok(ServerResponse.EMPTY).withNewSession
   }
 
 }

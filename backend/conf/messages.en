@@ -1,10 +1,10 @@
 # https://www.playframework.com/documentation/latest/ScalaI18N
 
-request.validation.failed = "Request validation failed"
-
 json.validation.email.valid     = Valid email required
 json.validation.field.minlength = Field length should be greater than {0}
 json.validation.field.maxlength = Field length should be less than {0}
+
+# Authorization signup and validation messages
 
 authorization.signup.validation.failed               = Please check that you have entered valid credentials
 authorization.signup.validation.login.minlength      = Login (user name) field should not be blank
@@ -17,6 +17,29 @@ authorization.signup.validation.login.exist          = This login (user name) ha
 authorization.signup.validation.password.minlength   = Password length should be greater than {0}
 authorization.signup.validation.password.maxlength   = Password length should be less than {0}
 authorization.signup.validation.passwords.equal      = Passwords should be equal
+authorization.signup.success                         = Your account has been created. Please follow the verification \
+                                                       link in the email we've sent you to complete the registration process
+
+# Authorization before reset and validation messages
+
+authorization.before-reset.validation.failed               = Please check that you have entered valid credentials
+authorization.before-reset.validation.email.valid          = Valid email required
+authorization.before-reset.validation.email.minlength      = Email field should not be blank
+authorization.before-reset.validation.email.maxlength      = Email field is too long
+authorization.before-reset.success                         = Your request was accepted. If there is an account registered with this email, \
+                                                             you will receive a message with instructions on how to reset your password
+
+# Authorization reset and validation messages
+
+authorization.reset.validation.failed               = Please check that you have entered valid credentials
+authorization.reset.validation.password.minlength   = Password length should be greater than {0}
+authorization.reset.validation.password.maxlength   = Password length should be less than {0}
+authorization.reset.validation.passwords.equal      = Passwords should be equal
+authorization.reset.success                         = Your password has been successfully changed
+
+# Authorization verify and validation messages
+
+authorization.verify.success = Your account has been successfully verified
 
 
 

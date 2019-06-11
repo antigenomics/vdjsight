@@ -95,14 +95,13 @@ object VerificationTokenProviderEvents {
 @Singleton
 class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider,
                                           conf: Configuration,
-                                          lifecycle: ApplicationLifecycle,
-                                          system: ActorSystem)(implicit ec: ExecutionContext, up: UserProvider)
+                                          lifecycle: ApplicationLifecycle)(implicit ec: ExecutionContext, up: UserProvider)
     extends HasDatabaseConfigProvider[JdbcProfile]
     with EventStreaming[VerificationTokenProviderEvent] {
 
   private final val logger        = LoggerFactory.getLogger(this.getClass)
   private final val configuration = conf.get[VerificationTokenConfiguration]("application.auth.verification")
-  private final val actorSystem   = ActorSystem.create("UserProviderActorSystem")
+  private final val actorSystem   = ActorSystem.create("VerificationTokenProviderActorSystem")
   private final val eventStream   = actorSystem.eventStream
 
   import dbConfig.profile.api._
@@ -111,7 +110,7 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
 
   private final val expiredTokensWithUsersDeleteScheduler: Option[Cancellable] = Option(configuration.interval.getSeconds != 0).collect {
     case true =>
-      system.scheduler.schedule(configuration.interval.getSeconds seconds, configuration.interval.getSeconds seconds) {
+      actorSystem.scheduler.schedule(configuration.interval.getSeconds seconds, configuration.interval.getSeconds seconds) {
         expired().map(_.map(_.token)).flatMap(delete) onComplete {
           case Failure(exception) => logger.warn("Cannot delete expired verification tokens", exception)
           case _                  =>
@@ -133,15 +132,9 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
 
   def get(token: UUID): Future[Option[VerificationToken]] = db.run(tokens.filter(_.token === token).result.headOption)
 
-  def get(token: Future[UUID]): Future[Option[VerificationToken]] = token.flatMap(get)
-
-  def findForUser(userID: UUID): Future[Option[VerificationToken]] = db.run(tokens.filter(_.userID === userID).result.headOption)
-
-  def findForUser(userID: Future[UUID]): Future[Option[VerificationToken]] = userID.flatMap(findForUser)
+  def findForUser(userID: UUID): Future[Set[VerificationToken]] = db.run(tokens.filter(_.userID === userID).result).map(_.toSet)
 
   def getWithUser(token: UUID): Future[Option[(VerificationToken, User)]] = db.run(tokens.withUser.filter(_._1.token === token).result.headOption)
-
-  def getWithUser(token: Future[UUID]): Future[Option[(VerificationToken, User)]] = token.flatMap(getWithUser)
 
   def create(userID: UUID): Future[UUID] = {
     val checkUserExist  = up.table.filter(_.uuid === userID).result.headOption
@@ -161,8 +154,6 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
     }
   }
 
-  def create(userID: Future[UUID]): Future[UUID] = userID.flatMap(create)
-
   def delete(token: UUID): Future[Int] = {
     val userIDAction = tokens.filter(_.token === token).map(_.userID).result.headOption
     val deleteAction = tokens.filter(_.token === token).delete
@@ -173,9 +164,9 @@ class VerificationTokenProvider @Inject()(@NamedDatabase("default") protected va
     } map (_._2)
   }
 
-  def delete(token: Future[UUID]): Future[Int] = token.flatMap(delete)
-
   def delete(tokenSet: Set[UUID]): Future[Int] = Future.sequence(tokenSet.map(delete)).map(_.sum)
+
+  def deleteForUser(userID: UUID): Future[Int] = findForUser(userID).map(_.map(_.token)).flatMap(delete)
 
   def expired(date: Timestamp = TimeUtils.getCurrentTimestamp): Future[Set[VerificationToken]] = db.run(tokens.filter(_.expiredAt < date).result).map(_.toSet)
 }
