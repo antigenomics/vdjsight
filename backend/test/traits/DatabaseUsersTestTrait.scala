@@ -91,20 +91,15 @@ trait DatabaseUsersTestTrait extends Matchers with OptionValues {
     val foundToken   = Await.result(vtp.findForUser(uuid), Duration.Inf)
 
     foundToken should not be empty
-    foundToken.get.token shouldEqual createdToken
-    foundToken.get.userID shouldEqual uuid
+    foundToken.map(_.token) shouldEqual Set(createdToken)
 
-    val user = Await.result(up.verify(foundToken.get.token), Duration.Inf)
+    val user = Await.result(up.verify(createdToken), Duration.Inf)
 
     user should not be empty
 
     user.get.login shouldEqual credentials.login
     user.get.email shouldEqual credentials.email
     user.get.verified shouldEqual true
-
-    val destroyedToken = Await.result(vtp.findForUser(uuid), Duration.Inf)
-
-    destroyedToken should be(empty)
 
     TestUser(uuid, credentials)
   }

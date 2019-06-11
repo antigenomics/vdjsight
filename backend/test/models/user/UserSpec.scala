@@ -76,8 +76,6 @@ class UserSpec extends DatabaseProviderTestSpec with DatabaseUsersTestTrait {
       for {
         verificationToken <- vtp.create(u.uuid)
         verifiedUser      <- up.verify(verificationToken)
-        usedToken         <- vtp.get(verificationToken)
-        _                 <- usedToken should be(empty)
         _                 <- verifiedUser should not be empty
         _                 <- verifiedUser.get.login shouldEqual u.credentials.login
         _                 <- verifiedUser.get.email shouldEqual u.credentials.email

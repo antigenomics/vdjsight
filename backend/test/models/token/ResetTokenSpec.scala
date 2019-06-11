@@ -86,8 +86,7 @@ class ResetTokenSpec extends DatabaseProviderTestSpec with DatabaseUsersTestTrai
         _     <- uwt.get._2.uuid shouldEqual users.notVerifiedUser.uuid
         _     <- uwt.get._2.login shouldEqual users.notVerifiedUser.credentials.login
         _     <- uwt.get._2.email shouldEqual users.notVerifiedUser.credentials.email
-        _     <- found should not be empty
-        check <- found.get.token shouldEqual token
+        check <- found.map(_.token) shouldEqual Set(token)
       } yield check
     }
 
