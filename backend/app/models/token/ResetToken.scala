@@ -5,8 +5,8 @@ import java.time.Duration
 import java.util.UUID
 
 import akka.actor.{ActorSystem, Cancellable}
+import com.google.inject.{Inject, Singleton}
 import com.typesafe.config.Config
-import javax.inject.{Inject, Singleton}
 import models.token
 import models.token.ResetMethod.ResetMethod
 import models.user.{User, UserProvider, UserTable}
@@ -126,13 +126,12 @@ class ResetTokenProvider @Inject()(@NamedDatabase("default") protected val dbCon
   def getWithUser(token: Future[UUID]): Future[Option[(ResetToken, User)]] = token.flatMap(getWithUser)
 
   def create(userID: UUID): Future[UUID] = {
-    val check = for {
-      token <- tokens if token.userID === userID
-    } yield token
+    val checkUserExist  = up.table.filter(_.uuid === userID).result.headOption
+    val checkTokenExist = tokens.filter(_.userID === userID).result.headOption
 
-    db.run(check.result.headOption) flatMap {
-      case Some(token) => Future.successful(token.token)
-      case None =>
+    db.run((checkUserExist zip checkTokenExist).transactionally) flatMap {
+      case (Some(_), Some(token)) => Future.successful(token.token)
+      case (Some(_), None) =>
         val token = UUID.randomUUID()
         db.run(tokens += ResetToken(token, userID, TimeUtils.getExpiredAt(configuration.keep))) map {
           case 1 => token
@@ -140,6 +139,7 @@ class ResetTokenProvider @Inject()(@NamedDatabase("default") protected val dbCon
         } onSuccessSideEffect { tokenID =>
           processToken(userID, tokenID)
         }
+      case (None, _) => throw new RuntimeException("Cannot create ResetToken instance in database: User does not exist")
     }
   }
 

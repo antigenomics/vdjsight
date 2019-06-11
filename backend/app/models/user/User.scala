@@ -2,8 +2,10 @@ package models.user
 
 import java.util.UUID
 
+import akka.actor.{ActorRef, ActorSystem}
+import com.google.inject.{Inject, Singleton}
+import effects.EventStreaming
 import io.github.nremond.SecureHash
-import javax.inject.{Inject, Singleton}
 import models.token.VerificationTokenProvider
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
@@ -11,6 +13,7 @@ import play.db.NamedDatabase
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
+import utils.FutureUtils._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
@@ -32,15 +35,29 @@ object UserTable {
   final val TABLE_NAME = "user"
 }
 
+trait UserProviderEvent
+
+object UserProviderEvents {
+  case class UserCreated(uuid: UUID)  extends UserProviderEvent
+  case class UserVerified(uuid: UUID) extends UserProviderEvent
+  case class UserDeleted(uuid: UUID)  extends UserProviderEvent
+}
+
 @Singleton
 class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
-    extends HasDatabaseConfigProvider[JdbcProfile] {
+    extends HasDatabaseConfigProvider[JdbcProfile] with EventStreaming[UserProviderEvent] {
 
-  private final val logger = LoggerFactory.getLogger(this.getClass)
+  private final val logger      = LoggerFactory.getLogger(this.getClass)
+  private final val actorSystem = ActorSystem.create("UserProviderActorSystem")
+  private final val eventStream = actorSystem.eventStream
 
   import dbConfig.profile.api._
 
   private final val users = TableQuery[UserTable]
+
+  def subscribe(subscriber: ActorRef): Unit = eventStream.subscribe(subscriber, classOf[UserProviderEvent])
+
+  def unsubscribe(subscriber: ActorRef): Unit = eventStream.unsubscribe(subscriber)
 
   def table: TableQuery[UserTable] = users
 
@@ -88,6 +105,8 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
         db.run(users += User(uuid, login, email, verified = false, SecureHash.createHash(password))) map {
           case 1 => uuid
           case _ => throw new RuntimeException("Cannot create User instance in database: Internal error")
+        } onSuccessSideEffect { uuid =>
+          eventStream.publish(UserProviderEvents.UserCreated(uuid))
         }
     }
   }
@@ -102,12 +121,20 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
           }
           .flatten
       case None => Future.successful(None)
+    } onSuccessSideEffect { user =>
+      user.foreach(u => eventStream.publish(UserProviderEvents.UserVerified(u.uuid)))
     }
   }
 
-  def delete(uuid: UUID): Future[Int] = db.run(users.filter(_.uuid === uuid).delete)
+  def delete(uuid: UUID): Future[Int] =
+    db.run(users.filter(_.uuid === uuid).delete) onSuccessSideEffect { _ =>
+      eventStream.publish(UserProviderEvents.UserDeleted(uuid))
+    }
 
   def delete(uuid: Future[UUID]): Future[Int] = uuid.flatMap(delete)
 
-  def delete(uuidSet: Set[UUID]): Future[Int] = db.run(users.filter(t => t.uuid inSet uuidSet).delete)
+  def delete(uuidSet: Set[UUID]): Future[Int] =
+    db.run(users.filter(t => t.uuid inSet uuidSet).delete) onSuccessSideEffect { _ =>
+      uuidSet.foreach(uuid => eventStream.publish(UserProviderEvents.UserDeleted(uuid)))
+    }
 }

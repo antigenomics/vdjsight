@@ -76,14 +76,6 @@ class ResetTokenSpec extends DatabaseProviderTestSpec with DatabaseUsersTestTrai
       } yield s should not be empty
     }
 
-    "be able to delete reset token" taggedAs SQLDatabaseTestTag in {
-      for {
-        createdToken <- rtp.create(users.notVerifiedUser.uuid)
-        _            <- rtp.delete(createdToken)
-        deletedToken <- rtp.get(createdToken)
-      } yield deletedToken should be(empty)
-    }
-
     "be able to find proper token associated user" taggedAs SQLDatabaseTestTag in {
       for {
         token <- rtp.create(users.notVerifiedUser.uuid)
@@ -97,6 +89,14 @@ class ResetTokenSpec extends DatabaseProviderTestSpec with DatabaseUsersTestTrai
         _     <- found should not be empty
         check <- found.get.token shouldEqual token
       } yield check
+    }
+
+    "be able to delete reset token" taggedAs SQLDatabaseTestTag in {
+      for {
+        createdToken <- rtp.create(users.notVerifiedUser.uuid)
+        _            <- rtp.delete(createdToken)
+        deletedToken <- rtp.get(createdToken)
+      } yield deletedToken should be(empty)
     }
 
   }

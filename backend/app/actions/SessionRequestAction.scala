@@ -2,7 +2,7 @@ package actions
 
 import java.util.UUID
 
-import javax.inject.Inject
+import com.google.inject.Inject
 import play.api.libs.json.JsValue
 import play.api.mvc._
 

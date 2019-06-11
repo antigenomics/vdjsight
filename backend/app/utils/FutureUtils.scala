@@ -7,7 +7,7 @@ object FutureUtils {
 
   implicit class FutureSideEffectExtension[T](future: Future[T]) {
     def onSuccessSideEffect[U](f: T => U)(implicit ec: ExecutionContext): Future[T] = {
-      future.onComplete {
+      future onComplete {
         case Success(value) => f(value)
         case Failure(_)     =>
       }

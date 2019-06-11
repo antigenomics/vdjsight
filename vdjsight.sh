@@ -41,9 +41,10 @@ function script_help() {
     echo "     docker   <tag>            -     :Create Docker image with tag specified                                                  "
     echo "                                                                                                                              "
     echo "  dev-environment                                                                                                             "
-    echo "     up                        -     :Up    develop environment                                                               "
-    echo "     stop                      -     :Stop  develop environment                                                               "
-    echo "     down                      -     :Down  develop environment                                                               "
+    echo "     up                        -     :Up        develop environment                                                           "
+    echo "     stop                      -     :Stop      develop environment                                                           "
+    echo "     down                      -     :Down      develop environment                                                           "
+    echo "     recreate                  -     :Recreate  develop environment                                                           "
     echo "                                                                                                                              "
 }
 
@@ -150,6 +151,10 @@ function dev_environment() {
             ;;
         down)
             docker-compose down;
+            ;;
+        recreate)
+            docker-compose down;
+            docker-compose up -d;
             ;;
         *)
             script_help;

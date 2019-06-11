@@ -2,7 +2,7 @@ package models.sample
 
 import java.util.UUID
 
-import javax.inject.{Inject, Singleton}
+import com.google.inject.{Inject, Singleton}
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.db.NamedDatabase

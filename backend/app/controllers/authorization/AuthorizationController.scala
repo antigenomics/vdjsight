@@ -3,8 +3,8 @@ package controllers.authorization
 import java.util.UUID
 
 import actions.{SessionRequest, SessionRequestAction}
+import com.google.inject.{Inject, Singleton}
 import controllers.ControllerHelpers
-import javax.inject.Inject
 import models.token.VerificationTokenProvider
 import models.user.UserProvider
 import org.slf4j.{Logger, LoggerFactory}
@@ -15,6 +15,7 @@ import server.{ServerResponse, ServerResponseError}
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class AuthorizationController @Inject()(cc: ControllerComponents,
                                         sessionAction: SessionRequestAction,
                                         messagesAPI: MessagesApi,
@@ -40,8 +41,7 @@ class AuthorizationController @Inject()(cc: ControllerComponents,
             Future.successful(BadRequest(ServerResponseError(messages("authorization.signup.validation.login.exist"))))
           } else {
             val result = for {
-              userID <- up.create(signup.login, signup.email, signup.password1)
-              _      <- vtp.create(userID)
+              _      <- up.create(signup.login, signup.email, signup.password1)
               result <- Future.successful(Ok(ServerResponse.SUCCESS))
             } yield result
 

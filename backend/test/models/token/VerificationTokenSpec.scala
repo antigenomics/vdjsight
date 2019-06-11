@@ -69,14 +69,6 @@ class VerificationTokenSpec extends DatabaseProviderTestSpec with DatabaseUsersT
       } yield s should not be empty
     }
 
-    "be able to delete verification token" taggedAs SQLDatabaseTestTag in {
-      for {
-        createdToken <- vtp.create(users.notVerifiedUser.uuid)
-        _            <- vtp.delete(createdToken)
-        deletedToken <- vtp.get(createdToken)
-      } yield deletedToken should be(empty)
-    }
-
     "be able to find proper token associated user" taggedAs SQLDatabaseTestTag in {
       for {
         token <- vtp.create(users.notVerifiedUser.uuid)
@@ -90,6 +82,14 @@ class VerificationTokenSpec extends DatabaseProviderTestSpec with DatabaseUsersT
         _     <- found should not be empty
         check <- found.get.token shouldEqual token
       } yield check
+    }
+
+    "be able to delete verification token" taggedAs SQLDatabaseTestTag in {
+      for {
+        createdToken <- vtp.create(users.notVerifiedUser.uuid)
+        _            <- vtp.delete(createdToken)
+        deletedToken <- vtp.get(createdToken)
+      } yield deletedToken should be(empty)
     }
 
   }
