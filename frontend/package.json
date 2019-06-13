@@ -2,12 +2,18 @@
   "name": "vdjsight-frontend",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod",
+    "build": "npm run build:clean && npm run build:styles && npm run build:ng && npm run semantic:optimize && npm run build:stats",
+    "build:ng": "ng build --prod --delete-output-path false",
+    "build:styles": "cd src/styles/semantic && rimraf dist && gulp build && cd ../../..",
+    "build:stats": "node scripts/build.stats.js",
+    "build:clean": "rimraf dist/* && rimraf src/styles/semantic/dist",
+    "semantic:optimize": "node scripts/semantic.optimize.js",
+    "semantic:patch": "node scripts/semantic.patch.js",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "postinstall": "npm run semantic:patch"
   },
   "private": true,
   "dependencies": {
@@ -19,9 +25,15 @@
     "@angular/platform-browser": "8.0.0",
     "@angular/platform-browser-dynamic": "8.0.0",
     "@angular/router": "8.0.0",
+    "@ngrx/store": "8.0.1",
+    "@ngrx/entity": "8.0.1",
+    "@ngrx/effects": "8.0.1",
+    "@ngrx/router-store": "8.0.1",
+    "@ngrx/store-devtools": "8.0.1",
     "rxjs": "6.5.2",
     "tslib": "1.9.3",
-    "zone.js": "0.9.1"
+    "zone.js": "0.9.1",
+    "semantic-ui": "2.4.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "0.800.1",
@@ -42,6 +54,16 @@
     "protractor": "5.4.2",
     "ts-node": "8.2.0",
     "tslint": "5.17.0",
-    "typescript": "3.4.5"
+    "typescript": "3.4.5",
+    "rimraf": "2.6.3",
+    "less": "3.9.0",
+    "purify-css": "1.2.5",
+    "console.table": "0.10.0",
+    "glob": "7.1.4",
+    "gzip-size": "5.1.1"
+  },
+  "engines": {
+    "node": ">= 11",
+    "npm": ">= 6"
   }
 }

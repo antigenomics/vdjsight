@@ -27,7 +27,7 @@ function script_help() {
     echo "                                                                                                                              "
     echo "  frontend                     -   Frontend related commands                                                                  "
     echo "     install                   -     :Install dependencies using yarn                                                         "
-    echo "     clean                     -     :Clean installed dependencies                                                            "
+    echo "     clean  [--full]           -     :Clean frontend bundle (use --full to delete installed dependencies)                     "
     echo "     serve                     -     :Serve dev version                                                                       "
     echo "     build                     -     :Build prod version                                                                      "
     echo "     test                      -     :Test frontend                                                                           "
@@ -71,9 +71,12 @@ function frontend() {
             yarn install
             ;;
         clean)
-            echo -n "Cleaning 'node_modules' from frontend directory..."
-            rm -rf node_modules
-            echo "Done."
+            yarn build:clean;
+            if [[ "$1" == "--full" ]]; then
+                echo -n "Cleaning 'node_modules' from frontend directory..."
+                rm -rf node_modules
+                echo "Done."
+            fi
             ;;
         serve)
             yarn start
