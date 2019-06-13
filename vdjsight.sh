@@ -68,7 +68,7 @@ function frontend() {
     shift
     case ${frontend_action} in
         install)
-            yarn install
+            yarn install --check-files --pure-lockfile || exit 1
             ;;
         clean)
             yarn build:clean;
