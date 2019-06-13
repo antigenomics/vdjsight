@@ -48,11 +48,11 @@ jobs:
           paths:
             - frontend/node_modules
       - run:
-          name: Testing frontend
-          command: ./vdjsight.sh frontend test-ci
-      - run:
           name: Building frontend
           command: ./vdjsight.sh frontend build
+      - run:
+          name: Testing frontend
+          command: ./vdjsight.sh frontend test-ci
       - setup_remote_docker
       - run:
           name: Creating frontend docker image
@@ -69,10 +69,10 @@ jobs:
       - restore_cache:
           key: backend-cache-1
       - run:
-          name: Compile dist package
+          name: Building backend
           command: ./vdjsight.sh backend build
       - run:
-          name: Test package
+          name: Testing backend
           command: ./vdjsight.sh backend test
       - save_cache:
           key: backend-cache-1
