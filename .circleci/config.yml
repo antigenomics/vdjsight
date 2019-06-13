@@ -39,14 +39,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - frontend-cache-1-{{ checksum "frontend/yarn.lock" }}
+            - frontend-cache-2-{{ checksum "frontend/yarn.lock" }}
       - run:
           name: Install frontend dependencies
           command: ./vdjsight.sh frontend install
-      - save_cache:
-          key: frontend-cache-1-{{ checksum "frontend/yarn.lock" }}
-          paths:
-            - frontend/node_modules
       - run:
           name: Building frontend
           command: ./vdjsight.sh frontend build
@@ -61,26 +57,27 @@ jobs:
             touch .docker-created
       - docker-publish:
           project: bvdmitri/vdjsight-frontend
+      - run:
+          name: Delete semantic-ui
+          working_directory: ~/project/frontend
+          command: rm -rf node_modules/semantic-ui
+      - save_cache:
+          key: frontend-cache-2-{{ checksum "frontend/yarn.lock" }}
+          paths:
+            - frontend/node_modules
 
   backend:
     executor: backend-executor
     steps:
       - checkout
       - restore_cache:
-          key: backend-cache-1
+          key: backend-cache-2
       - run:
           name: Building backend
           command: ./vdjsight.sh backend build
       - run:
           name: Testing backend
           command: ./vdjsight.sh backend test
-      - save_cache:
-          key: backend-cache-1
-          paths:
-            - "~/.ivy2/cache"
-            - "~/.sbt"
-            - "~/.m2"
-            - "~/project/backend/target"
       - setup_remote_docker
       - run:
           name: Creating backend docker image
@@ -89,6 +86,13 @@ jobs:
             touch .docker-created
       - docker-publish:
           project: bvdmitri/vdjsight-backend
+      - save_cache:
+          key: backend-cache-2
+          paths:
+            - "~/.ivy2/cache"
+            - "~/.sbt"
+            - "~/.m2"
+            - "~/project/backend/target"
 
 
 workflows:
