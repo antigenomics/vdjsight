@@ -71,7 +71,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: backend-cache-2
+          key: backend-cache-2-{{ checksum "backend/build.sbt" }}
       - run:
           name: Building backend
           command: ./vdjsight.sh backend build
@@ -87,7 +87,7 @@ jobs:
       - docker-publish:
           project: bvdmitri/vdjsight-backend
       - save_cache:
-          key: backend-cache-2
+          key: backend-cache-2-{{ checksum "backend/build.sbt" }}
           paths:
             - "~/.ivy2/cache"
             - "~/.sbt"
