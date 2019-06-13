@@ -9,13 +9,13 @@ import org.scalatest.{Matchers, OptionValues}
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-trait DatabaseUsersTestTrait extends Matchers with OptionValues {
+trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders {
 
   case class TestUserCredentials(login: String, email: String, password: String)
 
   case class TestUser(uuid: UUID, credentials: TestUserCredentials)
 
-  private def generateNotExistingUser(implicit up: UserProvider): TestUser = {
+  private def generateNotExistingUser: TestUser = {
     val uuid = UUID.randomUUID()
     val credentials = TestUserCredentials(
       login = "tokens-test-not-existing",
@@ -34,7 +34,7 @@ trait DatabaseUsersTestTrait extends Matchers with OptionValues {
     TestUser(uuid, credentials)
   }
 
-  private def generateNotVerifiedUser(implicit up: UserProvider): TestUser = {
+  private def generateNotVerifiedUser: TestUser = {
     val credentials = TestUserCredentials(
       login = "tokens-test-not-verified",
       email = "tokens-test-not-verified@mail.com",
@@ -62,7 +62,7 @@ trait DatabaseUsersTestTrait extends Matchers with OptionValues {
     TestUser(uuid, credentials)
   }
 
-  private def generateVerifiedUser(implicit up: UserProvider, vtp: VerificationTokenProvider): TestUser = {
+  private def generateVerifiedUser: TestUser = {
     val credentials = TestUserCredentials(
       login = "tokens-test-verified",
       email = "tokens-test-verified@mail.com",
@@ -110,15 +110,15 @@ trait DatabaseUsersTestTrait extends Matchers with OptionValues {
 
   final val users = new {
     def notExistingUser(implicit up: UserProvider): TestUser = _notExistingUser.getOrElse {
-      _notExistingUser = Some(generateNotExistingUser(up))
+      _notExistingUser = Some(generateNotExistingUser)
       _notExistingUser.get
     }
     def notVerifiedUser(implicit up: UserProvider): TestUser = _notVerifiedUser.getOrElse {
-      _notVerifiedUser = Some(generateNotVerifiedUser(up))
+      _notVerifiedUser = Some(generateNotVerifiedUser)
       _notVerifiedUser.get
     }
     def verifiedUser(implicit up: UserProvider, vtp: VerificationTokenProvider): TestUser = _verifiedUser.getOrElse {
-      _verifiedUser = Some(generateVerifiedUser(up, vtp))
+      _verifiedUser = Some(generateVerifiedUser)
       _verifiedUser.get
     }
   }

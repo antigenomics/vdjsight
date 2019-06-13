@@ -4,6 +4,16 @@ json.validation.email.valid     = Valid email required
 json.validation.field.minlength = Field length should be greater than {0}
 json.validation.field.maxlength = Field length should be less than {0}
 
+# Authorization login and validation messages
+
+authorization.login.validation.failed             = Please check that you have entered valid credentials
+authorization.login.validation.email.valid        = Valid email required
+authorization.login.validation.email.minlength    = Email field should not be blank
+authorization.login.validation.password.minlength = Password field should not be blank
+authorization.login.failed.email                  = Please check that you have entered valid credentials
+authorization.login.failed.unverified             = Please verify your account
+
+
 # Authorization signup and validation messages
 
 authorization.signup.validation.failed               = Please check that you have entered valid credentials

@@ -1,11 +1,9 @@
 package controllers.authorization
 
-import java.util.UUID
-
 import actions.{SessionRequest, SessionRequestAction}
 import com.google.inject.{Inject, Singleton}
 import controllers.ControllerHelpers
-import controllers.authorization.requests.{AuthorizationBeforeResetRequest, AuthorizationResetRequest, AuthorizationSignupRequest, AuthorizationVerifyRequest}
+import controllers.authorization.requests._
 import models.token.{ResetTokenProvider, VerificationTokenProvider}
 import models.user.UserProvider
 import org.slf4j.{Logger, LoggerFactory}
@@ -26,8 +24,18 @@ class AuthorizationController @Inject()(cc: ControllerComponents, sessionAction:
   private implicit final val logger: Logger     = LoggerFactory.getLogger(this.getClass)
   private implicit final val messages: Messages = messagesAPI.preferred(Seq(Lang.defaultLang))
 
-  def login: Action[JsValue] = (sessionAction andThen sessionAction.unauthorizedOnly) { implicit request =>
-    Ok(ServerResponse.EMPTY).withSession(SessionRequest.SESSION_REQUEST_USER_ID_KEY -> UUID.randomUUID().toString)
+  def login: Action[JsValue] = (sessionAction andThen sessionAction.unauthorizedOnly)(parse.json).async { implicit request =>
+    ControllerHelpers.validateRequestWithRecover[AuthorizationLoginRequest](error = AuthorizationLoginRequest.failedValidationMessage) { login =>
+      up.getByEmailAndPassword(login.email, login.password).map {
+        case None => BadRequest(ServerResponseError(messages("authorization.login.failed.email")))
+        case Some(user) =>
+          if (user.verified) {
+            Ok(ServerResponse.EMPTY).withSession(SessionRequest.SESSION_REQUEST_USER_ID_KEY -> user.uuid.toString)
+          } else {
+            BadRequest(ServerResponseError(messages("authorization.login.failed.unverified")))
+          }
+      }
+    }
   }
 
   def signup: Action[JsValue] = (sessionAction andThen sessionAction.unauthorizedOnly)(parse.json).async { implicit request =>

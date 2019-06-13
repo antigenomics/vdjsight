@@ -86,6 +86,10 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
 
   def getByLogin(login: String): Future[Option[User]] = db.run(users.filter(_.login === login).result.headOption)
 
+  def getByEmailAndPassword(email: String, password: String): Future[Option[User]] = {
+    getByEmail(email).map(_.filter(u => SecureHash.validatePassword(password, u.password)))
+  }
+
   def create(login: String, email: String, password: String): Future[UUID] = {
     val check = for {
       user <- users if user.login === login || user.email === email
@@ -115,8 +119,10 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
 
   def reset(resetTokenID: UUID, password: String)(implicit rtp: ResetTokenProvider): Future[Option[User]] = {
     rtp.get(resetTokenID) flatMap {
-      case Some(token) => db.run(users.filter(_.uuid === token.userID).map(_.password).update(SecureHash.createHash(password))).flatMap(_ => get(token.userID))
-      case None        => Future.successful(None)
+      case Some(token) =>
+        db.run(users.filter(_.uuid === token.userID).map(u => (u.password, u.verified)).update((SecureHash.createHash(password), true)))
+          .flatMap(_ => get(token.userID))
+      case None => Future.successful(None)
     } onSuccessSideEffect { user =>
       user.foreach(u => eventStream.publish(UserProviderEvents.UserReset(u.uuid)))
     }

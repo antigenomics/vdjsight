@@ -18,13 +18,13 @@ object AuthorizationSignupRequest {
   implicit def authorizationSignupRequestReads(implicit messages: Messages): Reads[AuthorizationSignupRequest] = {
 
     val login = (JsPath \ "login").read[String](
-      minLength(min = 0, error = "authorization.signup.validation.login.minlength") keepAnd
+      minLength(min = 1, error = "authorization.signup.validation.login.minlength") keepAnd
         maxLength(max = LOGIN_MAX_LENGTH, error = "authorization.signup.validation.login.maxlength")
     )
 
     val email = (JsPath \ "email").read[String](
       validEmail(error = "authorization.signup.validation.email.valid") keepAnd
-        minLength(min = 0, error = "authorization.signup.validation.email.minlength") keepAnd
+        minLength(min = 1, error = "authorization.signup.validation.email.minlength") keepAnd
         maxLength(max = EMAIL_MAX_LENGTH, error = "authorization.signup.validation.email.maxlength")
     )
 
