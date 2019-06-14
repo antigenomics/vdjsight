@@ -48,7 +48,7 @@ jobs:
           command: ./vdjsight.sh frontend build
       - run:
           name: Testing frontend
-          command: ./vdjsight.sh frontend test-ci
+          command: ./vdjsight.sh frontend test --ci
       - setup_remote_docker
       - run:
           name: Creating frontend docker image

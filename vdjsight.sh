@@ -85,15 +85,10 @@ function frontend() {
             ;;
         test)
             if [[ "$1" == "--ci" ]]; then
-            yarn run test:ci
+                yarn run test:ci
             else
-            yarn run test
+                yarn run test
             fi
-
-            ;;
-        test-ci)
-            yarn run test --no-watch --no-progress --browsers=ChromeHeadlessCI
-            # yarn run e2e --protractor-config=e2e/protractor-ci.conf.js
             ;;
         docker)
             [[ -z "$1" ]] && echo "Tag parameters is required" && exit;
