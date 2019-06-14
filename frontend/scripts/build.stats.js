@@ -8,12 +8,13 @@ const pathToBundle = path.resolve(__dirname, '../dist/frontend');
 const gzipSize = require('gzip-size');
 
 const types = [
-    { name: 'core', test: (file) => file.includes('runtime') || file.includes('main') || file.includes('vendor') || file.includes('scripts') },
-    { name: 'workers', test: (file) => file.includes('worker') },
-    { name: 'lazy-loaded', test: (file) => !Number.isNaN(Number(file.split('.')[0])) },
-    { name: 'styles', test: (file) => file.endsWith('css') },
-    { name: 'polyfills', test: (file) => file.includes('polyfills') },
-    { name: 'unknown', test: () => true }
+    { name: 'core-es2015',      test: (file) => file.includes('main-es2015') || file.includes('runtime-es2015') },
+    { name: 'core-es5',         test: (file) => file.includes('main-es5') || file.includes('runtime-es5') },
+    { name: 'lazy',             test: (file) => !Number.isNaN(Number(file.split('.')[0])) },
+    { name: 'styles',           test: (file) => file.endsWith('css') },
+    { name: 'polyfills-es2015', test: (file) => file.includes('polyfills-es2015') },
+    { name: 'polyfills-es5',    test: (file) => file.includes('polyfills-es5') },
+    { name: 'unknown',          test: () => true }
 ];
 
 const bundleFiles = glob.sync(pathToBundle + '/*.@(js|css)').map((file) => {
@@ -70,23 +71,37 @@ types.forEach((type) => {
 
 rows.push(fillerRows.empty);
 
+function appendStatisticsRows(statistics) {
+    statistics.forEach((statistic) => {
+        const filtered = bundleFiles.filter((file) => statistic.types.includes(file.type.name));
+        const size = filtered.reduce((prev, file) => prev + file.size, 0);
+        const compressed = filtered.reduce((prev, file) => prev + file.compressed, 0);
+        rows.push({
+            'Name': statistic.name,
+            'Size': memorySizePrettifier(size, 'size'),
+            'Compressed': memorySizePrettifier(compressed, 'compressed')
+        })
+    });
+}
+
 const totalStatisticTypes = [
-    { name: 'Application (start)', types: ['core', 'styles'] },
-    { name: 'Application (lazy-loaded)', types: ['lazy-loaded'] },
-    { name: 'Application (workers)', types: ['workers'] },
-    { name: 'Application (total)', types: ['core', 'styles', 'lazy-loaded'] },
-    { name: 'Polyfills', types: ['polyfills'] }
+    { name: 'Application core (es2015)',  types: ['core-es2015'] },
+    { name: 'Application core (es5)',     types: ['core-es5'] },
+    { name: 'Application lazy modules',   types: ['lazy'] },
+    { name: 'Styles',                     types: ['styles'] },
+    { name: 'Polyfills (es2015)',         types: ['polyfills-es2015'] },
+    { name: 'Polyfills (es5)',            types: ['polyfills-es5'] },
 ];
 
-totalStatisticTypes.forEach((statistic) => {
-    const filtered = bundleFiles.filter((file) => statistic.types.includes(file.type.name));
-    const size = filtered.reduce((prev, file) => prev + file.size, 0);
-    const compressed = filtered.reduce((prev, file) => prev + file.compressed, 0);
-    rows.push({
-        'Name': statistic.name,
-        'Size': memorySizePrettifier(size, 'size'),
-        'Compressed': memorySizePrettifier(compressed, 'compressed')
-    })
-});
+appendStatisticsRows(totalStatisticTypes);
+
+const applicationBundleOverallStatistic = [
+    { name: 'Application total (es2015)', types: ['core-es2015', 'lazy', 'styles', 'polyfills-es2015'] },
+    { name: 'Application total (es5)',    types: ['core-es5', 'lazy', 'styles', 'polyfills-es5'] }
+];
+
+rows.push(fillerRows.dashed);
+
+appendStatisticsRows(applicationBundleOverallStatistic);
 
 console.table('Frontend bundle statistic', rows);

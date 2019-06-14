@@ -3,15 +3,16 @@
   "version": "0.0.0",
   "scripts": {
     "start": "ng serve",
-    "build": "npm run build:clean && npm run build:styles && npm run build:ng && npm run semantic:optimize && npm run build:stats",
+    "build": "npm run build:clean && npm run build:styles && npm run build:env && npm run build:ng && npm run semantic:optimize && npm run build:stats",
     "build:ng": "ng build --prod --delete-output-path false",
+    "build:env": "node scripts/build.environment.js",
     "build:styles": "cd src/styles/semantic && rimraf dist && gulp build && cd ../../..",
     "build:stats": "node scripts/build.stats.js",
     "build:clean": "rimraf dist/* && rimraf src/styles/semantic/dist",
     "semantic:optimize": "node scripts/semantic.optimize.js",
     "semantic:patch": "node scripts/semantic.patch.js",
-    "test": "ng test --coverage",
-    "test:ci": "ng test --ci --coverage",
+    "test": "ng test",
+    "test:ci": "ng test --ci",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "postinstall": "npm run semantic:patch"
@@ -34,7 +35,8 @@
     "rxjs": "6.5.2",
     "semantic-ui": "2.4.2",
     "tslib": "1.9.3",
-    "zone.js": "0.9.1"
+    "zone.js": "0.9.1",
+    "immer": "3.1.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "0.800.1",
@@ -59,7 +61,8 @@
     "rimraf": "2.6.3",
     "ts-node": "8.2.0",
     "tslint": "5.17.0",
-    "typescript": "3.4.5"
+    "typescript": "3.4.5",
+    "dotenv": "8.0.0"
   },
   "engines": {
     "node": ">= 11",

@@ -1,0 +1,52 @@
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
+import { EffectsModule } from '@ngrx/effects';
+import { NavigationActionTiming, RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { ShellComponent } from 'components/shell/shell.component';
+import { environment } from 'environments/environment';
+import { ApplicationEffects } from 'models/application/application.effects';
+import { metaReducers, RootReducers } from 'models/root';
+import { AboutPageComponent } from 'pages/about/about.component';
+import { AboutPageModule } from 'pages/about/about.module';
+import { HomePageComponent } from 'pages/home/home.component';
+import { HomePageModule } from 'pages/home/home.module';
+import { ApplicationComponent } from './application.component';
+
+const ApplicationRouting = RouterModule.forRoot([
+  {
+    path:      '',
+    component: ShellComponent,
+    children:  [
+      { path: '', component: HomePageComponent },
+      { path: 'about', component: AboutPageComponent }
+    ]
+  }
+]);
+
+@NgModule({
+  imports:      [
+    BrowserModule, ApplicationRouting, HomePageModule, AboutPageModule,
+    StoreModule.forRoot(RootReducers, {
+      metaReducers:  metaReducers,
+      runtimeChecks: {
+        strictStateImmutability:     true,
+        strictActionImmutability:    true,
+        strictStateSerializability:  true,
+        strictActionSerializability: true
+      }
+    }),
+    EffectsModule.forRoot([ ApplicationEffects ]),
+    StoreRouterConnectingModule.forRoot({
+      stateKey:               'router',
+      navigationActionTiming: NavigationActionTiming.PostActivation,
+      routerState:            RouterState.Minimal
+    }),
+    !environment.production ? StoreDevtoolsModule.instrument({ maxAge: 50 }) : []
+  ],
+  declarations: [ ApplicationComponent, ShellComponent ],
+  bootstrap:    [ ApplicationComponent ]
+})
+export class ApplicationModule {}
