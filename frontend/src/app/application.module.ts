@@ -1,5 +1,7 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { NavigationActionTiming, RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
@@ -9,6 +11,7 @@ import { ShellComponent } from 'components/shell/shell.component';
 import { environment } from 'environments/environment';
 import { ApplicationEffects } from 'models/application/application.effects';
 import { metaReducers, RootReducers } from 'models/root';
+import { UserEffects } from 'models/user/user.effects';
 import { AboutPageComponent } from 'pages/about/about.component';
 import { AboutPageModule } from 'pages/about/about.module';
 import { HomePageComponent } from 'pages/home/home.component';
@@ -28,7 +31,8 @@ const ApplicationRouting = RouterModule.forRoot([
 
 @NgModule({
   imports:      [
-    BrowserModule, ApplicationRouting, HomePageModule, AboutPageModule,
+    BrowserModule, BrowserAnimationsModule, HttpClientModule,
+    ApplicationRouting, HomePageModule, AboutPageModule,
     StoreModule.forRoot(RootReducers, {
       metaReducers:  metaReducers,
       runtimeChecks: {
@@ -38,7 +42,7 @@ const ApplicationRouting = RouterModule.forRoot([
         strictActionSerializability: true
       }
     }),
-    EffectsModule.forRoot([ ApplicationEffects ]),
+    EffectsModule.forRoot([ ApplicationEffects, UserEffects ]),
     StoreRouterConnectingModule.forRoot({
       stateKey:               'router',
       navigationActionTiming: NavigationActionTiming.PostActivation,

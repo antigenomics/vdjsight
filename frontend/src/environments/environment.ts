@@ -5,7 +5,18 @@
 export const environment: ApplicationEnvironment = {
   version:    'dev',
   revision:   'dev',
-  production: false
+  production: false,
+  backend:    {
+    protocol: 'auto',
+    host:     'localhost:9000',
+    prefix:   '',
+    suffix:   '',
+    limits:   {
+      timeout: 250,
+      count:   5,
+      retry:   3
+    }
+  }
 };
 
 /*
@@ -16,4 +27,4 @@ export const environment: ApplicationEnvironment = {
  * on performance if an error is thrown.
  */
 import { ApplicationEnvironment } from 'environments/index';
-import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+import 'zone.js/dist/zone-error'; // Included with Angular CLI.

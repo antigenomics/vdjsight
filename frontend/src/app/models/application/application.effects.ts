@@ -11,7 +11,7 @@ export class ApplicationEffects implements OnInitEffects {
   constructor(private readonly logger: LoggerService) {}
 
   public ngrxOnInitEffects(): Action {
-    this.logger.info('Application initialization');
+    this.logger.info('[Application] Initialization');
     return ApplicationActions.initialize();
   }
 

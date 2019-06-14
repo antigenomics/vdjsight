@@ -37,7 +37,7 @@
     "paths": {
       "components/*"  : [ "src/app/components/*" ],
       "pages/*"       : [ "src/app/pages/*" ],
-      "services/*"    : [ "src/app.services/*" ],
+      "services/*"    : [ "src/app/services/*" ],
       "models/*"      : [ "src/app/models/*" ],
       "utils/*"       : [ "src/app/utils/*" ],
       "environments/*": [ "src/environments/*" ]

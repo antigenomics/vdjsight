@@ -1,4 +1,4 @@
-package controllers.authorization.requests
+package controllers.authorization.dto
 
 import java.util.UUID
 

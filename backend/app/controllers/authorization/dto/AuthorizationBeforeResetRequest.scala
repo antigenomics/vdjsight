@@ -1,4 +1,4 @@
-package controllers.authorization.requests
+package controllers.authorization.dto
 
 import play.api.i18n.Messages
 import play.api.libs.functional.syntax._
