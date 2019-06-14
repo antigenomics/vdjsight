@@ -27,11 +27,10 @@ function script_help() {
     echo "                                                                                                                              "
     echo "  frontend                     -   Frontend related commands                                                                  "
     echo "     install                   -     :Install dependencies using yarn                                                         "
-    echo "     clean  [--full]           -     :Clean frontend bundle (use --full to delete installed dependencies)                     "
+    echo "     clean        [--full]     -     :Clean frontend bundle (use --full to delete installed dependencies)                     "
     echo "     serve                     -     :Serve dev version                                                                       "
     echo "     build                     -     :Build prod version                                                                      "
-    echo "     test                      -     :Test frontend                                                                           "
-    echo "     test-ci                   -     :Test frontend with CI                                                                   "
+    echo "     test         [--ci  ]     -     :Test frontend (use --ci to indicate CI environment)                                     "
     echo "     docker <tag> [--fast]     -     :Create Docker image with tag specified (use --fast flag if frontend was build locally)  "
     echo "                                                                                                                              "
     echo "  backend                      -   Backend related commands                                                                   "
@@ -85,7 +84,12 @@ function frontend() {
             yarn build
             ;;
         test)
-            yarn test
+            if [[ "$1" == "--ci" ]]; then
+            yarn run test:ci
+            else
+            yarn run test
+            fi
+
             ;;
         test-ci)
             yarn run test --no-watch --no-progress --browsers=ChromeHeadlessCI
