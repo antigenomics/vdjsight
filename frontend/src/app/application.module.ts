@@ -7,6 +7,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { NavigationActionTiming, RouterState, StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { NavigationBarModule } from 'components/navbar/navbar.module';
 import { ShellComponent } from 'components/shell/shell.component';
 import { environment } from 'environments/environment';
 import { ApplicationEffects } from 'models/application/application.effects';
@@ -48,7 +49,8 @@ const ApplicationRouting = RouterModule.forRoot([
       navigationActionTiming: NavigationActionTiming.PostActivation,
       routerState:            RouterState.Minimal
     }),
-    !environment.production ? StoreDevtoolsModule.instrument({ maxAge: 50 }) : []
+    !environment.production ? StoreDevtoolsModule.instrument({ maxAge: 50 }) : [],
+    NavigationBarModule
   ],
   declarations: [ ApplicationComponent, ShellComponent ],
   bootstrap:    [ ApplicationComponent ]
