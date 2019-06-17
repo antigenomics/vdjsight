@@ -2,12 +2,12 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { environment } from 'environments/environment';
-import { RootState } from 'models/root';
+import { RootModuleState } from 'models/root';
 import { UserActions } from 'models/user/user.action';
 import { Observable } from 'rxjs';
 import { catchError, flatMap, map, retryWhen, take } from 'rxjs/operators';
 import { BackendRequest, BackendRequestEndpoint, BackendRequestOptions, BackendRequestType } from './backend-request';
-import { BackendResponse } from './backend-response';
+import { BackendSuccessResponse } from './backend-response';
 import { HttpStatusCode } from './http-codes';
 import { RateLimiter } from './rate-limiter';
 import { retryStrategy } from './retry-strategy';
@@ -24,7 +24,7 @@ export class BackendService {
 
   private readonly limiter: RateLimiter<BackendRequest<any>> = new RateLimiter(BackendService.rateTimeout, BackendService.rateCount); // tslint:disable-line:no-any
 
-  constructor(private http: HttpClient, private store: Store<RootState>) {}
+  constructor(private http: HttpClient, private store: Store<RootModuleState>) {}
 
   public get<T, B = T>(endpoint: BackendRequestEndpoint, options?: BackendRequestOptions): Observable<B> {
     return this.next<T, B>({ endpoint: endpoint, type: BackendRequestType.GET }, options);
@@ -42,22 +42,26 @@ export class BackendService {
     return this.next<T, B>({ endpoint: endpoint, type: BackendRequestType.DELETE }, options);
   }
 
+  public ping(): Observable<void> {
+    return this.get<void>('ping');
+  }
+
   private next<T, B = T>(request: BackendRequest<T>, options?: BackendRequestOptions): Observable<B> {
     const url = BackendService.endpointToURL(request.endpoint);
     return this.limiter.request(request).pipe(flatMap((r: BackendRequest<T>) => {
-      let call: Observable<BackendResponse<B>>;
+      let call: Observable<BackendSuccessResponse<B>>;
       switch (r.type) {
         case BackendRequestType.GET:
-          call = this.http.get<BackendResponse<B>>(url, { ...options, withCredentials: true });
+          call = this.http.get<BackendSuccessResponse<B>>(url, { ...options, withCredentials: true });
           break;
         case BackendRequestType.POST:
-          call = this.http.post<BackendResponse<B>>(url, r.data, { ...options, withCredentials: true });
+          call = this.http.post<BackendSuccessResponse<B>>(url, r.data, { ...options, withCredentials: true });
           break;
         case BackendRequestType.PUT:
-          call = this.http.put<BackendResponse<B>>(url, r.data, { ...options, withCredentials: true });
+          call = this.http.put<BackendSuccessResponse<B>>(url, r.data, { ...options, withCredentials: true });
           break;
         case BackendRequestType.DELETE:
-          call = this.http.delete<BackendResponse<B>>(url, { ...options, withCredentials: true });
+          call = this.http.delete<BackendSuccessResponse<B>>(url, { ...options, withCredentials: true });
           break;
         default:
           break;

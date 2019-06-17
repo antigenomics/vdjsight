@@ -1,10 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector:        'vs-application-root',
-  templateUrl:     './application.component.html',
+  selector:        'vs-login-page',
+  templateUrl:     './login-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ApplicationComponent {
-
-}
+export class LoginPageComponent {}

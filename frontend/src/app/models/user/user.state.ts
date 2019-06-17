@@ -1,31 +1,28 @@
-export interface UserInfo {
-  readonly email: string;
-  readonly login: string;
-}
+import { UserInfo } from 'models/user/user';
 
-export interface UserState {
-  readonly fetched: boolean;
-  readonly fetchFailed: boolean;
+export interface __UserState { // tslint:disable-line:class-name
+  readonly initialized: boolean;
+  readonly initializeFailed: boolean;
   readonly loggedIn: boolean;
   readonly info?: UserInfo;
 }
 
-export namespace fromUserState {
+export namespace __fromUserState {
 
-  function rehydrateInitialState(): UserState {
+  function rehydrateInitialState(): __UserState {
     const check = window.localStorage.getItem('isLoggedIn');
     if (check === null || check === 'false') {
-      return { fetched: true, fetchFailed: false, loggedIn: false };
+      return { initialized: true, initializeFailed: false, loggedIn: false };
     } else {
-      return { fetched: false, fetchFailed: false, loggedIn: false };
+      return { initialized: false, initializeFailed: false, loggedIn: false };
     }
   }
 
-  export const initial: UserState = rehydrateInitialState();
+  export const initial: __UserState = rehydrateInitialState();
 
-  export const isFetched     = (state: UserState) => state.fetched;
-  export const isFetchFailed = (state: UserState) => state.fetchFailed;
-  export const isLoggedIn    = (state: UserState) => state.loggedIn;
-  export const getInfo       = (state: UserState) => state.info;
+  export const isInitialized      = (state: __UserState) => state.initialized;
+  export const isInitializeFailed = (state: __UserState) => state.initializeFailed;
+  export const isLoggedIn         = (state: __UserState) => state.loggedIn;
+  export const getInfo            = (state: __UserState) => state.info;
 
 }

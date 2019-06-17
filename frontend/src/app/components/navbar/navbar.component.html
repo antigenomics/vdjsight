@@ -1,18 +1,18 @@
-<div class="ui segment" *ngIf="(isUserStateFetched$ | async); else fetching">
+<div class="ui segment" *ngIf="(isUserStateInitialized$ | async); else fetching">
     Very cool navigation bar |
     <div *ngIf="(isUserLoggedIn$ | async); else notLoggedIn">
         Logged as cool: {{ userInfo$ | async }}
         <button (click)="logout()">Logout</button>
     </div>
     <ng-template #notLoggedIn>
-        Not logged in but...
-        <button (click)="test_login()">Login</button>
+        Not logged in
+        <button routerLink="/auth">Auth</button>
     </ng-template>
 </div>
 <ng-template #fetching>
     <div class="ui segment">
         <div class="ui active inverted dimmer">
-            <div class="ui text loader">Fetching</div>
+            <div class="ui text loader">Initializing</div>
         </div>
     </div>
 </ng-template>

@@ -18,6 +18,7 @@ import { AboutPageModule } from 'pages/about/about.module';
 import { HomePageComponent } from 'pages/home/home.component';
 import { HomePageModule } from 'pages/home/home.module';
 import { ApplicationComponent } from './application.component';
+import { NonAuthorizedOnlyGuard } from './guards/non-authorized-only.guard';
 
 const ApplicationRouting = RouterModule.forRoot([
   {
@@ -27,8 +28,16 @@ const ApplicationRouting = RouterModule.forRoot([
       { path: '', component: HomePageComponent },
       { path: 'about', component: AboutPageComponent }
     ]
+  },
+  {
+    path:                  'auth',
+    loadChildren:          () => import('./pages/auth/auth.module').then((m) => m.AuthPageModule),
+    canLoad:               [ NonAuthorizedOnlyGuard ],
+    canActivate:           [ NonAuthorizedOnlyGuard ],
+    data:                  { nonAuthorizedOnlyGuardFallbackURL: '/' },
+    runGuardsAndResolvers: 'always'
   }
-]);
+], { onSameUrlNavigation: 'reload' });
 
 @NgModule({
   imports:      [

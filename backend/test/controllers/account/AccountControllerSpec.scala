@@ -12,7 +12,7 @@ import scala.language.reflectiveCalls
 
 class AccountControllerSpec extends ControllersTestSpec with DatabaseUsers {
     "Account#info" should {
-        implicit lazy val url: SuiteTestURL = SuiteTestURL("/account/info")
+        implicit lazy val url: SuiteTestURL = SuiteTestURL("/account/info/")
 
         "forbid access on invalid method type" taggedAs ControllersTestTag in CheckForbiddenMethodTypesAccess(Seq(POST, PUT, PATCH, DELETE))
 

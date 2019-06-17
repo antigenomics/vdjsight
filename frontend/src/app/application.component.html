@@ -1,16 +1,7 @@
 <!--<ic-offline-popup></ic-offline-popup>-->
-<ng-container *ngIf="(isInitialized$ | async); else initializing">
+<ng-container>
     <!--  <ic-notifications></ic-notifications>-->
     <router-outlet></router-outlet>
     <!--  <ic-content-loader-popup></ic-content-loader-popup>-->
     <!--  <ic-footer></ic-footer>-->
 </ng-container>
-<ng-template #initializing>
-    <div class="page-warning-container">
-        <div class="ui segment">
-            <div class="ui active inverted dimmer">
-                <div class="ui text loader">Initializing</div>
-            </div>
-        </div>
-    </div>
-</ng-template>

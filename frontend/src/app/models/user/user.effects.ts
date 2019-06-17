@@ -1,38 +1,39 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType, OnInitEffects } from '@ngrx/effects';
 import { Action, select, Store } from '@ngrx/store';
-import { fromRoot, RootState } from 'models/root';
+import { fromRoot, RootModuleState } from 'models/root';
 import { UserActions } from 'models/user/user.action';
 import { of } from 'rxjs';
+import { fromPromise } from 'rxjs/internal-compatibility';
 import { catchError, filter, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { AccountService } from 'services/account/account.service';
 import { HttpStatusCode } from 'services/backend/http-codes';
-import { LoggerService } from 'utils/logger/logger.service';
 
 @Injectable()
 export class UserEffects implements OnInitEffects {
 
-  public fetch$ = createEffect(() => this.actions$.pipe(
-    ofType(UserActions.fetch),
+  public initialize$ = createEffect(() => this.actions$.pipe(
+    ofType(UserActions.initialize),
     withLatestFrom(
-      this.store.pipe(select(fromRoot.isUserStateFetched)),
-      this.store.pipe(select(fromRoot.isUserStateFetchFailed))
+      this.store.pipe(select(fromRoot.isUserStateInitialized)),
+      this.store.pipe(select(fromRoot.isUserStateInitializeFailed))
     ),
-    filter(([ _, isFetched, isFetchFailed ]) => isFetchFailed || !isFetched),
-    map(() => UserActions.fetchStart())
+    filter(([ _, isInitialized, isInitializeFailed ]) => isInitializeFailed || !isInitialized),
+    map(() => UserActions.initializeStart())
   ));
 
-  public fetchStart$ = createEffect(() => this.actions$.pipe(
-    ofType(UserActions.fetchStart),
+  public initializeStart$ = createEffect(() => this.actions$.pipe(
+    ofType(UserActions.initializeStart),
     mergeMap(() =>
       this.account.info().pipe(
-        map((info) => UserActions.fetchSuccess({ loggedIn: true, info: info })),
+        map((info) => UserActions.initializeSuccess({ loggedIn: true, info: info })),
         catchError((error: HttpErrorResponse) => {
           if (error.status === HttpStatusCode.UNAUTHORIZED) {
-            return of(UserActions.fetchSuccess({ loggedIn: false }));
+            return of(UserActions.initializeSuccess({ loggedIn: false }));
           } else {
-            return of(UserActions.fetchFailed());
+            return of(UserActions.initializeFailed());
           }
         })
       )
@@ -41,20 +42,28 @@ export class UserEffects implements OnInitEffects {
 
   public login$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.login),
-    tap(() => window.localStorage.setItem('isLoggedIn', 'true'))
+    tap(() => window.localStorage.setItem('isLoggedIn', 'true')),
+    tap(() => this.router.navigateByUrl(this.router.url))
   ), { dispatch: false });
 
   public logout$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.logout),
-    tap(() => window.localStorage.setItem('isLoggedIn', 'false'))
+    tap(() => window.localStorage.setItem('isLoggedIn', 'false')),
+    tap(() => this.router.navigateByUrl(this.router.url))
   ), { dispatch: false });
 
-  constructor(private readonly actions$: Actions, private readonly store: Store<RootState>,
-              private readonly account: AccountService, private readonly logger: LoggerService) {}
+  public logoutWithRedirect$ = createEffect(() => this.actions$.pipe(
+    ofType(UserActions.logoutWithRedirect),
+    mergeMap((action) => fromPromise(this.router.navigateByUrl(action.redirectTo)).pipe(
+      map(() => UserActions.logout())
+    ))
+  ));
+
+  constructor(private readonly actions$: Actions, private readonly store: Store<RootModuleState>,
+              private readonly account: AccountService, private readonly router: Router) {}
 
   public ngrxOnInitEffects(): Action {
-    this.logger.info('[User] Fetching user info');
-    return UserActions.fetch();
+    return UserActions.initialize();
   }
 
 }

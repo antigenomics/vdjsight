@@ -44,7 +44,10 @@ function script_help() {
     echo "     stop                      -     :Stop      develop environment                                                           "
     echo "     down                      -     :Down      develop environment                                                           "
     echo "     recreate                  -     :Recreate  develop environment                                                           "
+    echo "     create-ssl                -     :Create    ssl self signed certificates                                                  "
+    echo "     remove-ssl                -     :Remove    ssl self signed certificates                                                  "
     echo "                                                                                                                              "
+
 }
 
 function ensure_non_empty_input() {
@@ -157,6 +160,14 @@ function dev_environment() {
         recreate)
             docker-compose down;
             docker-compose up -d;
+            ;;
+        create-ssl)
+            openssl req -new -x509 -newkey rsa:2048 -sha256 -nodes -keyout ./ssl/frontend.key -days 3650 -out ./ssl/frontend.crt -config ./ssl/certificate-frontend.cnf
+            openssl req -new -x509 -newkey rsa:2048 -sha256 -nodes -keyout ./ssl/backend.key -days 3650 -out ./ssl/backend.crt -config ./ssl/certificate-backend.cnf
+            openssl pkcs12 -export -in ./ssl/backend.crt -inkey ./ssl/backend.key -name vdjsight-backend -out ./ssl/backend-keystore.p12 -passout pass:vdjsight
+            keytool -importkeystore -srcstorepass vdjsight -deststorepass vdjsight -destkeystore ./ssl/backend-keystore.jks -srckeystore ./ssl/backend-keystore.p12 -srcstoretype PKCS12
+            ;;
+        remove-ssl)
             ;;
         *)
             script_help;

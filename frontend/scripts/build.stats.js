@@ -10,7 +10,18 @@ const gzipSize = require('gzip-size');
 const types = [
     { name: 'core-es2015',      test: (file) => file.includes('main-es2015') || file.includes('runtime-es2015') },
     { name: 'core-es5',         test: (file) => file.includes('main-es5') || file.includes('runtime-es5') },
-    { name: 'lazy',             test: (file) => !Number.isNaN(Number(file.split('.')[0])) },
+    { name: 'lazy-es2015',      test: (file) =>
+        {
+            const prefix = file.split('.')[0].split('-');
+            return !Number.isNaN(Number(prefix[0])) && prefix[1] === 'es2015';
+        }
+    },
+    { name: 'lazy-es5',      test: (file) =>
+        {
+            const prefix = file.split('.')[0].split('-');
+            return !Number.isNaN(Number(prefix[0])) && prefix[1] === 'es5';
+        }
+    },
     { name: 'styles',           test: (file) => file.endsWith('css') },
     { name: 'polyfills-es2015', test: (file) => file.includes('polyfills-es2015') },
     { name: 'polyfills-es5',    test: (file) => file.includes('polyfills-es5') },
@@ -87,7 +98,8 @@ function appendStatisticsRows(statistics) {
 const totalStatisticTypes = [
     { name: 'Application core (es2015)',  types: ['core-es2015'] },
     { name: 'Application core (es5)',     types: ['core-es5'] },
-    { name: 'Application lazy modules',   types: ['lazy'] },
+    { name: 'Lazy modules (es2015)',      types: ['lazy-es2015'] },
+    { name: 'Lazy modules (es5)',         types: ['lazy-es5'] },
     { name: 'Styles',                     types: ['styles'] },
     { name: 'Polyfills (es2015)',         types: ['polyfills-es2015'] },
     { name: 'Polyfills (es5)',            types: ['polyfills-es5'] },
@@ -96,8 +108,8 @@ const totalStatisticTypes = [
 appendStatisticsRows(totalStatisticTypes);
 
 const applicationBundleOverallStatistic = [
-    { name: 'Application total (es2015)', types: ['core-es2015', 'lazy', 'styles', 'polyfills-es2015'] },
-    { name: 'Application total (es5)',    types: ['core-es5', 'lazy', 'styles', 'polyfills-es5'] }
+    { name: 'Application total (es2015)', types: ['core-es2015', 'lazy-es2015', 'styles', 'polyfills-es2015'] },
+    { name: 'Application total (es5)',    types: ['core-es5', 'lazy-es5', 'styles', 'polyfills-es5'] }
 ];
 
 rows.push(fillerRows.dashed);

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UserInfo } from 'models/user/user.state';
+import { UserInfo } from 'models/user/user';
 import { Observable } from 'rxjs';
 import { BackendService } from '../backend/backend.service';
 

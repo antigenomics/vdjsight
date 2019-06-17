@@ -8,7 +8,7 @@ export const environment: ApplicationEnvironment = {
   production: false,
   backend:    {
     protocol: 'auto',
-    host:     'localhost:9000',
+    host:     'localhost:9443',
     prefix:   '',
     suffix:   '',
     limits:   {

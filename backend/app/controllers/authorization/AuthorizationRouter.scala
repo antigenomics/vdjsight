@@ -8,12 +8,12 @@ import play.api.routing.sird._
 class AuthorizationRouter @Inject()(controller: AuthorizationController) extends SimpleRouter {
 
   override def routes: Routes = {
-    case POST(p"/login")         => controller.login
-    case POST(p"/signup")        => controller.signup
-    case POST(p"/reset-request") => controller.beforeReset
-    case POST(p"/reset")         => controller.reset
-    case POST(p"/verify")        => controller.verify
-    case POST(p"/logout")        => controller.logout
+    case POST(p"/login/")         => controller.login
+    case POST(p"/signup/")        => controller.signup
+    case POST(p"/reset-request/") => controller.beforeReset
+    case POST(p"/reset/")         => controller.reset
+    case POST(p"/verify/")        => controller.verify
+    case POST(p"/logout/")        => controller.logout
   }
 
 }

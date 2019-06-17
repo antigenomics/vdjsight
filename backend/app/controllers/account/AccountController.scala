@@ -19,6 +19,7 @@ class AccountController @Inject()(cc: ControllerComponents, sessionAction: Sessi
     private def accountSecuredAction = sessionAction andThen sessionAction.authorizedOnly
 
     def info: Action[Unit] = accountSecuredAction(parse.empty).async { implicit request =>
+
         up.get(request.userID.get).map {
             case Some(user) => Ok(ServerResponse(AccountInfoResponse(user.login, user.email)))
             case None => BadRequest(ServerResponseError("Invalid UUID")).withNewSession

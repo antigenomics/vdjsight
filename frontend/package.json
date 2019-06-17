@@ -2,7 +2,7 @@
   "name": "vdjsight-frontend",
   "version": "0.0.0",
   "scripts": {
-    "start": "ng serve",
+    "start": "ng serve --ssl --ssl-key ./../environment/dev/ssl/frontend.key --ssl-cert ./../environment/dev/ssl/frontend.crt",
     "build": "npm run build:clean && npm run build:styles && npm run build:env && npm run build:ng && npm run semantic:optimize && npm run build:stats",
     "build:ng": "ng build --prod --delete-output-path false",
     "build:env": "node scripts/build.environment.js",

@@ -1,35 +1,24 @@
-import { createReducer, on, Action } from '@ngrx/store';
+import { Action, createReducer, on } from '@ngrx/store';
 import produce from 'immer';
 import { UserActions } from 'models/user/user.action';
-import { fromUserState, UserState } from 'models/user/user.state';
+import { __fromUserState, __UserState } from 'models/user/user.state';
 
 const userReducer = createReducer(
-  fromUserState.initial,
-  on(UserActions.fetchStart, (state) => produce(state, (draft) => {
-    draft.fetched     = false;
-    draft.fetchFailed = false;
-    draft.loggedIn    = false;
-  })),
-  on(UserActions.fetchSuccess, (state, payload) => produce(state, (draft) => {
-    draft.fetched     = true;
-    draft.fetchFailed = false;
-    draft.loggedIn    = payload.loggedIn;
-    draft.info        = payload.info;
-  })),
-  on(UserActions.fetchFailed, (state) => produce(state, (draft) => {
-    draft.fetched     = true;
-    draft.fetchFailed = true;
-    draft.loggedIn    = false;
-  })),
+  __fromUserState.initial,
+  on(UserActions.initializeStart, () => ({ initialized: false, initializeFailed: false, loggedIn: false })),
+  on(UserActions.initializeSuccess, (_, payload) => ({ initialized: true, initializeFailed: false, loggedIn: payload.loggedIn, info: payload.info })),
+  on(UserActions.initializeFailed, () => ({ initialized: true, initializeFailed: true, loggedIn: false })),
   on(UserActions.login, (state, payload) => produce(state, (draft) => {
     draft.loggedIn = true;
     draft.info     = payload.info;
   })),
-  on(UserActions.logout, (state) => produce(state, (draft) => { draft.loggedIn = false; }))
+  on(UserActions.logout, (state) => produce(state, (draft) => {
+    draft.loggedIn = false;
+  }))
 );
 
 export namespace fromUserReducers {
-  export function reducer(state: UserState | undefined, action: Action) {
+  export function reducer(state: __UserState | undefined, action: Action) {
     return userReducer(state, action);
   }
 }
