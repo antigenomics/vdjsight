@@ -4,8 +4,7 @@ import { Actions, createEffect, ofType, OnInitEffects } from '@ngrx/effects';
 import { Action, select, Store } from '@ngrx/store';
 import { ApplicationActions } from 'models/application/application.actions';
 import { fromRoot, RootModuleState } from 'models/root';
-import { of } from 'rxjs';
-import { fromPromise } from 'rxjs/internal-compatibility';
+import { from, of } from 'rxjs';
 import { catchError, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { BackendService } from 'services/backend/backend.service';
 
@@ -24,10 +23,9 @@ export class ApplicationEffects implements OnInitEffects {
   public restoreLastSavedURL$ = createEffect(() => this.actions$.pipe(
     ofType(ApplicationActions.restoreLastSavedURL),
     withLatestFrom(this.store.pipe(select(fromRoot.getApplicationLastSavedURL))),
-    mergeMap(([ action, lastSaved ]) => {
-      const url         = lastSaved ? lastSaved.url : action.fallbackURL;
-      const queryParams = lastSaved ? lastSaved.queryParams : action.fallbackQueryParams;
-      return fromPromise(this.router.navigate([ url ], { queryParams })).pipe(
+    mergeMap(([ action, lastSavedURL ]) => {
+      const url = lastSavedURL ? lastSavedURL : action.fallbackURL;
+      return from(this.router.navigateByUrl(url)).pipe(
         map(() => ApplicationActions.clearLastSavedURL())
       );
     })

@@ -1,13 +1,6 @@
-import { Params } from '@angular/router';
-
-export interface ApplicationSavedURL {
-  url: string;
-  queryParams: Params;
-}
-
 export interface __ApplicationState { // tslint:disable-line:class-name
   readonly backendDead: boolean;
-  readonly savedURLs: ApplicationSavedURL[];
+  readonly savedURLs: string[];
 }
 
 export namespace __fromApplicationState {

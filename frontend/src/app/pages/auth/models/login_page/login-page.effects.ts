@@ -3,8 +3,7 @@ import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { UserActions } from 'models/user/user.action';
 import { LoginPageActions } from 'pages/auth/models/login_page/login-page.actions';
-import { of } from 'rxjs';
-import { fromPromise } from 'rxjs/internal-compatibility';
+import { from, of } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import { AccountService } from 'services/account/account.service';
 import { AuthorizationService } from 'services/authorization/authorization.service';
@@ -23,7 +22,7 @@ export class LoginPageEffects {
   public loginSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(LoginPageActions.loginSuccess),
     mergeMap(() => this.account.info().pipe(
-      mergeMap((info) => fromPromise(this.router.navigateByUrl('/')).pipe(
+      mergeMap((info) => from(this.router.navigateByUrl('/')).pipe(
         map(() => UserActions.login({ info }))
       )),
       catchError(() => of(LoginPageActions.loginFailed({ error: 'Internal Server Error' })))

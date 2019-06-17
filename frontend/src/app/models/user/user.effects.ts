@@ -5,8 +5,7 @@ import { Actions, createEffect, ofType, OnInitEffects } from '@ngrx/effects';
 import { Action, select, Store } from '@ngrx/store';
 import { fromRoot, RootModuleState } from 'models/root';
 import { UserActions } from 'models/user/user.action';
-import { of } from 'rxjs';
-import { fromPromise } from 'rxjs/internal-compatibility';
+import { from, of } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { AccountService } from 'services/account/account.service';
 import { HttpStatusCode } from 'services/backend/http-codes';
@@ -54,7 +53,7 @@ export class UserEffects implements OnInitEffects {
 
   public logoutWithRedirect$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.logoutWithRedirect),
-    mergeMap((action) => fromPromise(this.router.navigateByUrl(action.redirectTo)).pipe(
+    mergeMap((action) => from(this.router.navigateByUrl(action.redirectTo)).pipe(
       map(() => UserActions.logout())
     ))
   ));
