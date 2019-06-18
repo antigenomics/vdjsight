@@ -1,13 +1,14 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { environment } from 'environments/environment';
-import { RootModuleState } from 'models/root';
-import { UserActions } from 'models/user/user.action';
+import { ApplicationActions } from 'models/application/application.actions';
+import { fromRoot, RootModuleState } from 'models/root';
+import { UserActions } from 'models/user/user.actions';
 import { Observable } from 'rxjs';
 import { catchError, flatMap, map, retryWhen, take } from 'rxjs/operators';
 import { BackendRequest, BackendRequestEndpoint, BackendRequestOptions, BackendRequestType } from './backend-request';
-import { BackendSuccessResponse, BackendErrorResponse } from './backend-response';
+import { BackendErrorResponse, BackendSuccessResponse } from './backend-response';
 import { HttpStatusCode } from './http-codes';
 import { RateLimiter } from './rate-limiter';
 import { retryStrategy } from './retry-strategy';
@@ -16,9 +17,10 @@ import { retryStrategy } from './retry-strategy';
   providedIn: 'root'
 })
 export class BackendService {
-  private static readonly rateTimeout: number = environment.backend.limits.timeout;
-  private static readonly rateCount: number   = environment.backend.limits.count;
-  private static readonly retryCount: number  = environment.backend.limits.retry;
+  private static readonly deadBackendPingTimeout = 15000; // 15 seconds
+  private static readonly rateTimeout: number    = environment.backend.limits.timeout;
+  private static readonly rateCount: number      = environment.backend.limits.count;
+  private static readonly retryCount: number     = environment.backend.limits.retry;
 
   public static readonly api = BackendService.getAPIUrl();
 
@@ -68,10 +70,17 @@ export class BackendService {
       }
       return call.pipe(retryWhen(retryStrategy(BackendService.retryCount)), take(1), map((response) => response.data));
     }), catchError((error: HttpErrorResponse) => {
-      if (error.status === HttpStatusCode.UNAUTHORIZED) {
-        setTimeout(() => { this.store.dispatch(UserActions.logout()); });
+      if (error.status === 0) {
+        return this.store.pipe(select(fromRoot.isApplicationBackendDead), take(1), map((isBackendDead) => {
+          if (isBackendDead) {
+            this.store.dispatch(ApplicationActions.pingBackendSchedule({ timeout: BackendService.deadBackendPingTimeout }));
+            throw { error: 'Server is unavailable now. Please try again later.' } as BackendErrorResponse;
+          }
+          throw { error: 'Unknown error. Please try again later.' } as BackendErrorResponse;
+        }));
+      } else if (error.status === HttpStatusCode.UNAUTHORIZED) {
+        this.store.dispatch(UserActions.logout());
       }
-      console.log(error.error);
       throw error.error as BackendErrorResponse;
     }));
   }

@@ -1,0 +1,25 @@
+<div class="ui raised segments">
+    <div class="ui orange segment padded">
+        <h2 class="ui header">Account verification</h2>
+    </div>
+    <div class="ui segment" *ngIf="pending">
+        <div class="ui active centered orange text inline loader" style="margin-top: 2em">Processing</div>
+    </div>
+    <div class="ui segment" smoothHeight [smoothTrigger]="error" style="border-top: none">
+        <div class="ui message error" *ngIf="error">
+            <div [@error-message]>
+                {{ error }}
+                <ul *ngIf="extra">
+                    <li *ngFor="let e of extra">{{ e }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="ui segment" *ngIf="!pending">
+        <p class="cursor pointer">
+            <a routerLink="/" rel="noopener">
+                Back to home
+            </a>
+        </p>
+    </div>
+</div>

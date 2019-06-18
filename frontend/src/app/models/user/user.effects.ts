@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Actions, createEffect, ofType, OnInitEffects } from '@ngrx/effects';
 import { Action, select, Store } from '@ngrx/store';
 import { fromRoot, RootModuleState } from 'models/root';
-import { UserActions } from 'models/user/user.action';
+import { UserActions } from 'models/user/user.actions';
 import { from, of } from 'rxjs';
 import { catchError, filter, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { AccountService } from 'services/account/account.service';

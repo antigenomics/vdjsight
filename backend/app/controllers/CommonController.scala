@@ -8,8 +8,8 @@ import server.ServerResponse
 @Singleton
 class CommonController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
 
-    def ping: Action[AnyContent] = Action {
-        Ok(ServerResponse.EMPTY)
-    }
+  def ping: Action[AnyContent] = Action {
+    Ok(ServerResponse.EMPTY)
+  }
 
 }

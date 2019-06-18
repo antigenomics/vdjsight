@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { fromRoot, RootModuleState } from 'models/root';
-import { UserActions } from 'models/user/user.action';
+import { UserActions } from 'models/user/user.actions';
 import { AuthorizationService } from 'services/authorization/authorization.service';
 
 @Component({

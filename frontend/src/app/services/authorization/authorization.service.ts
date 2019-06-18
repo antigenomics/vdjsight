@@ -15,12 +15,17 @@ interface SignupCredentials {
   readonly password2: string;
 }
 
+interface VerifyCredentials {
+  readonly token: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthorizationService {
   private static readonly LoginEndpoint: string  = '/auth/login/';
   private static readonly SignupEndpoint: string = '/auth/signup/';
+  private static readonly VerifyEndpoint: string = '/auth/verify/';
   private static readonly LogoutEndpoint: string = '/auth/logout/';
 
   constructor(private backend: BackendService) {}
@@ -31,6 +36,11 @@ export class AuthorizationService {
 
   public signup<C extends SignupCredentials>(credentials: C): Observable<BackendMessageResponse> {
     return this.backend.post<SignupCredentials, BackendMessageResponse>(AuthorizationService.SignupEndpoint, credentials);
+  }
+
+  public verify<C extends VerifyCredentials>(credentials: C): Observable<BackendMessageResponse> {
+    console.log(credentials);
+    return this.backend.post<VerifyCredentials, BackendMessageResponse>(AuthorizationService.VerifyEndpoint, credentials);
   }
 
   public logout(): Observable<void> {

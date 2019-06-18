@@ -1,5 +1,5 @@
 import { Action, createReducer, on } from '@ngrx/store';
-import { SignupPageActions } from 'pages/auth/models/signup_page/signup-page.action';
+import { SignupPageActions } from 'pages/auth/models/signup_page/signup-page.actions';
 import { __fromSignupPageState, __SignupPageState } from 'pages/auth/models/signup_page/signup-page.state';
 
 const signupReducer = createReducer(

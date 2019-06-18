@@ -107,7 +107,7 @@ class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProvi
   }
 
   "Authorization#reset-request" should {
-    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/reset-request/")
+    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/reset/")
 
     "forbid access on invalid method type" taggedAs ControllersTestTag in CheckForbiddenMethodTypesAccess(Seq(GET, PUT, PATCH, DELETE))
 
@@ -138,7 +138,7 @@ class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProvi
   }
 
   "Authorization#reset" should {
-    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/reset/")
+    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/change/")
 
     "forbid access on invalid method type" taggedAs ControllersTestTag in CheckForbiddenMethodTypesAccess(Seq(GET, PUT, PATCH, DELETE))
 

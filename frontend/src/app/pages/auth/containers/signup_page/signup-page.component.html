@@ -1,5 +1,5 @@
 <div class="ui middle aligned center aligned auth grid">
-    <div class="column left aligned" style="max-width: 30%; align-self: center;" [@form-enter]>
+    <div class="five wide doubling column left aligned" style="align-self: center;" [@form-enter]>
         <vs-signup [pending]="pending$ | async" [error]="error$ | async" [extra]="extra$ | async" (onSubmit)="onSubmit($event)"></vs-signup>
     </div>
 </div>

@@ -4,7 +4,7 @@ import { select, Store } from '@ngrx/store';
 import { FormEnterAnimation } from 'pages/auth/animations/form-enter.animation';
 import { AuthForms } from 'pages/auth/auth.forms';
 import { AuthPagesModuleState, fromAuth } from 'pages/auth/models/auth-pages.state';
-import { SignupPageActions } from 'pages/auth/models/signup_page/signup-page.action';
+import { SignupPageActions } from 'pages/auth/models/signup_page/signup-page.actions';
 
 @Component({
   selector:        'vs-signup-page',

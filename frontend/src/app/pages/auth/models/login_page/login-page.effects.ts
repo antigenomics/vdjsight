@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { UserActions } from 'models/user/user.action';
+import { UserActions } from 'models/user/user.actions';
 import { LoginPageActions } from 'pages/auth/models/login_page/login-page.actions';
 import { from, of } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';

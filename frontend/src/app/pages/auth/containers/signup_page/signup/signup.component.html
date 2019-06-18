@@ -1,23 +1,34 @@
-<div class="ui raised orange segment very padded" [ngClass]="{ 'loading': pending }">
-    <div class="ui one column grid">
-        <div class="ui column">
-            <h2 class="ui header">Create account</h2>
-        </div>
-        <div class="ui no vertical padding column" smoothHeight [smoothTrigger]="error">
-            <div class="ui message error" *ngIf="error">
-                <div [@error-message]>
-                    {{ error }}
-                    <ul *ngIf="extra"><li *ngFor="let e of extra">{{ e }}</li></ul>
+<div class="ui raised segments">
+    <div class="ui orange segment very padded" [ngClass]="{ 'loading': pending }">
+        <div class="ui one column grid">
+            <div class="ui column">
+                <h2 class="ui header">Create account</h2>
+            </div>
+            <div class="ui no vertical padding column" smoothHeight [smoothTrigger]="error">
+                <div class="ui message error" *ngIf="error">
+                    <div [@error-message]>
+                        {{ error }}
+                        <ul *ngIf="extra">
+                            <li *ngFor="let e of extra">{{ e }}</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
+            <div class="ui column">
+                <vs-signup-form (onSubmit)="onSubmit.emit($event)"></vs-signup-form>
+            </div>
+            <div class="ui center aligned column" style="padding-top: 50px">
+                <p>Already have an account?
+                    <a class="cursor pointer" routerLink="/auth/login" rel="noopener">Sign in</a>
+                </p>
+            </div>
         </div>
-        <div class="ui column">
-            <vs-signup-form (onSubmit)="onSubmit.emit($event)"></vs-signup-form>
-        </div>
-        <div class="ui center aligned column" style="padding-top: 50px">
-            <p>Already have an account?
-                <a class="cursor pointer" routerLink="/auth/login" rel="noopener">Sign in</a>
-            </p>
-        </div>
+    </div>
+    <div class="ui segment" *ngIf="!pending" [@footer]>
+        <p class="cursor pointer">
+            <a routerLink="/" rel="noopener">
+                Back to home
+            </a>
+        </p>
     </div>
 </div>

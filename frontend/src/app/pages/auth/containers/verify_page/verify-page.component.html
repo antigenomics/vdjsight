@@ -1,0 +1,6 @@
+<div class="ui middle aligned center aligned auth grid">
+    <div class="five wide doubling column left aligned" style="align-self: center;" [@form-enter]>
+        <vs-verify [pending]="pending$ | async" [error]="error$ | async" [extra]="extra$ | async"></vs-verify>
+    </div>
+</div>
+

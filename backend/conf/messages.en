@@ -32,20 +32,20 @@ authorization.signup.success                         = Your account has been cre
 
 # Authorization before reset and validation messages
 
-authorization.before-reset.validation.failed               = Please check that you have entered valid credentials
-authorization.before-reset.validation.email.valid          = Valid email required
-authorization.before-reset.validation.email.minlength      = Email field should not be blank
-authorization.before-reset.validation.email.maxlength      = Email field is too long
-authorization.before-reset.success                         = Your request was accepted. If there is an account registered with this email, \
-                                                             you will receive a message with instructions on how to reset your password
+authorization.reset.validation.failed               = Please check that you have entered valid credentials
+authorization.reset.validation.email.valid          = Valid email required
+authorization.reset.validation.email.minlength      = Email field should not be blank
+authorization.reset.validation.email.maxlength      = Email field is too long
+authorization.reset.success                         = Your request was accepted. If there is an account registered with this email, \
+                                                      you will receive a message with instructions on how to reset your password
 
 # Authorization reset and validation messages
 
-authorization.reset.validation.failed               = Please check that you have entered valid credentials
-authorization.reset.validation.password.minlength   = Password length should be greater than {0}
-authorization.reset.validation.password.maxlength   = Password length should be less than {0}
-authorization.reset.validation.passwords.equal      = Passwords should be equal
-authorization.reset.success                         = Your password has been successfully changed
+authorization.change.validation.failed               = Please check that you have entered valid credentials
+authorization.change.validation.password.minlength   = Password length should be greater than {0}
+authorization.change.validation.password.maxlength   = Password length should be less than {0}
+authorization.change.validation.passwords.equal      = Passwords should be equal
+authorization.change.success                         = Your password has been successfully changed
 
 # Authorization verify and validation messages
 
