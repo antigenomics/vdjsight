@@ -15,6 +15,16 @@ interface SignupCredentials {
   readonly password2: string;
 }
 
+interface ResetCredentials {
+  readonly email: string;
+}
+
+interface ChangeCredentials {
+  readonly token: string;
+  readonly password1: string;
+  readonly password2: string;
+}
+
 interface VerifyCredentials {
   readonly token: string;
 }
@@ -25,6 +35,8 @@ interface VerifyCredentials {
 export class AuthorizationService {
   private static readonly LoginEndpoint: string  = '/auth/login/';
   private static readonly SignupEndpoint: string = '/auth/signup/';
+  private static readonly ResetEndpoint: string  = '/auth/reset/';
+  private static readonly ChangeEndpoint: string = '/auth/change/';
   private static readonly VerifyEndpoint: string = '/auth/verify/';
   private static readonly LogoutEndpoint: string = '/auth/logout/';
 
@@ -38,8 +50,15 @@ export class AuthorizationService {
     return this.backend.post<SignupCredentials, BackendMessageResponse>(AuthorizationService.SignupEndpoint, credentials);
   }
 
+  public reset<C extends ResetCredentials>(credentials: C): Observable<BackendMessageResponse> {
+    return this.backend.post<ResetCredentials, BackendMessageResponse>(AuthorizationService.ResetEndpoint, credentials);
+  }
+
+  public change<C extends ChangeCredentials>(credentials: C): Observable<BackendMessageResponse> {
+    return this.backend.post<ChangeCredentials, BackendMessageResponse>(AuthorizationService.ChangeEndpoint, credentials);
+  }
+
   public verify<C extends VerifyCredentials>(credentials: C): Observable<BackendMessageResponse> {
-    console.log(credentials);
     return this.backend.post<VerifyCredentials, BackendMessageResponse>(AuthorizationService.VerifyEndpoint, credentials);
   }
 

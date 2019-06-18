@@ -1,0 +1,29 @@
+<form class="ui form" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field"
+         [ngClass]="{ 'error': c.password1.dirty && c.password1.invalid || (c.password2.touched && c.password1.touched && form.hasError('equalPasswords')) }"
+         smoothHeight
+         [smoothTrigger]="c.password1.touched">
+        <label>Password</label>
+        <div class="ui left icon input">
+            <i class="lock icon"></i>
+            <input type="password" placeholder="Password" formControlName="password1">
+        </div>
+        <label class="right aligned error" *ngIf="c.password1.hasError('required')" [@label]>This field is required</label>
+    </div>
+    <div class="field"
+         [ngClass]="{ 'error': c.password2.dirty && c.password2.invalid || (c.password2.touched && c.password1.touched && form.hasError('equalPasswords')) }"
+         smoothHeight
+         [smoothTrigger]="c.password2.touched">
+        <label>Repeat your password</label>
+        <div class="ui left icon input">
+            <i class="lock icon"></i>
+            <input type="password" placeholder="Repeat password" formControlName="password2">
+        </div>
+        <label class="right aligned error" *ngIf="c.password2.hasError('required')" [@label]>This field is required</label>
+    </div>
+    <div class="no vertical padding field" [ngClass]="{ 'error': (c.password2.touched && c.password1.touched) && form.hasError('equalPasswords') }" smoothHeight
+         [smoothTrigger]="(c.password2.touched && c.password1.touched) && form.hasError('equalPasswords')">
+        <label class="right aligned error" *ngIf="form.hasError('equalPasswords')" [@label]>Passwords should be equal</label>
+    </div>
+    <button class="ui fluid large orange button" [disabled]="form.invalid">Change</button>
+</form>

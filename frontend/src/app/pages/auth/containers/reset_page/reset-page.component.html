@@ -1,0 +1,6 @@
+<div class="ui middle aligned center aligned auth grid">
+    <div class="five wide doubling column left aligned" style="align-self: center;" [@form-enter]>
+        <vs-reset [pending]="pending$ | async" [message]="message$ | async"
+                  [error]="error$ | async" [extra]="extra$ | async" (onSubmit)="onSubmit($event)"></vs-reset>
+    </div>
+</div>

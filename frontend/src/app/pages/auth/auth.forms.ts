@@ -12,4 +12,13 @@ export namespace AuthForms {
     readonly password2: string;
   }
 
+  export interface ResetForm {
+    readonly email: string;
+  }
+
+  export interface ChangeForm {
+    readonly password1: string;
+    readonly password2: string;
+  }
+
 }

@@ -1,0 +1,36 @@
+<div class="ui raised segments">
+    <div class="ui orange segment very padded" [ngClass]="{ 'loading': pending }">
+        <div class="ui one column grid">
+            <div class="ui column">
+                <h2 class="ui header">Reset</h2>
+            </div>
+            <div class="ui no vertical padding column" smoothHeight [smoothTrigger]="message">
+                <div class="ui message info" *ngIf="message">
+                    <div [@info-message]>
+                        {{ message }}
+                    </div>
+                </div>
+            </div>
+            <div class="ui no vertical padding column" smoothHeight [smoothTrigger]="error">
+                <div class="ui message error" *ngIf="error">
+                    <div [@error-message]>
+                        {{ error }}
+                        <ul *ngIf="extra">
+                            <li *ngFor="let e of extra">{{ e }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="ui column">
+                <vs-reset-form (onSubmit)="onSubmit.emit($event)"></vs-reset-form>
+            </div>
+        </div>
+    </div>
+    <div class="ui segment" *ngIf="!pending" [@footer]>
+        <p class="cursor pointer">
+            <a routerLink="/" rel="noopener">
+                Back to home
+            </a>
+        </p>
+    </div>
+</div>
