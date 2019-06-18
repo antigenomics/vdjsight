@@ -36,6 +36,7 @@
     "extendedDiagnostics": true,
     "paths": {
       "components/*"  : [ "src/app/components/*" ],
+      "directives/*"  : [ "src/app/directives/*" ],
       "pages/*"       : [ "src/app/pages/*" ],
       "services/*"    : [ "src/app/services/*" ],
       "models/*"      : [ "src/app/models/*" ],

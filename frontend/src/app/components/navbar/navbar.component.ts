@@ -16,10 +16,6 @@ export class NavigationBarComponent {
 
   constructor(private store: Store<RootModuleState>, private authorization: AuthorizationService) {}
 
-  public test_login(): void {
-    this.authorization.login('bvd@a', '123123').subscribe(() => this.store.dispatch(UserActions.login({ info: { email: 'bvd@a', login: '??' } })));
-  }
-
   public logout(): void {
     this.authorization.logout().subscribe(() => this.store.dispatch(UserActions.logout()));
   }

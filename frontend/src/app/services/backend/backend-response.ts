@@ -2,8 +2,12 @@ export interface BackendSuccessResponse<T> {
   data: T;
 }
 
+export interface BackendMessageResponse {
+  message: string;
+}
+
 export interface BackendErrorResponse {
-  message: string[];
+  error: string;
   extra?: string[];
 }
 

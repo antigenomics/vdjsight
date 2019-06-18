@@ -22,13 +22,13 @@ authorization.signup.validation.login.maxlength      = Login (user name) field i
 authorization.signup.validation.email.valid          = Valid email required
 authorization.signup.validation.email.minlength      = Email field should not be blank
 authorization.signup.validation.email.maxlength      = Email field is too long
-authorization.signup.validation.email.exist          = This email address has already been registered (use Reset page if you forgot your password)
-authorization.signup.validation.login.exist          = This login (user name) has already been registered (use Reset page if you forgot your password)
+authorization.signup.validation.email.exist          = This email address has already been registered
+authorization.signup.validation.login.exist          = This login (user name) has already been registered
 authorization.signup.validation.password.minlength   = Password length should be greater than {0}
 authorization.signup.validation.password.maxlength   = Password length should be less than {0}
 authorization.signup.validation.passwords.equal      = Passwords should be equal
 authorization.signup.success                         = Your account has been created. Please follow the verification \
-                                                       link in the email we've sent you to complete the registration process
+                                                       link in the email we have sent you to complete the registration process
 
 # Authorization before reset and validation messages
 

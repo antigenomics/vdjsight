@@ -7,7 +7,7 @@ import { UserActions } from 'models/user/user.action';
 import { Observable } from 'rxjs';
 import { catchError, flatMap, map, retryWhen, take } from 'rxjs/operators';
 import { BackendRequest, BackendRequestEndpoint, BackendRequestOptions, BackendRequestType } from './backend-request';
-import { BackendSuccessResponse } from './backend-response';
+import { BackendSuccessResponse, BackendErrorResponse } from './backend-response';
 import { HttpStatusCode } from './http-codes';
 import { RateLimiter } from './rate-limiter';
 import { retryStrategy } from './retry-strategy';
@@ -71,7 +71,8 @@ export class BackendService {
       if (error.status === HttpStatusCode.UNAUTHORIZED) {
         setTimeout(() => { this.store.dispatch(UserActions.logout()); });
       }
-      throw error;
+      console.log(error.error);
+      throw error.error as BackendErrorResponse;
     }));
   }
 

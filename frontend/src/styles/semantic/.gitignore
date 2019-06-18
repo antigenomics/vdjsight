@@ -1,0 +1,8 @@
+dist/*
+src/definitions/*
+src/themes/*
+src/semantic.less
+src/theme.config
+src/theme.less
+tasks/*
+gulpfile.js

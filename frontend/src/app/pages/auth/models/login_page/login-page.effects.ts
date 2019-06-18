@@ -7,15 +7,16 @@ import { from, of } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import { AccountService } from 'services/account/account.service';
 import { AuthorizationService } from 'services/authorization/authorization.service';
+import { BackendErrorResponse } from 'services/backend/backend-response';
 
 @Injectable()
 export class LoginPageEffects {
 
   public loginAttempt$ = createEffect(() => this.actions$.pipe(
     ofType(LoginPageActions.loginAttempt),
-    mergeMap((action) => this.authorization.login(action.form.email, action.form.password).pipe(
+    mergeMap((action) => this.authorization.login(action.form).pipe(
       map(() => LoginPageActions.loginSuccess()),
-      catchError(() => of(LoginPageActions.loginFailed({ error: 'error' }))))
+      catchError((error: BackendErrorResponse) => of(LoginPageActions.loginFailed(error))))
     ))
   );
 
@@ -30,6 +31,6 @@ export class LoginPageEffects {
   ));
 
   constructor(private readonly actions$: Actions, private authorization: AuthorizationService,
-              private readonly account: AccountService, private router: Router) {}
+              private readonly account: AccountService, private readonly router: Router) {}
 
 }

@@ -1,2 +1,6 @@
-privet
-<vs-login-form></vs-login-form>
+<div class="ui middle aligned center aligned auth grid">
+    <div class="column left aligned" style="max-width: 30%; align-self: center;" [@form-enter]>
+        <vs-login [pending]="pending$ | async" [message]="message$ | async" [error]="error$ | async" [extra]="extra$ | async"
+                  (onSubmit)="onSubmit($event)"></vs-login>
+    </div>
+</div>
