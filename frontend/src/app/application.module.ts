@@ -18,6 +18,7 @@ import { AboutPageModule } from 'pages/about/about.module';
 import { HomePageComponent } from 'pages/home/home.component';
 import { HomePageModule } from 'pages/home/home.module';
 import { ApplicationComponent } from './application.component';
+import { AuthorizedOnlyGuard } from './guards/authorized-only.guard';
 import { NonAuthorizedOnlyGuard } from './guards/non-authorized-only.guard';
 
 const ApplicationRouting = RouterModule.forRoot([
@@ -35,6 +36,14 @@ const ApplicationRouting = RouterModule.forRoot([
     canLoad:               [ NonAuthorizedOnlyGuard ],
     canActivate:           [ NonAuthorizedOnlyGuard ],
     data:                  { nonAuthorizedOnlyGuardFallbackURL: '/' },
+    runGuardsAndResolvers: 'always'
+  },
+  {
+    path:                  'projects',
+    loadChildren:          () => import('./pages/projects/projects.module').then((m) => m.ProjectsModule),
+    canLoad:               [ AuthorizedOnlyGuard ],
+    canActivate:           [ AuthorizedOnlyGuard ],
+    data:                  { authorizedOnlyGuardFallbackURL: '/auth/login' },
     runGuardsAndResolvers: 'always'
   }
 ], { onSameUrlNavigation: 'reload' });

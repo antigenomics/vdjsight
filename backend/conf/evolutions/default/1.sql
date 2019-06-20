@@ -30,14 +30,17 @@ create table "project_link"
 (
     uuid                    uuid    not null primary key,
     project_id              uuid    not null,
+    user_id                 uuid    not null,
     is_shared               boolean not null,
     is_upload_allowed       boolean not null,
     is_delete_allowed       boolean not null,
     is_modification_allowed boolean not null,
-    foreign key (project_id) REFERENCES "project" (uuid) on update cascade on delete restrict
+    foreign key (project_id) REFERENCES "project" (uuid) on update cascade on delete restrict,
+    foreign key (user_id) REFERENCES "user" (uuid) on update cascade on delete restrict
 );
 
 create index project_link_table_project_id_idx on "project_link" (project_id);
+create index project_link_table_user_id_idx on "project_link" (user_id);
 
 # --- !Downs
 

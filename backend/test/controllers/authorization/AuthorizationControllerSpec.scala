@@ -12,7 +12,7 @@ import scala.language.reflectiveCalls
 class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProviders with DatabaseUsers {
 
   "Authorization#login" should {
-    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/login/")
+    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/login")
 
     "forbid access on invalid method type" taggedAs ControllersTestTag in CheckForbiddenMethodTypesAccess(Seq(GET, PUT, PATCH, DELETE))
 
@@ -58,7 +58,7 @@ class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProvi
   }
 
   "Authorization#signup" should {
-    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/signup/")
+    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/signup")
 
     "forbid access on invalid method type" taggedAs ControllersTestTag in CheckForbiddenMethodTypesAccess(Seq(GET, PUT, PATCH, DELETE))
 
@@ -107,7 +107,7 @@ class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProvi
   }
 
   "Authorization#reset-request" should {
-    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/reset/")
+    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/reset")
 
     "forbid access on invalid method type" taggedAs ControllersTestTag in CheckForbiddenMethodTypesAccess(Seq(GET, PUT, PATCH, DELETE))
 
@@ -138,7 +138,7 @@ class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProvi
   }
 
   "Authorization#reset" should {
-    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/change/")
+    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/change")
 
     "forbid access on invalid method type" taggedAs ControllersTestTag in CheckForbiddenMethodTypesAccess(Seq(GET, PUT, PATCH, DELETE))
 
@@ -183,7 +183,7 @@ class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProvi
   }
 
   "Authorization#verify" should {
-    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/verify/")
+    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/verify")
 
     "forbid access on invalid method type" taggedAs ControllersTestTag in CheckForbiddenMethodTypesAccess(Seq(GET, PUT, PATCH, DELETE))
 
@@ -223,7 +223,7 @@ class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProvi
   }
 
   "Authorization#logout" should {
-    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/logout/")
+    implicit lazy val url: SuiteTestURL = SuiteTestURL("/auth/logout")
 
     "forbid access on invalid method type" taggedAs ControllersTestTag in CheckForbiddenMethodTypesAccess(Seq(GET, PUT, PATCH, DELETE))
 

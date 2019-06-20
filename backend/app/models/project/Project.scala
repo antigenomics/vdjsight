@@ -11,6 +11,7 @@ import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
 
+import scala.concurrent.Future
 import scala.language.higherKinds
 
 case class Project(uuid: UUID, name: String, ownerID: UUID, folder: String, maxFileSize: Long, maxFilesCount: Long)
@@ -56,4 +57,8 @@ class ProjectProvider @Inject()(@NamedDatabase("default") protected val dbConfig
   private final val projects = TableQuery[ProjectTable]
 
   def table: TableQuery[ProjectTable] = projects
+
+  def all: Future[Seq[Project]] = db.run(table.result)
+
+  def get(uuid: UUID): Future[Option[Project]] = db.run(table.filter(_.uuid === uuid).result.headOption)
 }

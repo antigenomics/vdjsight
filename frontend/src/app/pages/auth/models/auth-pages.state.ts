@@ -4,8 +4,8 @@ import { __fromChangePageReducers } from 'pages/auth/models/change_page/change-p
 import { __ChangePageState, __fromChangePageState } from 'pages/auth/models/change_page/change-page.state';
 import { __fromLoginPageReducers } from 'pages/auth/models/login_page/login-page.reducers';
 import { __fromLoginPageState, __LoginPageState } from 'pages/auth/models/login_page/login-page.state';
-import { __fromResetPageReducers } from 'pages/auth/models/reset-page/reset-page.reducers';
-import { __fromResetPageState, __ResetPageState } from 'pages/auth/models/reset-page/reset-page.state';
+import { __fromResetPageReducers } from 'pages/auth/models/reset_page/reset-page.reducers';
+import { __fromResetPageState, __ResetPageState } from 'pages/auth/models/reset_page/reset-page.state';
 import { __fromSignupPageReducers } from 'pages/auth/models/signup_page/signup-page.reducers';
 import { __fromSignupPageState, __SignupPageState } from 'pages/auth/models/signup_page/signup-page.state';
 import { __fromVerifyPageReducers } from 'pages/auth/models/verify_page/verify-page.reducers';

@@ -46,7 +46,7 @@ export namespace fromRoot {
   export const isUserStateInitialized      = createSelector(getUserState, __fromUserState.isInitialized);
   export const isUserStateInitializeFailed = createSelector(getUserState, __fromUserState.isInitializeFailed);
   export const isUserLoggedIn              = createSelector(getUserState, __fromUserState.isLoggedIn);
-  export const getUserInfo                 = createSelector(getUserState, __fromUserState.getInfo);
+  export const getUserCredentials          = createSelector(getUserState, __fromUserState.getUser);
 
   /** Router state selectors */
   const routerStateSelectors = getSelectors(getRouterState);

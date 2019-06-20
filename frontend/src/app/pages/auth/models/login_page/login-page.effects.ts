@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { ApplicationActions } from 'models/application/application.actions';
 import { UserActions } from 'models/user/user.actions';
 import { LoginPageActions } from 'pages/auth/models/login_page/login-page.actions';
-import { from, of } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
 import { AccountService } from 'services/account/account.service';
 import { AuthorizationService } from 'services/authorization/authorization.service';
 import { BackendErrorResponse } from 'services/backend/backend-response';
@@ -23,14 +23,15 @@ export class LoginPageEffects {
   public loginSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(LoginPageActions.loginSuccess),
     mergeMap(() => this.account.info().pipe(
-      mergeMap((info) => from(this.router.navigateByUrl('/')).pipe(
-        map(() => UserActions.login({ info }))
-      )),
+      switchMap((response) => [
+        UserActions.login({ user: response.user }),
+        ApplicationActions.restoreLastSavedURL({ fallbackURL: '/' })
+      ]),
       catchError(() => of(LoginPageActions.loginFailed({ error: 'Internal Server Error' })))
     ))
   ));
 
   constructor(private readonly actions$: Actions, private authorization: AuthorizationService,
-              private readonly account: AccountService, private readonly router: Router) {}
+              private readonly account: AccountService) {}
 
 }

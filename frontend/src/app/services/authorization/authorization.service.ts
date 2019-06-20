@@ -33,12 +33,12 @@ interface VerifyCredentials {
   providedIn: 'root'
 })
 export class AuthorizationService {
-  private static readonly LoginEndpoint: string  = '/auth/login/';
-  private static readonly SignupEndpoint: string = '/auth/signup/';
-  private static readonly ResetEndpoint: string  = '/auth/reset/';
-  private static readonly ChangeEndpoint: string = '/auth/change/';
-  private static readonly VerifyEndpoint: string = '/auth/verify/';
-  private static readonly LogoutEndpoint: string = '/auth/logout/';
+  private static readonly LoginEndpoint: string  = '/auth/login';
+  private static readonly SignupEndpoint: string = '/auth/signup';
+  private static readonly ResetEndpoint: string  = '/auth/reset';
+  private static readonly ChangeEndpoint: string = '/auth/change';
+  private static readonly VerifyEndpoint: string = '/auth/verify';
+  private static readonly LogoutEndpoint: string = '/auth/logout';
 
   constructor(private backend: BackendService) {}
 

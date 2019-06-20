@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { ResetPageActions } from 'pages/auth/models/reset-page/reset-page.actions';
+import { ResetPageActions } from 'pages/auth/models/reset_page/reset-page.actions';
 import { of } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import { AuthorizationService } from 'services/authorization/authorization.service';

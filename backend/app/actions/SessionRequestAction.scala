@@ -50,3 +50,13 @@ class SessionRequestAction @Inject()(implicit val ec: ExecutionContext, parsers:
     }
   }
 }
+
+case class SessionRequestWithUser[A](userID: UUID, request: Request[A]) extends WrappedRequest[A](request)
+
+class SessionRequestExtractUser @Inject()(implicit ec: ExecutionContext) extends ActionTransformer[SessionRequest, SessionRequestWithUser] {
+  override protected def executionContext: ExecutionContext = ec
+
+  override protected def transform[A](request: SessionRequest[A]): Future[SessionRequestWithUser[A]] = Future.successful {
+    SessionRequestWithUser(request.userID.get, request)
+  }
+}

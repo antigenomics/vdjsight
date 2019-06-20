@@ -27,7 +27,7 @@ export class UserEffects implements OnInitEffects {
     ofType(UserActions.initializeStart),
     mergeMap(() =>
       this.account.info().pipe(
-        map((info) => UserActions.initializeSuccess({ loggedIn: true, info: info })),
+        map((response) => UserActions.initializeSuccess({ loggedIn: true, user: response.user })),
         catchError((error: HttpErrorResponse) => {
           if (error.status === HttpStatusCode.UNAUTHORIZED) {
             return of(UserActions.initializeSuccess({ loggedIn: false }));

@@ -1,9 +1,10 @@
 package controllers.account.dto
 
-import play.api.libs.json.{Json, Format}
+import models.user.UserDTO
+import play.api.libs.json.{Format, Json}
 
-case class AccountInfoResponse(login: String, email: String)
+case class AccountInfoResponse(user: UserDTO)
 
 object AccountInfoResponse {
-    implicit final val accountInfoResponseFormat: Format[AccountInfoResponse] = Json.format[AccountInfoResponse]
+  implicit final val accountInfoResponseFormat: Format[AccountInfoResponse] = Json.format[AccountInfoResponse]
 }

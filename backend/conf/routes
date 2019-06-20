@@ -3,10 +3,11 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-->         /account             controllers.account.AccountRouter
-->         /auth                controllers.authorization.AuthorizationRouter
+->         /account                  controllers.account.AccountRouter
+->         /auth                     controllers.authorization.AuthorizationRouter
+->         /projects/overview        controllers.projects.overview.ProjectsOverviewRouter
 
-GET        /ping/               controllers.CommonController.ping
+GET        /ping                     controllers.CommonController.ping
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file        controllers.Assets.versioned(path="/public", file: Asset)
+GET        /assets/*file             controllers.Assets.versioned(path="/public", file: Asset)

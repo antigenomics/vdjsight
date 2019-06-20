@@ -1,7 +1,7 @@
 <div class="ui segment" *ngIf="(isUserStateInitialized$ | async); else fetching">
     Very cool navigation bar |
     <div *ngIf="(isUserLoggedIn$ | async); else notLoggedIn">
-        Logged as cool: {{ userInfo$ | async }}
+        Logged as cool: {{ userCredentials$ | async | json }}
         <button (click)="logout()">Logout</button>
     </div>
     <ng-template #notLoggedIn>

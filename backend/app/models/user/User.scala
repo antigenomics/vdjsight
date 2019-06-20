@@ -9,6 +9,7 @@ import io.github.nremond.SecureHash
 import models.token.{ResetTokenProvider, VerificationTokenProvider}
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
+import play.api.libs.json.{Format, Json}
 import play.db.NamedDatabase
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._

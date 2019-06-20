@@ -12,7 +12,7 @@ import { AuthorizationService } from 'services/authorization/authorization.servi
 export class NavigationBarComponent {
   public readonly isUserStateInitialized$ = this.store.pipe(select(fromRoot.isUserStateInitialized));
   public readonly isUserLoggedIn$         = this.store.pipe(select(fromRoot.isUserLoggedIn));
-  public readonly userInfo$               = this.store.pipe(select(fromRoot.getUserInfo));
+  public readonly userCredentials$        = this.store.pipe(select(fromRoot.getUserCredentials));
 
   constructor(private store: Store<RootModuleState>, private authorization: AuthorizationService) {}
 

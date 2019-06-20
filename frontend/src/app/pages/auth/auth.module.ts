@@ -17,7 +17,7 @@ import { VerifyPageModule } from 'pages/auth/containers/verify_page/verify-page.
 import { AuthPagesModuleReducers } from 'pages/auth/models/auth-pages.state';
 import { ChangePageEffects } from 'pages/auth/models/change_page/change-page.effects';
 import { LoginPageEffects } from 'pages/auth/models/login_page/login-page.effects';
-import { ResetPageEffects } from 'pages/auth/models/reset-page/reset-page.effects';
+import { ResetPageEffects } from 'pages/auth/models/reset_page/reset-page.effects';
 import { SignupPageEffects } from 'pages/auth/models/signup_page/signup-page.effects';
 import { VerifyPageEffects } from 'pages/auth/models/verify_page/verify-page.effects';
 

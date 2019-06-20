@@ -6,11 +6,11 @@ import { __fromUserState, __UserState } from 'models/user/user.state';
 const userReducer = createReducer(
   __fromUserState.initial,
   on(UserActions.initializeStart, () => ({ initialized: false, initializeFailed: false, loggedIn: false })),
-  on(UserActions.initializeSuccess, (_, payload) => ({ initialized: true, initializeFailed: false, loggedIn: payload.loggedIn, info: payload.info })),
+  on(UserActions.initializeSuccess, (_, payload) => ({ initialized: true, initializeFailed: false, loggedIn: payload.loggedIn, user: payload.user })),
   on(UserActions.initializeFailed, () => ({ initialized: true, initializeFailed: true, loggedIn: false })),
   on(UserActions.login, (state, payload) => produce(state, (draft) => {
     draft.loggedIn = true;
-    draft.info     = payload.info;
+    draft.user     = payload.user;
   })),
   on(UserActions.logout, (state) => produce(state, (draft) => {
     draft.loggedIn = false;

@@ -1,6 +1,6 @@
 import { Action, createReducer, on } from '@ngrx/store';
-import { ResetPageActions } from 'pages/auth/models/reset-page/reset-page.actions';
-import { __fromResetPageState, __ResetPageState } from 'pages/auth/models/reset-page/reset-page.state';
+import { ResetPageActions } from 'pages/auth/models/reset_page/reset-page.actions';
+import { __fromResetPageState, __ResetPageState } from 'pages/auth/models/reset_page/reset-page.state';
 
 const resetReducer = createReducer(
   __fromResetPageState.initial,

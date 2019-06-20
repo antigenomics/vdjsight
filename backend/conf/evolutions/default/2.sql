@@ -15,14 +15,19 @@ create table "sample_file"
 
 create index sample_file_table_owner_id_idx on "sample_file" (owner_id);
 
+-- noinspection SqlResolve
+
 create table "sample_file_link"
 (
-    uuid      uuid not null primary key,
-    sample_id uuid not null,
-    foreign key (sample_id) references "sample_file" (uuid) on update cascade on delete restrict
+    uuid       uuid not null primary key,
+    sample_id  uuid not null,
+    project_id uuid not null,
+    foreign key (sample_id) references "sample_file" (uuid) on update cascade on delete restrict,
+    foreign key (project_id) references "project" (uuid) on update cascade on delete restrict
 );
 
 create index sample_file_link_table_sample_id_idx on "sample_file_link" (sample_id);
+create index sample_file_link_table_project_id_idx on "sample_file_link" (project_id);
 
 # --- !Downs
 

@@ -4,7 +4,7 @@ import { select, Store } from '@ngrx/store';
 import { FormEnterAnimation } from 'pages/auth/animations/form-enter.animation';
 import { AuthForms } from 'pages/auth/auth.forms';
 import { AuthPagesModuleState, fromAuth } from 'pages/auth/models/auth-pages.state';
-import { ResetPageActions } from 'pages/auth/models/reset-page/reset-page.actions';
+import { ResetPageActions } from 'pages/auth/models/reset_page/reset-page.actions';
 
 @Component({
   selector:        'vs-reset-page',

@@ -95,9 +95,9 @@ export class BackendService {
   private static endpointToURL(endpoint: BackendRequestEndpoint): string {
     let url = '';
     if (typeof endpoint === 'string') {
-      url = `/${endpoint}/`;
+      url = `/${endpoint}`;
     } else if (Array.isArray(endpoint)) {
-      url = `/${endpoint.concat('/')}/`;
+      url = `/${endpoint.concat('/')}`;
     } else {
       const query = Object.entries(endpoint.params).map(([ key, val ]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`).join('&');
       url         = `/${endpoint.segments.concat('/')}?${query}`;
