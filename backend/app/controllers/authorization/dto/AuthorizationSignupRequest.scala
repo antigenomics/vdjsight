@@ -18,24 +18,24 @@ object AuthorizationSignupRequest {
   implicit def authorizationSignupRequestReads(implicit messages: Messages): Reads[AuthorizationSignupRequest] = {
 
     val login = (JsPath \ "login").read[String](
-      minLength(min = 1, error = "authorization.signup.validation.login.minlength") keepAnd
-        maxLength(max = LOGIN_MAX_LENGTH, error = "authorization.signup.validation.login.maxlength")
+      minLength(min = 1, error                = "authorization.signup.validation.login.minlength") keepAnd
+      maxLength(max = LOGIN_MAX_LENGTH, error = "authorization.signup.validation.login.maxlength")
     )
 
     val email = (JsPath \ "email").read[String](
       validEmail(error = "authorization.signup.validation.email.valid") keepAnd
-        minLength(min = 1, error = "authorization.signup.validation.email.minlength") keepAnd
-        maxLength(max = EMAIL_MAX_LENGTH, error = "authorization.signup.validation.email.maxlength")
+      minLength(min    = 1, error = "authorization.signup.validation.email.minlength") keepAnd
+      maxLength(max    = EMAIL_MAX_LENGTH, error = "authorization.signup.validation.email.maxlength")
     )
 
     val password1 = (JsPath \ "password1").read[String](
       minLength(min = PASSWORD_MIN_LENGTH, error = "authorization.signup.validation.password.minlength") keepAnd
-        maxLength(max = PASSWORD_MAX_LENGTH, error = "authorization.signup.validation.password.maxlength")
+      maxLength(max = PASSWORD_MAX_LENGTH, error = "authorization.signup.validation.password.maxlength")
     )
 
     val password2 = (JsPath \ "password2").read[String](
       minLength(min = PASSWORD_MIN_LENGTH, error = "authorization.signup.validation.password.minlength") keepAnd
-        maxLength(max = PASSWORD_MAX_LENGTH, error = "authorization.signup.validation.password.maxlength")
+      maxLength(max = PASSWORD_MAX_LENGTH, error = "authorization.signup.validation.password.maxlength")
     )
 
     val schema = login and email and password1 and password2

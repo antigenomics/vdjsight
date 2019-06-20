@@ -13,18 +13,38 @@ create table "user"
     password varchar(255) not null
 );
 
+create table "user_permissions"
+(
+    uuid               uuid   not null primary key,
+    user_id            uuid   not null unique,
+    max_projects_count bigint not null,
+    max_samples_count  bigint not null,
+    max_sample_size    bigint not null,
+    foreign key (user_id) references "user" (uuid) on update cascade on delete cascade
+);
+
+create index user_permissions_table_user_id_idx on "user_permissions" (user_id);
+
 create table "project"
 (
-    uuid            uuid         not null primary key,
-    name            varchar(255) not null,
-    owner_id        uuid         not null,
-    folder          varchar(510) not null unique,
-    max_file_size   bigint       not null,
-    max_files_count bigint       not null,
+    uuid     uuid         not null primary key,
+    name     varchar(255) not null,
+    owner_id uuid         not null,
     foreign key (owner_id) references "user" (uuid) on update cascade on delete restrict
 );
 
 create index project_table_owner_index on "project" (owner_id);
+
+create table "project_permissions"
+(
+    uuid            uuid         not null primary key,
+    project_id      uuid         not null unique,
+    folder          varchar(510) not null unique,
+    max_files_count bigint       not null,
+    foreign key (project_id) references "project" (uuid) on update cascade on delete cascade
+);
+
+create index project_permissions_table_project_id_idx on "project_permissions" (project_id);
 
 create table "project_link"
 (
@@ -44,10 +64,17 @@ create index project_link_table_user_id_idx on "project_link" (user_id);
 
 # --- !Downs
 
+drop index project_link_table_user_id_idx;
 drop index project_link_table_project_id_idx;
 drop table "project_link";
 
+drop index project_permissions_table_project_id_idx;
+drop table "project_permissions";
+
 drop index project_table_owner_index;
 drop table "project";
+
+drop index user_permissions_table_user_id_idx;
+drop table "user_permissions";
 
 drop table "user";

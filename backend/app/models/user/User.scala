@@ -9,7 +9,6 @@ import io.github.nremond.SecureHash
 import models.token.{ResetTokenProvider, VerificationTokenProvider}
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import play.api.libs.json.{Format, Json}
 import play.db.NamedDatabase
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
@@ -38,10 +37,10 @@ object UserTable {
 trait UserProviderEvent
 
 object UserProviderEvents {
-  case class UserCreated(uuid: UUID)  extends UserProviderEvent
+  case class UserCreated(uuid: UUID) extends UserProviderEvent
   case class UserVerified(uuid: UUID) extends UserProviderEvent
-  case class UserReset(uuid: UUID)    extends UserProviderEvent
-  case class UserDeleted(uuid: UUID)  extends UserProviderEvent
+  case class UserReset(uuid: UUID) extends UserProviderEvent
+  case class UserDeleted(uuid: UUID) extends UserProviderEvent
 }
 
 @Singleton
@@ -49,13 +48,13 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
     extends HasDatabaseConfigProvider[JdbcProfile]
     with EventStreaming[UserProviderEvent] {
 
-  private final val logger      = LoggerFactory.getLogger(this.getClass)
-  private final val actorSystem = ActorSystem.create("UserProviderActorSystem")
-  private final val eventStream = actorSystem.eventStream
+  final private val logger      = LoggerFactory.getLogger(this.getClass)
+  final private val actorSystem = ActorSystem.create("UserProviderActorSystem")
+  final private val eventStream = actorSystem.eventStream
 
   import dbConfig.profile.api._
 
-  private final val users = TableQuery[UserTable]
+  final private val users = TableQuery[UserTable]
 
   def subscribe(subscriber: ActorRef): Unit = eventStream.subscribe(subscriber, classOf[UserProviderEvent])
 

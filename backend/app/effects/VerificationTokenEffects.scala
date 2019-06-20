@@ -33,9 +33,9 @@ class VerificationTokenEffectsActor(up: UserProvider, vtp: VerificationTokenProv
 
 @Singleton
 class VerificationTokenEffects @Inject()(lifecycle: ApplicationLifecycle, actorSystem: ActorSystem, up: UserProvider, vtp: VerificationTokenProvider)(
-    implicit ec: ExecutionContext)
-    extends AbstractEffects[VerificationTokenProviderEvent](lifecycle) {
-  override final lazy val effects = actorSystem.actorOf(VerificationTokenEffectsActor.props(up, vtp), "verification-token-effects-actor")
+  implicit ec: ExecutionContext
+) extends AbstractEffects[VerificationTokenProviderEvent](lifecycle) {
+  final override lazy val effects = actorSystem.actorOf(VerificationTokenEffectsActor.props(up, vtp), "verification-token-effects-actor")
 
   override def stream: EventStreaming[VerificationTokenProviderEvent] = vtp
 }

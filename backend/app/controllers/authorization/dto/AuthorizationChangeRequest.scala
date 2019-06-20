@@ -21,12 +21,12 @@ object AuthorizationChangeRequest {
 
     val password1 = (JsPath \ "password1").read[String](
       minLength(min = PASSWORD_MIN_LENGTH, error = "authorization.change.validation.password.minlength") keepAnd
-        maxLength(max = PASSWORD_MAX_LENGTH, error = "authorization.change.validation.password.maxlength")
+      maxLength(max = PASSWORD_MAX_LENGTH, error = "authorization.change.validation.password.maxlength")
     )
 
     val password2 = (JsPath \ "password2").read[String](
       minLength(min = PASSWORD_MIN_LENGTH, error = "authorization.change.validation.password.minlength") keepAnd
-        maxLength(max = PASSWORD_MAX_LENGTH, error = "authorization.change.validation.password.maxlength")
+      maxLength(max = PASSWORD_MAX_LENGTH, error = "authorization.change.validation.password.maxlength")
     )
 
     val schema = token and password1 and password2

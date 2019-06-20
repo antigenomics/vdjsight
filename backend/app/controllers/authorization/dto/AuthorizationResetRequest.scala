@@ -16,8 +16,8 @@ object AuthorizationResetRequest {
     (JsPath \ "email")
       .read[String](
         validEmail(error = "authorization.reset.validation.email.valid") keepAnd
-          minLength(min = 1, error = "authorization.reset.validation.email.minlength") keepAnd
-          maxLength(max = EMAIL_MAX_LENGTH, error = "authorization.reset.validation.email.maxlength")
+        minLength(min    = 1, error = "authorization.reset.validation.email.minlength") keepAnd
+        maxLength(max    = EMAIL_MAX_LENGTH, error = "authorization.reset.validation.email.maxlength")
       )
       .map(AuthorizationResetRequest.apply)
   }

@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext
 class AccountController @Inject()(cc: ControllerComponents, session: SessionRequestAction)(implicit ec: ExecutionContext, up: UserProvider)
     extends AbstractController(cc) {
 
-  private implicit final val logger: Logger = LoggerFactory.getLogger(this.getClass)
+  implicit final private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   private def accountAction = session andThen session.authorizedOnly
 

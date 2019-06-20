@@ -7,9 +7,9 @@ import traits.TestApplication
 import scala.concurrent.ExecutionContext
 
 abstract class BaseTestSpecWithApplication extends BaseTestSpec with TestApplication {
-  lazy private implicit val _application: Application = new GuiceApplicationBuilder().in(Mode.Test).build()
+  implicit private lazy val _application: Application = new GuiceApplicationBuilder().in(Mode.Test).build()
 
-  lazy implicit val ec: ExecutionContext = _application.injector.instanceOf[ExecutionContext]
+  implicit lazy val ec: ExecutionContext = _application.injector.instanceOf[ExecutionContext]
 
   def application: Application = _application
 }

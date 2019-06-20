@@ -33,18 +33,19 @@ object AuthorizationControllerConfiguration {
 
 @Singleton
 class AuthorizationController @Inject()(cc: ControllerComponents, session: SessionRequestAction, messagesAPI: MessagesApi, conf: Configuration)(
-    implicit ec: ExecutionContext,
-    up: UserProvider,
-    vtp: VerificationTokenProvider,
-    rtp: ResetTokenProvider)
-    extends AbstractController(cc) {
+  implicit ec: ExecutionContext,
+  up: UserProvider,
+  vtp: VerificationTokenProvider,
+  rtp: ResetTokenProvider
+) extends AbstractController(cc) {
 
-  private implicit final val logger: Logger                                      = LoggerFactory.getLogger(this.getClass)
-  private implicit final val messages: Messages                                  = messagesAPI.preferred(Seq(Lang.defaultLang))
-  private implicit final val configuration: AuthorizationControllerConfiguration = conf.get[AuthorizationControllerConfiguration]("application.auth.controller")
+  implicit final private val logger: Logger                                      = LoggerFactory.getLogger(this.getClass)
+  implicit final private val messages: Messages                                  = messagesAPI.preferred(Seq(Lang.defaultLang))
+  implicit final private val configuration: AuthorizationControllerConfiguration = conf.get[AuthorizationControllerConfiguration]("application.auth.controller")
 
-  private def authorizationAction[J](error: String = "Request validation failed")(block: (SessionRequest[JsValue], J) => Future[Result])(
-      implicit reads: Reads[J]) =
+  private def authorizationAction[J](
+    error: String = "Request validation failed"
+  )(block: (SessionRequest[JsValue], J) => Future[Result])(implicit reads: Reads[J]) =
     DelayedAction(configuration.delay milliseconds) {
       WithRecoverAction {
         (session andThen session.unauthorizedOnly)(parse.json).async { implicit request =>

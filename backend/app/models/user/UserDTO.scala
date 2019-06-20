@@ -4,7 +4,10 @@ import play.api.libs.json.{Format, Json}
 
 import scala.concurrent.ExecutionContext
 
-case class UserDTO(login: String, email: String)
+case class UserDTO(
+  login: String,
+  email: String
+)
 
 object UserDTO {
   implicit val userDTOFormat: Format[UserDTO] = Json.format[UserDTO]

@@ -9,7 +9,11 @@ import scala.concurrent.Future
 class EffectsModule extends AbstractModule {
   override def configure(): Unit = {
     bind(classOf[UserEffects]).asEagerSingleton()
+    bind(classOf[UserPermissionsEffects]).asEagerSingleton()
     bind(classOf[VerificationTokenEffects]).asEagerSingleton()
+    bind(classOf[ResetTokenEffects]).asEagerSingleton()
+    bind(classOf[ProjectEffects]).asEagerSingleton()
+    bind(classOf[ProjectPermissionsEffects]).asEagerSingleton()
   }
 }
 

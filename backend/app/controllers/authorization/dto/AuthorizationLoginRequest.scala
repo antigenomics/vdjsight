@@ -15,7 +15,7 @@ object AuthorizationLoginRequest {
 
     val email = (JsPath \ "email").read[String](
       validEmail(error = "authorization.login.validation.email.valid") keepAnd
-        minLength(min = 1, error = "authorization.login.validation.email.minlength")
+      minLength(min    = 1, error = "authorization.login.validation.email.minlength")
     )
 
     val password = (JsPath \ "password").read[String](

@@ -32,7 +32,7 @@ class SampleFileLinkTable(tag: Tag)(implicit sfp: SampleFileProvider, pp: Projec
     onDelete = ForeignKeyAction.Restrict
   )
 
-  def sample_id_idx  = index("sample_file_link_table_sample_id_idx", sampleID, unique = false)
+  def sample_id_idx  = index("sample_file_link_table_sample_id_idx", sampleID, unique   = false)
   def project_id_idx = index("sample_file_link_table_project_id_idx", projectID, unique = false)
 }
 
@@ -41,9 +41,10 @@ object SampleFileLinkTable {
 }
 
 @Singleton
-class SampleFileLinkProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider)(implicit sfp: SampleFileProvider,
-                                                                                                                         pp: ProjectProvider)
-    extends HasDatabaseConfigProvider[JdbcProfile] {
+class SampleFileLinkProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider)(
+  implicit sfp: SampleFileProvider,
+  pp: ProjectProvider
+) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   private final val logger = LoggerFactory.getLogger(this.getClass)
 

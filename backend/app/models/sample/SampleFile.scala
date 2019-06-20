@@ -45,11 +45,11 @@ object SampleFileTable {
 class SampleFileProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider)(implicit up: UserProvider)
     extends HasDatabaseConfigProvider[JdbcProfile] {
 
-  private final val logger = LoggerFactory.getLogger(this.getClass)
+  final private val logger = LoggerFactory.getLogger(this.getClass)
 
   import dbConfig.profile.api._
 
-  private final val samples = TableQuery[SampleFileTable]
+  final private val samples = TableQuery[SampleFileTable]
 
   def table: TableQuery[SampleFileTable] = samples
 }

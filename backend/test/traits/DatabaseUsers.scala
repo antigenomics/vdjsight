@@ -18,8 +18,8 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders {
   private def generateNotExistingUser: TestUser = {
     val uuid = UUID.randomUUID()
     val credentials = TestUserCredentials(
-      login = "tokens-test-not-existing",
-      email = "tokens-test-not-existing@mail.com",
+      login    = "tokens-test-not-existing",
+      email    = "tokens-test-not-existing@mail.com",
       password = "tokens-test-not-existing"
     )
 
@@ -36,8 +36,8 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders {
 
   private def generateNotVerifiedUser: TestUser = {
     val credentials = TestUserCredentials(
-      login = "tokens-test-not-verified",
-      email = "tokens-test-not-verified@mail.com",
+      login    = "tokens-test-not-verified",
+      email    = "tokens-test-not-verified@mail.com",
       password = "tokens-test-not-verified"
     )
 
@@ -64,8 +64,8 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders {
 
   private def generateVerifiedUser: TestUser = {
     val credentials = TestUserCredentials(
-      login = "tokens-test-verified",
-      email = "tokens-test-verified@mail.com",
+      login    = "tokens-test-verified",
+      email    = "tokens-test-verified@mail.com",
       password = "tokens-test-verified"
     )
 
@@ -109,14 +109,17 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders {
   private var _verifiedUser: Option[TestUser]    = None
 
   final val users = new {
+
     def notExistingUser(implicit up: UserProvider): TestUser = _notExistingUser.getOrElse {
       _notExistingUser = Some(generateNotExistingUser)
       _notExistingUser.get
     }
+
     def notVerifiedUser(implicit up: UserProvider): TestUser = _notVerifiedUser.getOrElse {
       _notVerifiedUser = Some(generateNotVerifiedUser)
       _notVerifiedUser.get
     }
+
     def verifiedUser(implicit up: UserProvider, vtp: VerificationTokenProvider): TestUser = _verifiedUser.getOrElse {
       _verifiedUser = Some(generateVerifiedUser)
       _verifiedUser.get

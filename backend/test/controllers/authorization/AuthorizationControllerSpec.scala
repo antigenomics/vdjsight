@@ -85,7 +85,7 @@ class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProvi
         "Empty password1"     -> Map("login" -> neuc.login, "email" -> neuc.email, "password1" -> "", "password2" -> neuc.password),
         "Empty password2"     -> Map("login" -> neuc.login, "email" -> neuc.email, "password1" -> neuc.password, "password2" -> ""),
         "Invalid email"       -> Map("email" -> "invalid", "login" -> neuc.login, "password1" -> neuc.password, "password2" -> neuc.password),
-        "Different passwords" -> Map("email" -> neuc.email, "login" -> neuc.login, "password1" -> (neuc.password + "_"), "password2" -> neuc.password),
+        "Different passwords" -> Map("email" -> neuc.email, "login" -> neuc.login, "password1" -> (neuc.password + "_"), "password2" -> neuc.password)
       )
     }
 
@@ -124,7 +124,7 @@ class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProvi
       Seq(
         "Missing email" -> Map(),
         "Empty email"   -> Map("email" -> ""),
-        "Invalid email" -> Map("email" -> "invalid"),
+        "Invalid email" -> Map("email" -> "invalid")
       )
     }
 
@@ -161,7 +161,7 @@ class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProvi
         "Empty password1"     -> Map("token" -> UUID.randomUUID().toString, "password1" -> "", "password2" -> "1234567890"),
         "Empty password2"     -> Map("token" -> UUID.randomUUID().toString, "password1" -> "1234567890", "password2" -> ""),
         "Invalid token"       -> Map("token" -> "1234", "password1" -> "1234567890", "password2" -> "1234567890"),
-        "Different passwords" -> Map("token" -> UUID.randomUUID().toString, "password1" -> "1234567890", "password2" -> "0987654321"),
+        "Different passwords" -> Map("token" -> UUID.randomUUID().toString, "password1" -> "1234567890", "password2" -> "0987654321")
       )
     }
 

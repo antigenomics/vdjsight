@@ -67,6 +67,7 @@ javaOptions in Test ++= Seq(
     "-Dslick.dbs.default.db.url=jdbc:h2:mem:play;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_UPPER=FALSE;DATABASE_TO_LOWER=TRUE",
     "-Dapplication.temporary.interval=0",
     "-Dapplication.auth.verification.method=noop",
+    "-Dapplication.auth.reset.method=noop",
     "-Dapplication.auth.controller.delay=0 seconds"
 )
 

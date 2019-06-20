@@ -15,26 +15,27 @@ import server.ServerResponse
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ProjectsOverviewController @Inject()(cc: ControllerComponents, session: SessionRequestAction, messagesAPI: MessagesApi)(implicit ec: ExecutionContext,
-                                                                                                                              up: UserProvider,
-                                                                                                                              plp: ProjectLinkProvider)
-    extends AbstractController(cc) {
+class ProjectsOverviewController @Inject()(cc: ControllerComponents, session: SessionRequestAction, messagesAPI: MessagesApi)(
+  implicit ec: ExecutionContext,
+  up: UserProvider,
+  plp: ProjectLinkProvider
+) extends AbstractController(cc) {
 
-  private implicit final val logger: Logger     = LoggerFactory.getLogger(this.getClass)
-  private implicit final val messages: Messages = messagesAPI.preferred(Seq(Lang.defaultLang))
+  implicit final private val logger: Logger     = LoggerFactory.getLogger(this.getClass)
+  implicit final private val messages: Messages = messagesAPI.preferred(Seq(Lang.defaultLang))
 
   private def projectsOverviewAction(block: SessionRequest[JsValue] => Future[Result]) =
     WithRecoverAction {
-      (session andThen session.unauthorizedOnly)(parse.json).async(block)
+      (session andThen session.authorizedOnly)(parse.json).async(block)
     }
 
-  private def projectsOverviewActionWithValidate[J](error: String = "Request validation failed")(block: (SessionRequest[JsValue], J) => Future[Result])(
-      implicit reads: Reads[J]) =
-    projectsOverviewAction { implicit request =>
-      ControllerHelpers.validateRequest[J](error) { value =>
-        block(request, value)
-      }
+  private def projectsOverviewActionWithValidate[J](
+    error: String = "Request validation failed"
+  )(block: (SessionRequest[JsValue], J) => Future[Result])(implicit reads: Reads[J]) = projectsOverviewAction { implicit request =>
+    ControllerHelpers.validateRequest[J](error) { value =>
+      block(request, value)
     }
+  }
 
   def list: Action[JsValue] = projectsOverviewAction { implicit request =>
     plp.findForUserWithProject(request.userID.get).map { projects =>

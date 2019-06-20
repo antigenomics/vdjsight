@@ -27,7 +27,7 @@ class ResetTokenEffectsActor()(implicit ec: ExecutionContext) extends Actor {
 class ResetTokenEffects @Inject()(lifecycle: ApplicationLifecycle, actorSystem: ActorSystem, rtp: ResetTokenProvider)(implicit ec: ExecutionContext)
     extends AbstractEffects[ResetTokenProviderEvent](lifecycle) {
 
-  override final lazy val effects = actorSystem.actorOf(ResetTokenEffectsActor.props, "reset-token-effects-actor")
+  final override lazy val effects = actorSystem.actorOf(ResetTokenEffectsActor.props, "reset-token-effects-actor")
 
   override def stream: EventStreaming[ResetTokenProviderEvent] = rtp
 }

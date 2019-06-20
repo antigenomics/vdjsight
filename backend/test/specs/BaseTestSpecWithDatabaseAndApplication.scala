@@ -6,7 +6,7 @@ import play.api.db.{DBApi, Database}
 import traits.TestDatabase
 
 abstract class BaseTestSpecWithDatabaseAndApplication extends BaseTestSpecWithApplication with TestDatabase with BeforeAndAfterAll {
-  lazy private implicit val _database: Database = application.injector.instanceOf[DBApi].database(databaseName)
+  implicit private lazy val _database: Database = application.injector.instanceOf[DBApi].database(databaseName)
 
   def database: Database = _database
 

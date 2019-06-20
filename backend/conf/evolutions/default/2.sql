@@ -31,6 +31,7 @@ create index sample_file_link_table_project_id_idx on "sample_file_link" (projec
 
 # --- !Downs
 
+drop index sample_file_link_table_project_id_idx;
 drop index sample_file_link_table_sample_id_idx;
 drop table "sample_file_link";
 

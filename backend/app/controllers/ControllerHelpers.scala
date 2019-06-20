@@ -26,8 +26,9 @@ case class WithRecoverAction[A](action: Action[A]) extends Action[A] with Loggin
 
 object ControllerHelpers {
 
-  def validateRequest[A](error: String = "Request validation failed")(
-      block: A => Future[Result])(implicit request: Request[JsValue], messages: Messages, reads: Reads[A], ec: ExecutionContext): Future[Result] = {
+  def validateRequest[A](
+    error: String = "Request validation failed"
+  )(block: A => Future[Result])(implicit request: Request[JsValue], messages: Messages, reads: Reads[A], ec: ExecutionContext): Future[Result] = {
     request.body.validate[A] match {
       case JsError(errors) =>
         Future.successful(BadRequest(ServerResponseError(error, extra = Some(errors.map(e => messages(e._2.head.message)).distinct))))

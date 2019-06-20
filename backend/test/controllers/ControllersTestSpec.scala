@@ -5,7 +5,7 @@ import org.scalatest.Assertion
 import play.api.http.Writeable
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result, Results}
+import play.api.mvc.{AnyContentAsEmpty, Result, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import specs.BaseTestSpecWithDatabaseAndApplication
@@ -13,11 +13,11 @@ import specs.BaseTestSpecWithDatabaseAndApplication
 import scala.concurrent.Future
 
 abstract class ControllersTestSpec extends BaseTestSpecWithDatabaseAndApplication with Results {
-  lazy implicit val messagesApi: MessagesApi = application.injector.instanceOf[MessagesApi]
-  lazy implicit val messages: Messages       = messagesApi.preferred(Seq(Lang.defaultLang))
-  lazy implicit val mat: Materializer        = application.injector.instanceOf[Materializer]
+  implicit lazy val messagesApi: MessagesApi = application.injector.instanceOf[MessagesApi]
+  implicit lazy val messages: Messages       = messagesApi.preferred(Seq(Lang.defaultLang))
+  implicit lazy val mat: Materializer        = application.injector.instanceOf[Materializer]
 
-  def FakeEmptyRequest(method: String)(implicit url: SuiteTestURL) = FakeRequest(method, url.url)
+  def FakeEmptyRequest(method: String)(implicit url: SuiteTestURL): FakeRequest[AnyContentAsEmpty.type] = FakeRequest(method, url.url)
 
   def FakeJsonRequest(body: String, method: String)(implicit url: SuiteTestURL): FakeRequest[JsValue] =
     FakeRequest(method, url.url).withHeaders("Content-type" -> "application/json").withBody(Json.parse(body))
@@ -69,5 +69,6 @@ abstract class ControllersTestSpec extends BaseTestSpecWithDatabaseAndApplicatio
   }
 
   def VerifyFutureInputRequest(method: String, expectedStatus: Int)(constraints: Future[Seq[(String, Map[String, String])]])(
-      implicit url: SuiteTestURL): Future[Assertion] = constraints.map(c => VerifyInputRequest(method, expectedStatus)(c))
+    implicit url: SuiteTestURL
+  ): Future[Assertion] = constraints.map(c => VerifyInputRequest(method, expectedStatus)(c))
 }

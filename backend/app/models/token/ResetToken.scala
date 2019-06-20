@@ -29,6 +29,7 @@ import scala.util.Failure
 
 object ResetMethod extends Enumeration {
   type ResetMethod = Value
+
   val EMAIL: token.ResetMethod.Value   = Value("email")
   val CONSOLE: token.ResetMethod.Value = Value("console")
   val NOOP: token.ResetMethod.Value    = Value("noop")
@@ -50,9 +51,9 @@ object ResetTokenConfiguration {
   implicit val resetTokenConfigurationLoader: ConfigLoader[ResetTokenConfiguration] = (root: Config, path: String) => {
     val config = root.getConfig(path)
     ResetTokenConfiguration(
-      method = ResetMethod.convert(config.getString("method")),
-      link = config.getString("link"),
-      keep = config.getDuration("keep"),
+      method   = ResetMethod.convert(config.getString("method")),
+      link     = config.getString("link"),
+      keep     = config.getDuration("keep"),
       interval = config.getDuration("interval")
     )
   }
@@ -78,6 +79,7 @@ object ResetTokenTable {
   final val TABLE_NAME = "reset_token"
 
   implicit class ResetTokenExtension[C[_]](q: Query[ResetTokenTable, ResetToken, C]) {
+
     def withUser(implicit up: UserProvider): Query[(ResetTokenTable, UserTable), (ResetToken, User), C] = {
       q.join(up.table).on(_.userID === _.uuid)
     }
@@ -92,22 +94,24 @@ object ResetTokenProviderEvents {
 }
 
 @Singleton
-class ResetTokenProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider,
-                                   conf: Configuration,
-                                   lifecycle: ApplicationLifecycle)(implicit ec: ExecutionContext, up: UserProvider)
+class ResetTokenProvider @Inject()(
+  @NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider,
+  conf: Configuration,
+  lifecycle: ApplicationLifecycle
+)(implicit ec: ExecutionContext, up: UserProvider)
     extends HasDatabaseConfigProvider[JdbcProfile]
     with EventStreaming[ResetTokenProviderEvent] {
 
-  private final val logger        = LoggerFactory.getLogger(this.getClass)
-  private final val configuration = conf.get[ResetTokenConfiguration]("application.auth.reset")
-  private final val actorSystem   = ActorSystem.create("ResetTokenProviderActorSystem")
-  private final val eventStream   = actorSystem.eventStream
+  final private val logger        = LoggerFactory.getLogger(this.getClass)
+  final private val configuration = conf.get[ResetTokenConfiguration]("application.auth.reset")
+  final private val actorSystem   = ActorSystem.create("ResetTokenProviderActorSystem")
+  final private val eventStream   = actorSystem.eventStream
 
   import dbConfig.profile.api._
 
-  private final val tokens = TableQuery[ResetTokenTable]
+  final private val tokens = TableQuery[ResetTokenTable]
 
-  private final val expiredTokensDeleteScheduler: Option[Cancellable] = Option(configuration.interval.getSeconds != 0).collect {
+  final private val expiredTokensDeleteScheduler: Option[Cancellable] = Option(configuration.interval.getSeconds != 0).collect {
     case true =>
       actorSystem.scheduler.schedule(configuration.interval.getSeconds seconds, configuration.interval.getSeconds seconds) {
         expired().map(_.map(_.token)).flatMap(delete) onComplete {
