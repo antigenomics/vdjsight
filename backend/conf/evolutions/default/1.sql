@@ -27,25 +27,16 @@ create index user_permissions_table_user_id_idx on "user_permissions" (user_id);
 
 create table "project"
 (
-    uuid        uuid         not null primary key,
-    name        varchar(255) not null,
-    description text         not null,
-    owner_id    uuid         not null,
+    uuid              uuid         not null primary key,
+    name              varchar(255) not null,
+    description       text         not null,
+    owner_id          uuid         not null,
+    folder            text         not null,
+    max_samples_count bigint       not null,
     foreign key (owner_id) references "user" (uuid) on update cascade on delete restrict
 );
 
 create index project_table_owner_index on "project" (owner_id);
-
-create table "project_permissions"
-(
-    uuid            uuid         not null primary key,
-    project_id      uuid         not null unique,
-    folder          varchar(510) not null unique,
-    max_files_count bigint       not null,
-    foreign key (project_id) references "project" (uuid) on update cascade on delete cascade
-);
-
-create index project_permissions_table_project_id_idx on "project_permissions" (project_id);
 
 create table "project_link"
 (
@@ -68,9 +59,6 @@ create index project_link_table_user_id_idx on "project_link" (user_id);
 drop index project_link_table_user_id_idx;
 drop index project_link_table_project_id_idx;
 drop table "project_link";
-
-drop index project_permissions_table_project_id_idx;
-drop table "project_permissions";
 
 drop index project_table_owner_index;
 drop table "project";

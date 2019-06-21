@@ -2,14 +2,15 @@ package traits
 
 import java.util.UUID
 
-import models.token.VerificationTokenProvider
-import models.user.UserProvider
+import models.token.{VerificationTokenProvider, VerificationTokenProviderEvent, VerificationTokenProviderEvents}
+import models.user._
 import org.scalatest.{Matchers, OptionValues}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import scala.language.reflectiveCalls
 
-trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders {
+trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders with EffectsStream {
 
   case class TestUserCredentials(login: String, email: String, password: String)
 
@@ -35,6 +36,9 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders {
   }
 
   private def generateNotVerifiedUser: TestUser = {
+    val userEventProbe            = events.probe[UserProviderEvent]
+    val userPermissionsEventProbe = events.probe[UserPermissionsProviderEvent]
+    val verificationEventProbe    = events.probe[VerificationTokenProvider]
     val credentials = TestUserCredentials(
       login    = "tokens-test-not-verified",
       email    = "tokens-test-not-verified@mail.com",
@@ -42,6 +46,10 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders {
     )
 
     val uuid = Await.result(up.create(credentials.login, credentials.email, credentials.password), Duration.Inf)
+
+    userEventProbe.expectMsgType[UserProviderEvents.UserCreated]
+    userPermissionsEventProbe.expectMsgType[UserPermissionsProviderEvents.UserPermissionCreated]
+    verificationEventProbe.expectMsgType[VerificationTokenProviderEvents.TokenCreated]
 
     val foundByUUID  = Await.result(up.get(uuid), Duration.Inf)
     val foundByEmail = Await.result(up.getByEmail(credentials.email), Duration.Inf)
@@ -63,6 +71,9 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders {
   }
 
   private def generateVerifiedUser: TestUser = {
+    val userEventProbe            = events.probe[UserProviderEvent]
+    val userPermissionsEventProbe = events.probe[UserPermissionsProviderEvent]
+    val verificationEventProbe    = events.probe[VerificationTokenProviderEvent]
     val credentials = TestUserCredentials(
       login    = "tokens-test-verified",
       email    = "tokens-test-verified@mail.com",
@@ -70,6 +81,10 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders {
     )
 
     val uuid = Await.result(up.create(credentials.login, credentials.email, credentials.password), Duration.Inf)
+
+    userEventProbe.expectMsgType[UserProviderEvents.UserCreated]
+    userPermissionsEventProbe.expectMsgType[UserPermissionsProviderEvents.UserPermissionCreated]
+    verificationEventProbe.expectMsgType[VerificationTokenProviderEvents.TokenCreated]
 
     val foundByUUID  = Await.result(up.get(uuid), Duration.Inf)
     val foundByEmail = Await.result(up.getByEmail(credentials.email), Duration.Inf)
@@ -94,6 +109,9 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders {
     foundToken.map(_.token) shouldEqual Set(createdToken)
 
     val user = Await.result(up.verify(createdToken), Duration.Inf)
+
+    userEventProbe.expectMsgType[UserProviderEvents.UserVerified]
+    verificationEventProbe.expectMsgType[VerificationTokenProviderEvents.TokenDeleted]
 
     user should not be empty
 

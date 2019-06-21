@@ -15,7 +15,6 @@ class EffectsModule extends AbstractModule {
     bind(classOf[ResetTokenEffects]).asEagerSingleton()
     bind(classOf[ProjectEffects]).asEagerSingleton()
     bind(classOf[ProjectLinkEffects]).asEagerSingleton()
-    bind(classOf[ProjectPermissionsEffects]).asEagerSingleton()
   }
 }
 

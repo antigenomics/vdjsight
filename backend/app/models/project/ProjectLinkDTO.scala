@@ -8,13 +8,12 @@ case class ProjectLinkDTO(
   uuid: UUID,
   name: String,
   description: String,
+  maxSamplesCount: Long,
   isShared: Boolean,
   isUploadAllowed: Boolean,
   isDeleteAllowed: Boolean,
   isModificationAllowed: Boolean
 )
-
-// TODO Add permissions
 
 object ProjectLinkDTO {
   implicit val projectDTOFormat: Format[ProjectLinkDTO] = Json.format[ProjectLinkDTO]
@@ -24,6 +23,7 @@ object ProjectLinkDTO {
       uuid                  = link.uuid,
       name                  = project.name,
       description           = project.description,
+      maxSamplesCount       = project.maxSampleCount,
       isShared              = link.isShared,
       isUploadAllowed       = link.isUploadAllowed,
       isDeleteAllowed       = link.isDeleteAllowed,
