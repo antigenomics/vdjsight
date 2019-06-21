@@ -5,7 +5,7 @@ import { environment } from 'environments/environment';
 import { ApplicationActions } from 'models/application/application.actions';
 import { fromRoot, RootModuleState } from 'models/root';
 import { UserActions } from 'models/user/user.actions';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, flatMap, map, retryWhen, take } from 'rxjs/operators';
 import { BackendRequest, BackendRequestEndpoint, BackendRequestOptions, BackendRequestType } from './backend-request';
 import { BackendErrorResponse, BackendSuccessResponse } from './backend-response';
@@ -71,17 +71,17 @@ export class BackendService {
       return call.pipe(retryWhen(retryStrategy(BackendService.retryCount)), take(1), map((response) => response.data));
     }), catchError((error: HttpErrorResponse) => {
       if (error.status === 0) {
-        return this.store.pipe(select(fromRoot.isApplicationBackendDead), take(1), map((isBackendDead) => {
+        return this.store.pipe(select(fromRoot.isApplicationBackendDead), take(1), flatMap((isBackendDead) => {
           if (isBackendDead) {
             this.store.dispatch(ApplicationActions.pingBackendSchedule({ timeout: BackendService.deadBackendPingTimeout }));
-            throw { error: 'Server is unavailable now. Please try again later.' } as BackendErrorResponse;
+            return throwError({ error: 'Server is unavailable now. Please try again later.' } as BackendErrorResponse);
           }
-          throw { error: 'Unknown error. Please try again later.' } as BackendErrorResponse;
+          return throwError({ error: 'Unknown error. Please try again later.' } as BackendErrorResponse);
         }));
       } else if (error.status === HttpStatusCode.UNAUTHORIZED) {
         this.store.dispatch(UserActions.logout());
       }
-      throw error.error as BackendErrorResponse;
+      return throwError(error.error as BackendErrorResponse);
     }));
   }
 

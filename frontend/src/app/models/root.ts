@@ -33,9 +33,9 @@ export const metaReducers: MetaReducer[] = environment.production ? [] : [ Logge
 export namespace fromRoot {
 
   /** Root state branches selectors */
-  export const getApplicationState = (state: RootModuleState) => state.application;
-  export const getUserState        = (state: RootModuleState) => state.user;
-  export const getRouterState      = createFeatureSelector<RootModuleState, RouterReducerState<MinimalRouterStateSnapshot>>('router');
+  const getApplicationState = (state: RootModuleState) => state.application;
+  const getUserState        = (state: RootModuleState) => state.user;
+  const getRouterState      = createFeatureSelector<RootModuleState, RouterReducerState<MinimalRouterStateSnapshot>>('router');
 
   /** Application state selectors */
   export const isApplicationBackendDead   = createSelector(getApplicationState, __fromApplicationState.isBackendDead);

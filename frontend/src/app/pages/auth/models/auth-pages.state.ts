@@ -34,12 +34,12 @@ export interface AuthPagesModuleState extends RootModuleState {
 export namespace fromAuth {
 
   /** Main auth module selectors */
-  export const selectAuthModuleState           = createFeatureSelector<__AuthPagesState>('auth');
-  export const selectAuthModuleLoginPageState  = createSelector(selectAuthModuleState, (state) => state.login);
-  export const selectAuthModuleSignupPageState = createSelector(selectAuthModuleState, (state) => state.signup);
-  export const selectAuthModuleResetPageState  = createSelector(selectAuthModuleState, (state) => state.reset);
-  export const selectAuthModuleChangePageState = createSelector(selectAuthModuleState, (state) => state.change);
-  export const selectAuthModuleVerifyPageState = createSelector(selectAuthModuleState, (state) => state.verify);
+  const selectAuthModuleState           = createFeatureSelector<__AuthPagesState>('auth');
+  const selectAuthModuleLoginPageState  = createSelector(selectAuthModuleState, (state) => state.login);
+  const selectAuthModuleSignupPageState = createSelector(selectAuthModuleState, (state) => state.signup);
+  const selectAuthModuleResetPageState  = createSelector(selectAuthModuleState, (state) => state.reset);
+  const selectAuthModuleChangePageState = createSelector(selectAuthModuleState, (state) => state.change);
+  const selectAuthModuleVerifyPageState = createSelector(selectAuthModuleState, (state) => state.verify);
 
   /** Login selectors */
   export const isLoginPagePending  = createSelector(selectAuthModuleLoginPageState, __fromLoginPageState.isPending);

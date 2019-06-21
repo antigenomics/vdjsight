@@ -5,7 +5,7 @@
 
 ->         /account                  controllers.account.AccountRouter
 ->         /auth                     controllers.authorization.AuthorizationRouter
-->         /projects/overview        controllers.projects.overview.ProjectsOverviewRouter
+->         /projects                 controllers.projects.ProjectsRouter
 
 GET        /ping                     controllers.CommonController.ping
 

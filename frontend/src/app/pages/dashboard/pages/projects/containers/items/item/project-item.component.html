@@ -1,0 +1,16 @@
+<div class="content">
+    <ng-container *ngIf="project.link; else notLoaded">
+        <a class="header">{{ project.link.name }}</a>
+        <div class="meta">
+            <span>{{ project.link.description }}</span>
+        </div>
+    </ng-container>
+    <ng-template #notLoaded>
+        <ng-container *ngIf="project.isRejected; else loading">
+            Failed to create project
+        </ng-container>
+        <ng-template #loading>
+            <div class="ui active inline text violet slow double loader">Creating</div>
+        </ng-template>
+    </ng-template>
+</div>

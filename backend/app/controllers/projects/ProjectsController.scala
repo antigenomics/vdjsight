@@ -1,8 +1,8 @@
-package controllers.projects.overview
+package controllers.projects
 
 import actions.{SessionRequest, SessionRequestAction}
 import com.google.inject.{Inject, Singleton}
-import controllers.projects.overview.dto.{ProjectsOverviewCreateRequest, ProjectsOverviewCreateResponse, ProjectsOverviewListResponse}
+import controllers.projects.dto.{ProjectsCreateRequest, ProjectsCreateResponse, ProjectsListResponse}
 import controllers.{ControllerHelpers, WithRecoverAction}
 import models.project.{ProjectLinkDTO, ProjectLinkProvider, ProjectProvider}
 import models.user.UserProvider
@@ -15,7 +15,7 @@ import server.ServerResponse
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ProjectsOverviewController @Inject()(cc: ControllerComponents, session: SessionRequestAction, messagesAPI: MessagesApi)(
+class ProjectsController @Inject()(cc: ControllerComponents, session: SessionRequestAction, messagesAPI: MessagesApi)(
   implicit ec: ExecutionContext,
   up: UserProvider,
   pp: ProjectProvider,
@@ -25,29 +25,30 @@ class ProjectsOverviewController @Inject()(cc: ControllerComponents, session: Se
   implicit final private val logger: Logger     = LoggerFactory.getLogger(this.getClass)
   implicit final private val messages: Messages = messagesAPI.preferred(Seq(Lang.defaultLang))
 
-  private def projectsOverviewAction(block: SessionRequest[JsValue] => Future[Result]) =
+  private def projectsAction[A](bodyParser: BodyParser[A])(block: SessionRequest[A] => Future[Result]) =
     WithRecoverAction {
-      (session andThen session.authorizedOnly)(parse.json).async(block)
+      (session andThen session.authorizedOnly)(bodyParser).async(block)
     }
 
-  private def projectsOverviewActionWithValidate[J](
+  private def projectsActionWithValidate[J](
     error: String = "Request validation failed"
-  )(block: (SessionRequest[JsValue], J) => Future[Result])(implicit reads: Reads[J]) = projectsOverviewAction { implicit request =>
+  )(block: (SessionRequest[JsValue], J) => Future[Result])(implicit reads: Reads[J]) = projectsAction(parse.json) { implicit request =>
     ControllerHelpers.validateRequest[J](error) { value =>
       block(request, value)
     }
   }
 
-  def list: Action[JsValue] = projectsOverviewAction { implicit request =>
+  def list: Action[Unit] = projectsAction(parse.empty) { implicit request =>
     plp.findForUserWithProject(request.userID.get).map { projects =>
-      Ok(ServerResponse(ProjectsOverviewListResponse(projects.map(ProjectLinkDTO(_)))))
+      Ok(ServerResponse(ProjectsListResponse(projects.map(ProjectLinkDTO(_)))))
     }
   }
 
-  def create: Action[JsValue] = projectsOverviewActionWithValidate[ProjectsOverviewCreateRequest]() { (request, create) =>
+  def create: Action[JsValue] = projectsActionWithValidate[ProjectsCreateRequest]() { (request, create) =>
+    Thread.sleep(1000)
     pp.create(request.userID.get, create.name, create.description) flatMap { project =>
       plp.create(request.userID.get, project.uuid).map { link =>
-        Ok(ServerResponse(ProjectsOverviewCreateResponse(ProjectLinkDTO(link, project))))
+        Ok(ServerResponse(ProjectsCreateResponse(ProjectLinkDTO(link, project))))
       }
     }
   }

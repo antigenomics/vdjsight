@@ -40,7 +40,7 @@ const ApplicationRouting = RouterModule.forRoot([
   },
   {
     path:                  'projects',
-    loadChildren:          () => import('./pages/projects/projects.module').then((m) => m.ProjectsModule),
+    loadChildren:          () => import('pages/dashboard/dashboard.module').then((m) => m.DashboardModule),
     canLoad:               [ AuthorizedOnlyGuard ],
     canActivate:           [ AuthorizedOnlyGuard ],
     data:                  { authorizedOnlyGuardFallbackURL: '/auth/login' },

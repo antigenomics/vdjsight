@@ -1,0 +1,14 @@
+<ng-container *ngIf="projects.length; else empty">
+    <div class="ui divided items cursor pointer" smoothHeight [smoothTrigger]="projects">
+        <div class="item" *ngFor="let project of projects" vs-project-item [project]="project"></div>
+    </div>
+</ng-container>
+<ng-template #empty>
+    <h3 class="ui center aligned top very pushed icon header">
+        <i class="folder plus icon"></i>
+        <div class="content">
+            You don't have any project yet
+            <div class="sub header">Click on 'Create new project' button to start</div>
+        </div>
+    </h3>
+</ng-template>

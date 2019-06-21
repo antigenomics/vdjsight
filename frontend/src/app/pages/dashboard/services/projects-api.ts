@@ -1,6 +1,6 @@
-import { ProjectLink } from 'pages/projects/models/projects_list/project-link';
+import { ProjectLink } from 'pages/dashboard/models/projects/projects';
 
-export namespace ProjectsOverview {
+export namespace ProjectsAPI {
 
   export interface ListResponse {
     readonly projects: ProjectLink[];
