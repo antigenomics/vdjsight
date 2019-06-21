@@ -15,11 +15,13 @@ create table "user"
 
 create table "user_permissions"
 (
-    uuid               uuid   not null primary key,
-    user_id            uuid   not null unique,
-    max_projects_count bigint not null,
-    max_samples_count  bigint not null,
-    max_sample_size    bigint not null,
+    uuid                       uuid   not null primary key,
+    user_id                    uuid   not null unique,
+    max_projects_count         bigint not null,
+    max_samples_count          bigint not null,
+    max_sample_size            bigint not null,
+    max_dangling_project_links bigint not null,
+    max_dangling_sample_links  bigint not null,
     foreign key (user_id) references "user" (uuid) on update cascade on delete cascade
 );
 

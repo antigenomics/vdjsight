@@ -112,7 +112,7 @@ class VerificationTokenProvider @Inject()(
 
   final private val tokens = TableQuery[VerificationTokenTable]
 
-  final private val expiredTokensWithUsersDeleteScheduler: Option[Cancellable] = Option(!configuration.interval.getSeconds.isZero).collect {
+  final private val expiredTokensWithUsersDeleteScheduler: Option[Cancellable] = Option(!configuration.interval.isZero).collect {
     case true =>
       actorSystem.scheduler.schedule(configuration.interval.getSeconds seconds, configuration.interval.getSeconds seconds) {
         expired().map(_.map(_.token)).flatMap(delete) onComplete {
@@ -160,7 +160,7 @@ class VerificationTokenProvider @Inject()(
 
     db.run((userIDAction zip deleteAction).transactionally) onSuccessSideEffect {
       case (Some(userID), 1) => events.publish(VerificationTokenProviderEvents.TokenDeleted(token, userID, configuration))
-      case (None, _)         => logger.warn(s"Empty user for verification token: $token")
+      case _                 => logger.warn(s"Cannot delete verification token: $token")
     } map (_._2)
   }
 

@@ -17,29 +17,56 @@ import utils.FutureUtils._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.{higherKinds, implicitConversions, postfixOps}
 
-case class UserPermissionsConfiguration(maxProjectsCount: Long, maxSamplesCount: Long, maxSampleSize: Long)
+case class UserPermissionsConfiguration(
+  maxProjectsCount: Long,
+  maxSamplesCount: Long,
+  maxSampleSize: Long,
+  maxDanglingProjectLinks: Long,
+  maxDanglingSampleLinks: Long
+)
 
 object UserPermissionsConfiguration {
   implicit val userPermissionsDefaultConfigurationLoader: ConfigLoader[UserPermissionsConfiguration] = (root: Config, path: String) => {
     val config = root.getConfig(path)
     UserPermissionsConfiguration(
-      maxProjectsCount = config.getLong("maxProjectsCount"),
-      maxSamplesCount  = config.getLong("maxSamplesCount"),
-      maxSampleSize    = config.getMemorySize("maxSampleSize").toBytes
+      maxProjectsCount        = config.getLong("maxProjectsCount"),
+      maxSamplesCount         = config.getLong("maxSamplesCount"),
+      maxSampleSize           = config.getMemorySize("maxSampleSize").toBytes,
+      maxDanglingProjectLinks = config.getLong("maxDanglingProjectLinks"),
+      maxDanglingSampleLinks  = config.getLong("maxDanglingSampleLinks")
     )
   }
 }
 
-case class UserPermissions(uuid: UUID, userID: UUID, maxProjectsCount: Long, maxSamplesCount: Long, maxSampleSize: Long)
+case class UserPermissions(
+  uuid: UUID,
+  userID: UUID,
+  maxProjectsCount: Long,
+  maxSamplesCount: Long,
+  maxSampleSize: Long,
+  maxDanglingProjectLinks: Long,
+  maxDanglingSampleLinks: Long
+)
 
 class UserPermissionsTable(tag: Tag)(implicit up: UserProvider) extends Table[UserPermissions](tag, UserPermissionsTable.TABLE_NAME) {
-  def uuid             = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
-  def userID           = column[UUID]("user_id", O.Unique, O.SqlType("uuid"))
-  def maxProjectsCount = column[Long]("max_projects_count")
-  def maxSamplesCount  = column[Long]("max_samples_count")
-  def maxSampleSize    = column[Long]("max_sample_size")
+  def uuid                    = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
+  def userID                  = column[UUID]("user_id", O.Unique, O.SqlType("uuid"))
+  def maxProjectsCount        = column[Long]("max_projects_count")
+  def maxSamplesCount         = column[Long]("max_samples_count")
+  def maxSampleSize           = column[Long]("max_sample_size")
+  def maxDanglingProjectLinks = column[Long]("max_dangling_project_links")
+  def maxDanglingSampleLinks  = column[Long]("max_dangling_sample_links")
 
-  def * = (uuid, userID, maxProjectsCount, maxSamplesCount, maxSampleSize) <> (UserPermissions.tupled, UserPermissions.unapply)
+  def * =
+    (
+      uuid,
+      userID,
+      maxProjectsCount,
+      maxSamplesCount,
+      maxSampleSize,
+      maxDanglingProjectLinks,
+      maxDanglingSampleLinks
+    ) <> (UserPermissions.tupled, UserPermissions.unapply)
 
   def user = foreignKey("user_permissions_table_user_fk", userID, up.table)(
     _.uuid,
@@ -104,11 +131,13 @@ class UserPermissionsProvider @Inject()(
       case (Some(_), None) =>
         val uuid = UUID.randomUUID()
         val permission = UserPermissions(
-          uuid             = uuid,
-          userID           = userID,
-          maxProjectsCount = configuration.getOrElse(defaultConfiguration).maxProjectsCount,
-          maxSamplesCount  = configuration.getOrElse(defaultConfiguration).maxSamplesCount,
-          maxSampleSize    = configuration.getOrElse(defaultConfiguration).maxSampleSize
+          uuid                    = uuid,
+          userID                  = userID,
+          maxProjectsCount        = configuration.getOrElse(defaultConfiguration).maxProjectsCount,
+          maxSamplesCount         = configuration.getOrElse(defaultConfiguration).maxSamplesCount,
+          maxSampleSize           = configuration.getOrElse(defaultConfiguration).maxSampleSize,
+          maxDanglingProjectLinks = configuration.getOrElse(defaultConfiguration).maxDanglingProjectLinks,
+          maxDanglingSampleLinks  = configuration.getOrElse(defaultConfiguration).maxDanglingSampleLinks
         )
         db.run(permissions += permission) map {
           case 1 => uuid

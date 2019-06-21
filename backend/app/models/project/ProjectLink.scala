@@ -43,7 +43,7 @@ object ProjectLinkConfiguration {
   implicit val projectLinkConfigurationLoader: ConfigLoader[ProjectLinkConfiguration] = (root: Config, path: String) => {
     val config = root.getConfig(path)
     ProjectLinkConfiguration(
-      delete = ProjectLinkDeleteConfiguration.projectLinkDeleteConfigurationLoader(config, "delete")
+      delete = ProjectLinkDeleteConfiguration.projectLinkDeleteConfigurationLoader.load(config, "delete")
     )
   }
 }
@@ -138,7 +138,7 @@ class ProjectLinkProvider @Inject()(
 ) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   final private val logger        = LoggerFactory.getLogger(this.getClass)
-  final private val configuration = conf.get[ProjectLinkConfiguration]("application.links")
+  final private val configuration = conf.get[ProjectLinkConfiguration]("application.projects.links")
 
   import dbConfig.profile.api._
 
@@ -246,12 +246,13 @@ class ProjectLinkProvider @Inject()(
       case ((Some(userID), Some(projectID)), 1) => events.publish(ProjectLinkProviderEvents.ProjectLinkDeleted(userID, projectID))
       case ((None, _), _)                       => logger.warn(s"Empty user for project link: $uuid")
       case ((_, None), _)                       => logger.warn(s"Empty project for project link: $uuid")
+      case _                                    => logger.warn(s"Cannot delete project link: $uuid")
     } map (_._2)
   }
 
   def delete(seq: Seq[UUID]): Future[Int] = Future.sequence(seq.map(delete)).map(_.sum)
 
   def expired(date: Timestamp = TimeUtils.getCurrentTimestamp): Future[Seq[ProjectLink]] =
-    db.run(table.filter(_.deleteOn.nonEmpty).filter(_.deleteOn.get < date).result)
+    db.run(links.filter(l => l.deleteOn.nonEmpty && l.deleteOn < date).result)
 
 }
