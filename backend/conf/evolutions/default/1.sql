@@ -47,6 +47,8 @@ create table "project_link"
     is_upload_allowed       boolean not null,
     is_delete_allowed       boolean not null,
     is_modification_allowed boolean not null,
+    is_delete_scheduled     boolean not null,
+    delete_on               timestamp default null,
     foreign key (project_id) REFERENCES "project" (uuid) on update cascade on delete restrict,
     foreign key (user_id) REFERENCES "user" (uuid) on update cascade on delete restrict
 );

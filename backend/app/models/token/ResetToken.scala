@@ -112,7 +112,7 @@ class ResetTokenProvider @Inject()(
 
   final private val tokens = TableQuery[ResetTokenTable]
 
-  final private val expiredTokensDeleteScheduler: Option[Cancellable] = Option(configuration.interval.getSeconds != 0).collect {
+  final private val expiredTokensDeleteScheduler: Option[Cancellable] = Option(!configuration.interval.getSeconds.isZero).collect {
     case true =>
       actorSystem.scheduler.schedule(configuration.interval.getSeconds seconds, configuration.interval.getSeconds seconds) {
         expired().map(_.map(_.token)).flatMap(delete) onComplete {
@@ -159,7 +159,7 @@ class ResetTokenProvider @Inject()(
     val deleteAction = tokens.filter(_.token === token).delete
 
     db.run((userIDAction zip deleteAction).transactionally) onSuccessSideEffect {
-      case (Some(userID), _) => events.publish(ResetTokenProviderEvents.TokenDeleted(token, userID, configuration))
+      case (Some(userID), 1) => events.publish(ResetTokenProviderEvents.TokenDeleted(token, userID, configuration))
       case (None, _)         => logger.warn(s"Empty user for reset token: $token")
     } map (_._2)
   }

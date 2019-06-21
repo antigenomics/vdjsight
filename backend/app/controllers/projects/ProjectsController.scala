@@ -40,7 +40,7 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
 
   def list: Action[Unit] = projectsAction(parse.empty) { implicit request =>
     plp.findForUserWithProject(request.userID.get).map { projects =>
-      Ok(ServerResponse(ProjectsListResponse(projects.map(ProjectLinkDTO(_)))))
+      Ok(ServerResponse(ProjectsListResponse(projects.filter(_._1.deleteOn.isEmpty).map(ProjectLinkDTO(_)))))
     }
   }
 

@@ -12,7 +12,6 @@ object ProjectLinkEffectsActor {
 class ProjectLinkEffectsActor() extends Actor {
   override def receive: Receive = {
     case ProjectLinkProviderEvents.ProjectLinkCreated(_, _) =>
-    case ProjectLinkProviderEvents.ProjectLinkUpdated(_, _) =>
     case ProjectLinkProviderEvents.ProjectLinkDeleted(_, _) =>
   }
 }
