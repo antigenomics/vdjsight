@@ -2,9 +2,9 @@ package effects
 
 import java.nio.file.{Files, Path}
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.{Actor, Props}
 import com.google.inject.{Inject, Singleton}
-import models.project.{ProjectPermissionProviderEvent, ProjectPermissionProviderEvents, ProjectPermissionsProvider}
+import models.project.{ProjectPermissionProviderEvent, ProjectPermissionProviderEvents}
 import play.api.inject.ApplicationLifecycle
 
 object ProjectPermissionsEffectsActor {
@@ -19,12 +19,8 @@ class ProjectPermissionsEffectsActor() extends Actor {
 }
 
 @Singleton
-class ProjectPermissionsEffects @Inject()(
-  lifecycle: ApplicationLifecycle,
-  actorSystem: ActorSystem,
-  ppp: ProjectPermissionsProvider
-) extends AbstractEffects[ProjectPermissionProviderEvent](lifecycle) {
-  final override lazy val effects = actorSystem.actorOf(ProjectPermissionsEffectsActor.props(), "project-permissions-effects-actor")
-
-  override def stream: EventStreaming[ProjectPermissionProviderEvent] = ppp
+class ProjectPermissionsEffects @Inject()(lifecycle: ApplicationLifecycle, events: EffectsEventsStream)
+    extends AbstractEffects[ProjectPermissionProviderEvent](lifecycle, events) {
+  
+  final override lazy val effects = events.actorSystem.actorOf(ProjectPermissionsEffectsActor.props(), "project-permissions-effects-actor")
 }

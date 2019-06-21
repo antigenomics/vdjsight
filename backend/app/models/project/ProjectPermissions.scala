@@ -2,10 +2,9 @@ package models.project
 
 import java.util.UUID
 
-import akka.actor.{ActorRef, ActorSystem}
 import com.google.inject.{Inject, Singleton}
 import com.typesafe.config.Config
-import effects.EventStreaming
+import effects.{AbstractEffectEvent, EffectsEventsStream}
 import models.user.UserPermissionsProvider
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
@@ -62,32 +61,29 @@ object ProjectPermissionsTable {
   }
 }
 
-trait ProjectPermissionProviderEvent
+trait ProjectPermissionProviderEvent extends AbstractEffectEvent
 
 object ProjectPermissionProviderEvents {
   case class ProjectPermissionCreated(permission: ProjectPermissions) extends ProjectPermissionProviderEvent
 }
 
 @Singleton
-class ProjectPermissionsProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider, conf: Configuration)(
+class ProjectPermissionsProvider @Inject()(
+  @NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider,
+  conf: Configuration,
+  events: EffectsEventsStream
+)(
   implicit ec: ExecutionContext,
   pp: ProjectProvider,
   upp: UserPermissionsProvider
-) extends HasDatabaseConfigProvider[JdbcProfile]
-    with EventStreaming[ProjectPermissionProviderEvent] {
+) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   final private val logger               = LoggerFactory.getLogger(this.getClass)
   final private val defaultConfiguration = conf.get[ProjectPermissionsConfiguration]("application.projects.permissions")
-  final private val actorSystem          = ActorSystem.create("ProjectPermissionsProviderActorSystem")
-  final private val eventStream          = actorSystem.eventStream
 
   final private val permissions = TableQuery[ProjectPermissionsTable]
 
   def table: TableQuery[ProjectPermissionsTable] = permissions
-
-  def subscribe(subscriber: ActorRef): Unit = eventStream.subscribe(subscriber, classOf[ProjectPermissionProviderEvent])
-
-  def unsubscribe(subscriber: ActorRef): Unit = eventStream.unsubscribe(subscriber)
 
   def all: Future[Seq[ProjectPermissions]] = db.run(permissions.result)
 
@@ -124,7 +120,7 @@ class ProjectPermissionsProvider @Inject()(@NamedDatabase("default") protected v
             case 1 => uuid
             case _ => throw new RuntimeException("Cannot create VerificationToken instance in database: Internal error")
           } onSuccessSideEffect { _ =>
-            eventStream.publish(ProjectPermissionProviderEvents.ProjectPermissionCreated(permission))
+            events.publish(ProjectPermissionProviderEvents.ProjectPermissionCreated(permission))
           }
         }
       case (None, _) => throw new RuntimeException("Cannot create UserPermissions instance in database: User does not exist")

@@ -1,9 +1,9 @@
 package effects
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.{Actor, Props}
 import com.google.inject.Singleton
 import javax.inject.Inject
-import models.token.{ResetMethod, ResetTokenProvider, ResetTokenProviderEvent, ResetTokenProviderEvents}
+import models.token.{ResetMethod, ResetTokenProviderEvent, ResetTokenProviderEvents}
 import play.api.inject.ApplicationLifecycle
 
 import scala.concurrent.ExecutionContext
@@ -24,10 +24,8 @@ class ResetTokenEffectsActor()(implicit ec: ExecutionContext) extends Actor {
 }
 
 @Singleton
-class ResetTokenEffects @Inject()(lifecycle: ApplicationLifecycle, actorSystem: ActorSystem, rtp: ResetTokenProvider)(implicit ec: ExecutionContext)
-    extends AbstractEffects[ResetTokenProviderEvent](lifecycle) {
+class ResetTokenEffects @Inject()(lifecycle: ApplicationLifecycle, events: EffectsEventsStream)(implicit ec: ExecutionContext)
+    extends AbstractEffects[ResetTokenProviderEvent](lifecycle, events) {
 
-  final override lazy val effects = actorSystem.actorOf(ResetTokenEffectsActor.props, "reset-token-effects-actor")
-
-  override def stream: EventStreaming[ResetTokenProviderEvent] = rtp
+  final override lazy val effects = events.actorSystem.actorOf(ResetTokenEffectsActor.props, "reset-token-effects-actor")
 }

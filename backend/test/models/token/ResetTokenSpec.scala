@@ -3,13 +3,14 @@ package models.token
 import models.ModelsTestTag
 import org.scalatest.Assertions
 import specs.BaseTestSpecWithDatabaseAndApplication
-import traits.{DatabaseProviders, DatabaseUsers}
+import traits.{DatabaseProviders, DatabaseUsers, EffectsStream}
 
 import scala.concurrent.Future
-import scala.language.reflectiveCalls
+import scala.concurrent.duration._
+import scala.language.{postfixOps, reflectiveCalls}
 import scala.util.{Failure, Success}
 
-class ResetTokenSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProviders with DatabaseUsers {
+class ResetTokenSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProviders with DatabaseUsers with EffectsStream {
 
   "ResetMethod" should {
 
@@ -49,24 +50,32 @@ class ResetTokenSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
     }
 
     "be able to create reset token for not verified user" taggedAs ModelsTestTag in {
+      val probe = events.probe[ResetTokenProviderEvent]
       rtp.create(users.notVerifiedUser.uuid).transform {
-        case Success(_) => Success(Assertions.succeed)
+        case Success(_) =>
+          probe.expectMsgType[ResetTokenProviderEvents.TokenCreated]
+          Success(Assertions.succeed)
         case Failure(_) => Assertions.fail
       }
     }
 
     "be able to create reset token for verified user" taggedAs ModelsTestTag in {
+      val probe = events.probe[ResetTokenProviderEvent]
       rtp.create(users.verifiedUser.uuid).transform {
-        case Success(_) => Success(Assertions.succeed)
+        case Success(_) =>
+          probe.expectMsgType[ResetTokenProviderEvents.TokenCreated]
+          Success(Assertions.succeed)
         case Failure(_) => Assertions.fail
       }
     }
 
     "not create many tokens for one user and return the single one" taggedAs ModelsTestTag in {
+      val probe = events.probe[ResetTokenProviderEvent]
       for {
         token1 <- rtp.create(users.notVerifiedUser.uuid)
         token2 <- rtp.create(users.notVerifiedUser.uuid)
         check  <- token1 shouldEqual token2
+        _      <- Future(probe.expectNoMessage(100 milliseconds))
       } yield check
     }
 
@@ -92,10 +101,12 @@ class ResetTokenSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
     }
 
     "be able to delete reset token" taggedAs ModelsTestTag in {
+      val probe = events.probe[ResetTokenProviderEvent]
       for {
         createdToken <- rtp.create(users.notVerifiedUser.uuid)
         _            <- rtp.delete(createdToken)
         deletedToken <- rtp.get(createdToken)
+        _            <- Future(probe.expectMsgType[ResetTokenProviderEvents.TokenDeleted])
       } yield deletedToken should be(empty)
     }
 

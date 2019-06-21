@@ -2,10 +2,9 @@ package models.user
 
 import java.util.UUID
 
-import akka.actor.{ActorRef, ActorSystem}
 import com.google.inject.{Inject, Singleton}
 import com.typesafe.config.Config
-import effects.EventStreaming
+import effects.{AbstractEffectEvent, EffectsEventsStream}
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.{ConfigLoader, Configuration}
@@ -63,31 +62,28 @@ object UserPermissionsTable {
   }
 }
 
-trait UserPermissionsProviderEvent
+trait UserPermissionsProviderEvent extends AbstractEffectEvent
 
 object UserPermissionsProviderEvents {
   case class UserPermissionCreated(permissions: UserPermissions) extends UserPermissionsProviderEvent
 }
 
 @Singleton
-class UserPermissionsProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider, conf: Configuration)(
+class UserPermissionsProvider @Inject()(
+  @NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider,
+  conf: Configuration,
+  events: EffectsEventsStream
+)(
   implicit ec: ExecutionContext,
   up: UserProvider
-) extends HasDatabaseConfigProvider[JdbcProfile]
-    with EventStreaming[UserPermissionsProviderEvent] {
+) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   final private val logger               = LoggerFactory.getLogger(this.getClass)
   final private val defaultConfiguration = conf.get[UserPermissionsConfiguration]("application.users.permissions")
-  final private val actorSystem          = ActorSystem.create("UserPermissionsProviderActorSystem")
-  final private val eventStream          = actorSystem.eventStream
 
   import dbConfig.profile.api._
 
   final private val permissions = TableQuery[UserPermissionsTable]
-
-  def subscribe(subscriber: ActorRef): Unit = eventStream.subscribe(subscriber, classOf[UserPermissionsProviderEvent])
-
-  def unsubscribe(subscriber: ActorRef): Unit = eventStream.unsubscribe(subscriber)
 
   def table: TableQuery[UserPermissionsTable] = permissions
 
@@ -118,7 +114,7 @@ class UserPermissionsProvider @Inject()(@NamedDatabase("default") protected val 
           case 1 => uuid
           case _ => throw new RuntimeException("Cannot create VerificationToken instance in database: Internal error")
         } onSuccessSideEffect { _ =>
-          eventStream.publish(UserPermissionsProviderEvents.UserPermissionCreated(permission))
+          events.publish(UserPermissionsProviderEvents.UserPermissionCreated(permission))
         }
       case (None, _) => throw new RuntimeException("Cannot create UserPermissions instance in database: User does not exist")
     }

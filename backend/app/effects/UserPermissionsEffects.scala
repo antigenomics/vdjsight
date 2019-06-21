@@ -1,8 +1,8 @@
 package effects
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.{Actor, Props}
 import com.google.inject.{Inject, Singleton}
-import models.user.{UserPermissionsProvider, UserPermissionsProviderEvent, UserPermissionsProviderEvents}
+import models.user.{UserPermissionsProviderEvent, UserPermissionsProviderEvents}
 import play.api.inject.ApplicationLifecycle
 
 object UserPermissionsEffectsActor {
@@ -16,12 +16,8 @@ class UserPermissionsEffectsActor() extends Actor {
 }
 
 @Singleton
-class UserPermissionsEffects @Inject()(
-  lifecycle: ApplicationLifecycle,
-  actorSystem: ActorSystem,
-  upp: UserPermissionsProvider
-) extends AbstractEffects[UserPermissionsProviderEvent](lifecycle) {
-  final override lazy val effects = actorSystem.actorOf(UserPermissionsEffectsActor.props(), "user-permissions-effects-actor")
+class UserPermissionsEffects @Inject()(lifecycle: ApplicationLifecycle, events: EffectsEventsStream)
+    extends AbstractEffects[UserPermissionsProviderEvent](lifecycle, events) {
 
-  override def stream: EventStreaming[UserPermissionsProviderEvent] = upp
+  final override lazy val effects = events.actorSystem.actorOf(UserPermissionsEffectsActor.props(), "user-permissions-effects-actor")
 }

@@ -4,10 +4,10 @@ import java.sql.Timestamp
 import java.time.Duration
 import java.util.UUID
 
-import akka.actor.{ActorRef, ActorSystem, Cancellable}
+import akka.actor.{ActorSystem, Cancellable}
 import com.google.inject.{Inject, Singleton}
 import com.typesafe.config.Config
-import effects.EventStreaming
+import effects.{AbstractEffectEvent, EffectsEventsStream}
 import models.token
 import models.token.VerificationMethod.VerificationMethod
 import models.user.{User, UserProvider, UserTable}
@@ -86,7 +86,7 @@ object VerificationTokenTable {
   }
 }
 
-trait VerificationTokenProviderEvent
+trait VerificationTokenProviderEvent extends AbstractEffectEvent
 
 object VerificationTokenProviderEvents {
   case class TokenCreated(token: UUID, userID: UUID, configuration: VerificationTokenConfiguration) extends VerificationTokenProviderEvent
@@ -97,15 +97,16 @@ object VerificationTokenProviderEvents {
 class VerificationTokenProvider @Inject()(
   @NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider,
   conf: Configuration,
-  lifecycle: ApplicationLifecycle
-)(implicit ec: ExecutionContext, up: UserProvider)
-    extends HasDatabaseConfigProvider[JdbcProfile]
-    with EventStreaming[VerificationTokenProviderEvent] {
+  lifecycle: ApplicationLifecycle,
+  actorSystem: ActorSystem,
+  events: EffectsEventsStream
+)(
+  implicit ec: ExecutionContext,
+  up: UserProvider
+) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   final private val logger        = LoggerFactory.getLogger(this.getClass)
   final private val configuration = conf.get[VerificationTokenConfiguration]("application.auth.verification")
-  final private val actorSystem   = ActorSystem.create("VerificationTokenProviderActorSystem")
-  final private val eventStream   = actorSystem.eventStream
 
   import dbConfig.profile.api._
 
@@ -124,10 +125,6 @@ class VerificationTokenProvider @Inject()(
   lifecycle.addStopHook { () =>
     Future.successful(expiredTokensWithUsersDeleteScheduler.foreach(_.cancel()))
   }
-
-  def subscribe(subscriber: ActorRef): Unit = eventStream.subscribe(subscriber, classOf[VerificationTokenProviderEvent])
-
-  def unsubscribe(subscriber: ActorRef): Unit = eventStream.unsubscribe(subscriber)
 
   def table: TableQuery[VerificationTokenTable] = tokens
 
@@ -151,7 +148,7 @@ class VerificationTokenProvider @Inject()(
           case 1 => token
           case _ => throw new RuntimeException("Cannot create VerificationToken instance in database: Internal error")
         } onSuccessSideEffect { token =>
-          eventStream.publish(VerificationTokenProviderEvents.TokenCreated(token, userID, configuration))
+          events.publish(VerificationTokenProviderEvents.TokenCreated(token, userID, configuration))
         }
       case (None, _) => throw new RuntimeException("Cannot create VerificationToken instance in database: User does not exist")
     }
@@ -162,7 +159,7 @@ class VerificationTokenProvider @Inject()(
     val deleteAction = tokens.filter(_.token === token).delete
 
     db.run((userIDAction zip deleteAction).transactionally) onSuccessSideEffect {
-      case (Some(userID), _) => eventStream.publish(VerificationTokenProviderEvents.TokenDeleted(token, userID, configuration))
+      case (Some(userID), _) => events.publish(VerificationTokenProviderEvents.TokenDeleted(token, userID, configuration))
       case (None, _)         => logger.warn(s"Empty user for verification token: $token")
     } map (_._2)
   }

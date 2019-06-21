@@ -2,9 +2,8 @@ package models.user
 
 import java.util.UUID
 
-import akka.actor.{ActorRef, ActorSystem}
 import com.google.inject.{Inject, Singleton}
-import effects.EventStreaming
+import effects.{AbstractEffectEvent, EffectsEventsStream}
 import io.github.nremond.SecureHash
 import models.token.{ResetTokenProvider, VerificationTokenProvider}
 import org.slf4j.LoggerFactory
@@ -34,7 +33,7 @@ object UserTable {
   final val TABLE_NAME = "user"
 }
 
-trait UserProviderEvent
+trait UserProviderEvent extends AbstractEffectEvent
 
 object UserProviderEvents {
   case class UserCreated(uuid: UUID) extends UserProviderEvent
@@ -44,21 +43,18 @@ object UserProviderEvents {
 }
 
 @Singleton
-class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
-    extends HasDatabaseConfigProvider[JdbcProfile]
-    with EventStreaming[UserProviderEvent] {
+class UserProvider @Inject()(
+  @NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider,
+  events: EffectsEventsStream
+)(
+  implicit ec: ExecutionContext
+) extends HasDatabaseConfigProvider[JdbcProfile] {
 
-  final private val logger      = LoggerFactory.getLogger(this.getClass)
-  final private val actorSystem = ActorSystem.create("UserProviderActorSystem")
-  final private val eventStream = actorSystem.eventStream
+  final private val logger = LoggerFactory.getLogger(this.getClass)
 
   import dbConfig.profile.api._
 
   final private val users = TableQuery[UserTable]
-
-  def subscribe(subscriber: ActorRef): Unit = eventStream.subscribe(subscriber, classOf[UserProviderEvent])
-
-  def unsubscribe(subscriber: ActorRef): Unit = eventStream.unsubscribe(subscriber)
 
   def table: TableQuery[UserTable] = users
 
@@ -103,7 +99,7 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
           case 1 => uuid
           case _ => throw new RuntimeException("Cannot create User instance in database: Internal error")
         } onSuccessSideEffect { uuid =>
-          eventStream.publish(UserProviderEvents.UserCreated(uuid))
+          events.publish(UserProviderEvents.UserCreated(uuid))
         }
     }
   }
@@ -113,7 +109,7 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
       case Some(token) => db.run(users.filter(_.uuid === token.userID).map(_.verified).update(true)).flatMap(_ => get(token.userID))
       case None        => Future.successful(None)
     } onSuccessSideEffect { user =>
-      user.foreach(u => eventStream.publish(UserProviderEvents.UserVerified(u.uuid)))
+      user.foreach(u => events.publish(UserProviderEvents.UserVerified(u.uuid)))
     }
   }
 
@@ -124,13 +120,13 @@ class UserProvider @Inject()(@NamedDatabase("default") protected val dbConfigPro
           .flatMap(_ => get(token.userID))
       case None => Future.successful(None)
     } onSuccessSideEffect { user =>
-      user.foreach(u => eventStream.publish(UserProviderEvents.UserReset(u.uuid)))
+      user.foreach(u => events.publish(UserProviderEvents.UserReset(u.uuid)))
     }
   }
 
   def delete(uuid: UUID): Future[Int] =
     db.run(users.filter(_.uuid === uuid).delete) onSuccessSideEffect { _ =>
-      eventStream.publish(UserProviderEvents.UserDeleted(uuid))
+      events.publish(UserProviderEvents.UserDeleted(uuid))
     }
 
   def delete(uuidSet: Set[UUID]): Future[Int] = Future.sequence(uuidSet.map(delete)).map(_.sum)

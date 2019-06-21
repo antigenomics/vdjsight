@@ -27,9 +27,10 @@ create index user_permissions_table_user_id_idx on "user_permissions" (user_id);
 
 create table "project"
 (
-    uuid     uuid         not null primary key,
-    name     varchar(255) not null,
-    owner_id uuid         not null,
+    uuid        uuid         not null primary key,
+    name        varchar(255) not null,
+    description text         not null,
+    owner_id    uuid         not null,
     foreign key (owner_id) references "user" (uuid) on update cascade on delete restrict
 );
 

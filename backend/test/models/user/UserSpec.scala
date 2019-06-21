@@ -3,12 +3,12 @@ package models.user
 import models.ModelsTestTag
 import org.scalatest.Assertion
 import specs.BaseTestSpecWithDatabaseAndApplication
-import traits.{DatabaseProviders, DatabaseUsers}
+import traits.{DatabaseProviders, DatabaseUsers, EffectsStream}
 
 import scala.concurrent.Future
 import scala.language.reflectiveCalls
 
-class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProviders with DatabaseUsers {
+class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProviders with DatabaseUsers with EffectsStream {
 
   "UserProvider" should {
 
@@ -63,9 +63,11 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
     }
 
     "be able to create new user" taggedAs ModelsTestTag in {
+      val p = events.probe[UserProviderEvent]
       val c = users.notExistingUser.credentials
       for {
         newUserUUID <- up.create(c.login, c.email, c.password)
+        _           <- Future(p.expectMsgType[UserProviderEvents.UserCreated])
         newUser     <- up.get(newUserUUID)
         _           <- newUser should not be empty
         _           <- newUser.get.login shouldEqual c.login
@@ -75,10 +77,12 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
     }
 
     "be able to verify users" taggedAs ModelsTestTag in {
+      val p = events.probe[UserProviderEvent]
       val u = users.notVerifiedUser
       for {
         verificationToken <- vtp.create(u.uuid)
         verifiedUser      <- up.verify(verificationToken)
+        _                 <- Future(p.expectMsgType[UserProviderEvents.UserVerified])
         _                 <- verifiedUser should not be empty
         _                 <- verifiedUser.get.login shouldEqual u.credentials.login
         _                 <- verifiedUser.get.email shouldEqual u.credentials.email
@@ -88,10 +92,12 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
 
     "be able to reset users" taggedAs ModelsTestTag in {
       def resetUser(user: TestUser): Future[Assertion] = {
+        val p = events.probe[UserProviderEvent]
         for {
           resetTokenForTestUser <- rtp.create(user.uuid)
           testInDBBeforeReset   <- up.get(user.uuid)
           resetTestUser         <- up.reset(resetTokenForTestUser, user.credentials.password + "_")
+          _                     <- Future(p.expectMsgType[UserProviderEvents.UserReset])
           _                     <- testInDBBeforeReset should not be empty
           _                     <- resetTestUser should not be empty
           _                     <- testInDBBeforeReset.get.uuid shouldEqual resetTestUser.get.uuid
@@ -108,9 +114,11 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
     }
 
     "be able to delete users" taggedAs ModelsTestTag in {
+      val p = events.probe[UserProviderEvent]
       val u = users.verifiedUser
       for {
         _           <- up.delete(u.uuid)
+        _           <- Future(p.expectMsgType[UserProviderEvents.UserDeleted])
         deletedUser <- up.get(u.uuid)
       } yield deletedUser should be(empty)
     }

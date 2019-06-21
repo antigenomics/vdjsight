@@ -4,10 +4,10 @@ import java.sql.Timestamp
 import java.time.Duration
 import java.util.UUID
 
-import akka.actor.{ActorRef, ActorSystem, Cancellable}
+import akka.actor.{ActorSystem, Cancellable}
 import com.google.inject.{Inject, Singleton}
 import com.typesafe.config.Config
-import effects.EventStreaming
+import effects.{AbstractEffectEvent, EffectsEventsStream}
 import models.token
 import models.token.ResetMethod.ResetMethod
 import models.user.{User, UserProvider, UserTable}
@@ -86,7 +86,7 @@ object ResetTokenTable {
   }
 }
 
-trait ResetTokenProviderEvent
+trait ResetTokenProviderEvent extends AbstractEffectEvent
 
 object ResetTokenProviderEvents {
   case class TokenCreated(token: UUID, userID: UUID, configuration: ResetTokenConfiguration) extends ResetTokenProviderEvent
@@ -97,15 +97,16 @@ object ResetTokenProviderEvents {
 class ResetTokenProvider @Inject()(
   @NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider,
   conf: Configuration,
-  lifecycle: ApplicationLifecycle
-)(implicit ec: ExecutionContext, up: UserProvider)
-    extends HasDatabaseConfigProvider[JdbcProfile]
-    with EventStreaming[ResetTokenProviderEvent] {
+  lifecycle: ApplicationLifecycle,
+  actorSystem: ActorSystem,
+  events: EffectsEventsStream
+)(
+  implicit ec: ExecutionContext,
+  up: UserProvider
+) extends HasDatabaseConfigProvider[JdbcProfile] {
 
   final private val logger        = LoggerFactory.getLogger(this.getClass)
   final private val configuration = conf.get[ResetTokenConfiguration]("application.auth.reset")
-  final private val actorSystem   = ActorSystem.create("ResetTokenProviderActorSystem")
-  final private val eventStream   = actorSystem.eventStream
 
   import dbConfig.profile.api._
 
@@ -124,10 +125,6 @@ class ResetTokenProvider @Inject()(
   lifecycle.addStopHook { () =>
     Future.successful(expiredTokensDeleteScheduler.foreach(_.cancel()))
   }
-
-  def subscribe(subscriber: ActorRef): Unit = eventStream.subscribe(subscriber, classOf[ResetTokenProviderEvent])
-
-  def unsubscribe(subscriber: ActorRef): Unit = eventStream.unsubscribe(subscriber)
 
   def table: TableQuery[ResetTokenTable] = tokens
 
@@ -151,7 +148,7 @@ class ResetTokenProvider @Inject()(
           case 1 => token
           case _ => throw new RuntimeException("Cannot create ResetToken instance in database: Internal error")
         } onSuccessSideEffect { token =>
-          eventStream.publish(ResetTokenProviderEvents.TokenCreated(token, userID, configuration))
+          events.publish(ResetTokenProviderEvents.TokenCreated(token, userID, configuration))
         }
       case (None, _) => throw new RuntimeException("Cannot create ResetToken instance in database: User does not exist")
     }
@@ -162,7 +159,7 @@ class ResetTokenProvider @Inject()(
     val deleteAction = tokens.filter(_.token === token).delete
 
     db.run((userIDAction zip deleteAction).transactionally) onSuccessSideEffect {
-      case (Some(userID), _) => eventStream.publish(ResetTokenProviderEvents.TokenDeleted(token, userID, configuration))
+      case (Some(userID), _) => events.publish(ResetTokenProviderEvents.TokenDeleted(token, userID, configuration))
       case (None, _)         => logger.warn(s"Empty user for reset token: $token")
     } map (_._2)
   }

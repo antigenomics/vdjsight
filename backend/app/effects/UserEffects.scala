@@ -1,9 +1,9 @@
 package effects
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.{Actor, Props}
 import com.google.inject.{Inject, Singleton}
 import models.token.{ResetTokenProvider, VerificationTokenProvider}
-import models.user.{UserPermissionsProvider, UserProvider, UserProviderEvent, UserProviderEvents}
+import models.user.{UserPermissionsProvider, UserProviderEvent, UserProviderEvents}
 import play.api.inject.ApplicationLifecycle
 
 object UserEffectsActor {
@@ -23,13 +23,11 @@ class UserEffectsActor(upp: UserPermissionsProvider, vtp: VerificationTokenProvi
 @Singleton
 class UserEffects @Inject()(
   lifecycle: ApplicationLifecycle,
-  actorSystem: ActorSystem,
-  up: UserProvider,
+  events: EffectsEventsStream,
   upp: UserPermissionsProvider,
   vtp: VerificationTokenProvider,
   rtp: ResetTokenProvider
-) extends AbstractEffects[UserProviderEvent](lifecycle) {
-  final override lazy val effects = actorSystem.actorOf(UserEffectsActor.props(upp, vtp, rtp), "user-effects-actor")
+) extends AbstractEffects[UserProviderEvent](lifecycle, events) {
 
-  override def stream: EventStreaming[UserProviderEvent] = up
+  final override lazy val effects = events.actorSystem.actorOf(UserEffectsActor.props(upp, vtp, rtp), "user-effects-actor")
 }

@@ -3,13 +3,14 @@ package models.token
 import models.ModelsTestTag
 import org.scalatest.Assertions
 import specs.BaseTestSpecWithDatabaseAndApplication
-import traits.{DatabaseProviders, DatabaseUsers}
+import traits.{DatabaseProviders, DatabaseUsers, EffectsStream}
 
 import scala.concurrent.Future
-import scala.language.reflectiveCalls
+import scala.concurrent.duration._
+import scala.language.{postfixOps, reflectiveCalls}
 import scala.util.{Failure, Success}
 
-class VerificationTokenSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProviders with DatabaseUsers {
+class VerificationTokenSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProviders with DatabaseUsers with EffectsStream {
 
   "VerificationMethod" should {
 
@@ -49,17 +50,22 @@ class VerificationTokenSpec extends BaseTestSpecWithDatabaseAndApplication with 
     }
 
     "be able to create verification token for not verified user" taggedAs ModelsTestTag in {
+      val probe = events.probe[VerificationTokenProviderEvent]
       vtp.create(users.notVerifiedUser.uuid).transform {
-        case Success(_) => Success(Assertions.succeed)
+        case Success(_) =>
+          probe.expectMsgType[VerificationTokenProviderEvents.TokenCreated]
+          Success(Assertions.succeed)
         case Failure(_) => Assertions.fail
       }
     }
 
     "not create many tokens for one user and return the single one" taggedAs ModelsTestTag in {
+      val probe = events.probe[VerificationTokenProviderEvent]
       for {
         token1 <- vtp.create(users.notVerifiedUser.uuid)
         token2 <- vtp.create(users.notVerifiedUser.uuid)
         check  <- token1 shouldEqual token2
+        _      <- Future(probe.expectNoMessage(100 milliseconds))
       } yield check
     }
 
@@ -85,10 +91,12 @@ class VerificationTokenSpec extends BaseTestSpecWithDatabaseAndApplication with 
     }
 
     "be able to delete verification token" taggedAs ModelsTestTag in {
+      val probe = events.probe[VerificationTokenProviderEvent]
       for {
         createdToken <- vtp.create(users.notVerifiedUser.uuid)
         _            <- vtp.delete(createdToken)
         deletedToken <- vtp.get(createdToken)
+        _            <- Future(probe.expectMsgType[VerificationTokenProviderEvents.TokenDeleted])
       } yield deletedToken should be(empty)
     }
 

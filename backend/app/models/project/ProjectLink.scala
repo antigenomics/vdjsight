@@ -3,6 +3,7 @@ package models.project
 import java.util.UUID
 
 import com.google.inject.{Inject, Singleton}
+import effects.{AbstractEffectEvent, EffectsEventsStream}
 import models.user.{User, UserProvider, UserTable}
 import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
@@ -10,6 +11,7 @@ import play.db.NamedDatabase
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
+import utils.FutureUtils._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.{higherKinds, implicitConversions, postfixOps}
@@ -69,8 +71,16 @@ object ProjectLinkTable {
 
 }
 
+trait ProjectLinkProviderEvent extends AbstractEffectEvent
+
+object ProjectLinkProviderEvents {
+  case class ProjectLinkCreated(userID: UUID, projectID: UUID) extends ProjectProviderEvent
+  case class ProjectLinkUpdated(userID: UUID, projectID: UUID) extends ProjectProviderEvent
+  case class ProjectLinkDeleted(userID: UUID, projectID: UUID) extends ProjectProviderEvent
+}
+
 @Singleton
-class ProjectLinkProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider)(
+class ProjectLinkProvider @Inject()(@NamedDatabase("default") protected val dbConfigProvider: DatabaseConfigProvider, events: EffectsEventsStream)(
   implicit ec: ExecutionContext,
   pp: ProjectProvider,
   up: UserProvider
@@ -108,12 +118,9 @@ class ProjectLinkProvider @Inject()(@NamedDatabase("default") protected val dbCo
     val checkProjectExist = pp.table.filter(_.uuid === projectID).result.headOption
     val checkLinkExist = links
       .filter(
-        l =>
-          l.userID                === userID &&
-          l.projectID             === projectID &&
-          l.isUploadAllowed       === isUploadAllowed &&
-          l.isDeleteAllowed       === isDeleteAllowed &&
-          l.isModificationAllowed === isModificationAllowed
+        link =>
+          link.userID    === userID &&
+          link.projectID === projectID
       )
       .result
       .headOption
@@ -121,7 +128,17 @@ class ProjectLinkProvider @Inject()(@NamedDatabase("default") protected val dbCo
     db.run((checkUserExist zip checkProjectExist zip checkLinkExist).transactionally) flatMap {
       case ((Some(_), Some(_)), Some(link)) => Future.successful(link.uuid)
       case ((Some(user), Some(project)), None) =>
-        throw new NotImplementedError("Not implemented")
+        val isShared = project.ownerID != user.uuid
+        val linkID   = UUID.randomUUID()
+        val link     = ProjectLink(linkID, projectID, userID, isShared, isUploadAllowed, isDeleteAllowed, isModificationAllowed)
+
+        db.run(links += link) map {
+          case 1 => linkID
+          case _ => throw new RuntimeException("Cannot create ProjectLink instance in database: Internal error")
+        } onSuccessSideEffect { _ =>
+          events.publish(ProjectLinkProviderEvents.ProjectLinkCreated(userID, projectID))
+        }
+
       case ((None, _), _) => throw new RuntimeException("Cannot create VerificationToken instance in database: User does not exist")
       case ((_, None), _) => throw new RuntimeException("Cannot create VerificationToken instance in database: Project does not exist")
     }

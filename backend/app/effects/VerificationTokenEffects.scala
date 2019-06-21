@@ -1,6 +1,6 @@
 package effects
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.{Actor, Props}
 import com.google.inject.{Inject, Singleton}
 import models.token.{VerificationMethod, VerificationTokenProvider, VerificationTokenProviderEvent, VerificationTokenProviderEvents}
 import models.user.UserProvider
@@ -32,10 +32,9 @@ class VerificationTokenEffectsActor(up: UserProvider, vtp: VerificationTokenProv
 }
 
 @Singleton
-class VerificationTokenEffects @Inject()(lifecycle: ApplicationLifecycle, actorSystem: ActorSystem, up: UserProvider, vtp: VerificationTokenProvider)(
+class VerificationTokenEffects @Inject()(lifecycle: ApplicationLifecycle, events: EffectsEventsStream, up: UserProvider, vtp: VerificationTokenProvider)(
   implicit ec: ExecutionContext
-) extends AbstractEffects[VerificationTokenProviderEvent](lifecycle) {
-  final override lazy val effects = actorSystem.actorOf(VerificationTokenEffectsActor.props(up, vtp), "verification-token-effects-actor")
+) extends AbstractEffects[VerificationTokenProviderEvent](lifecycle, events) {
 
-  override def stream: EventStreaming[VerificationTokenProviderEvent] = vtp
+  final override lazy val effects = events.actorSystem.actorOf(VerificationTokenEffectsActor.props(up, vtp), "verification-token-effects-actor")
 }

@@ -1,8 +1,8 @@
 package effects
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.{Actor, Props}
 import com.google.inject.{Inject, Singleton}
-import models.project.{ProjectPermissionsProvider, ProjectProvider, ProjectProviderEvent, ProjectProviderEvents}
+import models.project.{ProjectPermissionsProvider, ProjectProviderEvent, ProjectProviderEvents}
 import play.api.inject.ApplicationLifecycle
 
 object ProjectEffectsActor {
@@ -18,13 +18,8 @@ class ProjectEffectsActor(ppp: ProjectPermissionsProvider) extends Actor {
 }
 
 @Singleton
-class ProjectEffects @Inject()(
-  lifecycle: ApplicationLifecycle,
-  actorSystem: ActorSystem,
-  pp: ProjectProvider,
-  ppp: ProjectPermissionsProvider
-) extends AbstractEffects[ProjectProviderEvent](lifecycle) {
-  final override lazy val effects = actorSystem.actorOf(ProjectEffectsActor.props(ppp), "projects-effects-actor")
+class ProjectEffects @Inject()(lifecycle: ApplicationLifecycle, events: EffectsEventsStream, ppp: ProjectPermissionsProvider)
+    extends AbstractEffects[ProjectProviderEvent](lifecycle, events) {
 
-  override def stream: EventStreaming[ProjectProviderEvent] = pp
+  final override lazy val effects = events.actorSystem.actorOf(ProjectEffectsActor.props(ppp), "projects-effects-actor")
 }

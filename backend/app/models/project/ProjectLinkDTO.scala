@@ -7,6 +7,7 @@ import play.api.libs.json.{Format, Json}
 case class ProjectLinkDTO(
   uuid: UUID,
   name: String,
+  description: String,
   isShared: Boolean,
   isUploadAllowed: Boolean,
   isDeleteAllowed: Boolean,
@@ -22,6 +23,7 @@ object ProjectLinkDTO {
     ProjectLinkDTO(
       uuid                  = link.uuid,
       name                  = project.name,
+      description           = project.description,
       isShared              = link.isShared,
       isUploadAllowed       = link.isUploadAllowed,
       isDeleteAllowed       = link.isDeleteAllowed,
