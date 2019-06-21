@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { ProjectsListComponent } from 'pages/projects/pages/list/projects-list.component';
 import { ProjectsListModule } from 'pages/projects/pages/list/projects-list.module';
 import { ProjectsPageComponent } from 'pages/projects/projects.component';
+import { ProjectsOverviewService } from 'pages/projects/services/projects-overview.service';
 
 const ProjectsRouting = RouterModule.forChild([
   {
@@ -17,6 +18,7 @@ const ProjectsRouting = RouterModule.forChild([
 
 @NgModule({
   imports:      [ CommonModule, ProjectsRouting, ProjectsListModule ],
-  declarations: [ ProjectsPageComponent ]
+  declarations: [ ProjectsPageComponent ],
+  providers:    [ ProjectsOverviewService ]
 })
 export class ProjectsModule {}

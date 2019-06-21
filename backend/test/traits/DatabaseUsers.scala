@@ -38,7 +38,7 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders wi
   private def generateNotVerifiedUser: TestUser = {
     val userEventProbe            = events.probe[UserProviderEvent]
     val userPermissionsEventProbe = events.probe[UserPermissionsProviderEvent]
-    val verificationEventProbe    = events.probe[VerificationTokenProvider]
+    val verificationEventProbe    = events.probe[VerificationTokenProviderEvent]
     val credentials = TestUserCredentials(
       login    = "tokens-test-not-verified",
       email    = "tokens-test-not-verified@mail.com",

@@ -2,7 +2,7 @@ package traits
 
 import akka.actor.ActorSystem
 import akka.testkit.TestProbe
-import effects.EffectsEventsStream
+import effects.{AbstractEffectEvent, EffectsEventsStream}
 import play.api.Application
 
 import scala.reflect.{ClassTag, _}
@@ -13,7 +13,7 @@ trait EffectsStream {
 
   final val events = new {
 
-    def probe[T](implicit ct: ClassTag[T]): TestProbe = {
+    def probe[T <: AbstractEffectEvent](implicit ct: ClassTag[T]): TestProbe = {
       val probe = TestProbe()
       _events.stream.subscribe(probe.ref, classTag[T].runtimeClass)
       probe

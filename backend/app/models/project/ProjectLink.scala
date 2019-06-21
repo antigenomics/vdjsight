@@ -112,7 +112,7 @@ class ProjectLinkProvider @Inject()(@NamedDatabase("default") protected val dbCo
     isUploadAllowed: Boolean       = true,
     isDeleteAllowed: Boolean       = true,
     isModificationAllowed: Boolean = true
-  ): Future[UUID] = {
+  ): Future[ProjectLink] = {
 
     val checkUserExist    = up.table.filter(_.uuid === userID).result.headOption
     val checkProjectExist = pp.table.filter(_.uuid === projectID).result.headOption
@@ -126,14 +126,14 @@ class ProjectLinkProvider @Inject()(@NamedDatabase("default") protected val dbCo
       .headOption
 
     db.run((checkUserExist zip checkProjectExist zip checkLinkExist).transactionally) flatMap {
-      case ((Some(_), Some(_)), Some(link)) => Future.successful(link.uuid)
+      case ((Some(_), Some(_)), Some(link)) => Future.successful(link)
       case ((Some(user), Some(project)), None) =>
         val isShared = project.ownerID != user.uuid
         val linkID   = UUID.randomUUID()
         val link     = ProjectLink(linkID, projectID, userID, isShared, isUploadAllowed, isDeleteAllowed, isModificationAllowed)
 
         db.run(links += link) map {
-          case 1 => linkID
+          case 1 => link
           case _ => throw new RuntimeException("Cannot create ProjectLink instance in database: Internal error")
         } onSuccessSideEffect { _ =>
           events.publish(ProjectLinkProviderEvents.ProjectLinkCreated(userID, projectID))

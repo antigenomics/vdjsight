@@ -7,6 +7,7 @@ import play.api.routing.sird._
 
 class ProjectsOverviewRouter @Inject()(controller: ProjectsOverviewController) extends SimpleRouter {
   override def routes: Routes = {
-    case GET(p"/list") => controller.list
+    case GET(p"/list")  => controller.list
+    case POST(p"/list") => controller.create
   }
 }

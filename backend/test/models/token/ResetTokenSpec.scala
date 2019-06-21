@@ -36,7 +36,7 @@ class ResetTokenSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
       rtp.table.baseTableRow.tableName shouldEqual ResetTokenTable.TABLE_NAME
     }
 
-    "get empty list on empty table" taggedAs ModelsTestTag in {
+    "list empty list on empty table" taggedAs ModelsTestTag in {
       rtp.all.map {
         _ should be(empty)
       }
@@ -79,7 +79,7 @@ class ResetTokenSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
       } yield check
     }
 
-    "get not empty list on not empty table" taggedAs ModelsTestTag in {
+    "list not empty list on not empty table" taggedAs ModelsTestTag in {
       for {
         _ <- rtp.create(users.notVerifiedUser.uuid)
         s <- rtp.all

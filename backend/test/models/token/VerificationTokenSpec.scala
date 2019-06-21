@@ -36,7 +36,7 @@ class VerificationTokenSpec extends BaseTestSpecWithDatabaseAndApplication with 
       vtp.table.baseTableRow.tableName shouldEqual VerificationTokenTable.TABLE_NAME
     }
 
-    "get empty list on empty table" taggedAs ModelsTestTag in {
+    "list empty list on empty table" taggedAs ModelsTestTag in {
       vtp.all.map {
         _ should be(empty)
       }
@@ -69,7 +69,7 @@ class VerificationTokenSpec extends BaseTestSpecWithDatabaseAndApplication with 
       } yield check
     }
 
-    "get not empty list on not empty table" taggedAs ModelsTestTag in {
+    "list not empty list on not empty table" taggedAs ModelsTestTag in {
       for {
         _ <- vtp.create(users.notVerifiedUser.uuid)
         s <- vtp.all

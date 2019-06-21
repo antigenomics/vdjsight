@@ -14,7 +14,7 @@ export const environment: ApplicationEnvironment = {
     limits:   {
       timeout: 250,
       count:   5,
-      retry:   3
+      retry:   0
     }
   }
 };

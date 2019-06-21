@@ -2,9 +2,9 @@ package controllers.projects.overview
 
 import actions.{SessionRequest, SessionRequestAction}
 import com.google.inject.{Inject, Singleton}
-import controllers.projects.overview.dto.ProjectsOverviewListResponse
+import controllers.projects.overview.dto.{ProjectsOverviewCreateRequest, ProjectsOverviewCreateResponse, ProjectsOverviewListResponse}
 import controllers.{ControllerHelpers, WithRecoverAction}
-import models.project.{ProjectLinkDTO, ProjectLinkProvider}
+import models.project.{ProjectLinkDTO, ProjectLinkProvider, ProjectProvider}
 import models.user.UserProvider
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.i18n.{Lang, Messages, MessagesApi}
@@ -18,6 +18,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ProjectsOverviewController @Inject()(cc: ControllerComponents, session: SessionRequestAction, messagesAPI: MessagesApi)(
   implicit ec: ExecutionContext,
   up: UserProvider,
+  pp: ProjectProvider,
   plp: ProjectLinkProvider
 ) extends AbstractController(cc) {
 
@@ -40,6 +41,14 @@ class ProjectsOverviewController @Inject()(cc: ControllerComponents, session: Se
   def list: Action[JsValue] = projectsOverviewAction { implicit request =>
     plp.findForUserWithProject(request.userID.get).map { projects =>
       Ok(ServerResponse(ProjectsOverviewListResponse(projects.map(ProjectLinkDTO(_)))))
+    }
+  }
+
+  def create: Action[JsValue] = projectsOverviewActionWithValidate[ProjectsOverviewCreateRequest]() { (request, create) =>
+    pp.create(request.userID.get, create.name, create.description) flatMap { project =>
+      plp.create(request.userID.get, project.uuid).map { link =>
+        Ok(ServerResponse(ProjectsOverviewCreateResponse(ProjectLinkDTO(link, project))))
+      }
     }
   }
 
