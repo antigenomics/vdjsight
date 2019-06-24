@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter } from '@angular/core';
 import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
 
 @Component({
@@ -9,4 +9,7 @@ import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
 export class ProjectItemComponent {
   @Input()
   public project: ProjectEntity;
+
+  @Output()
+  public onDelete = new EventEmitter();
 }

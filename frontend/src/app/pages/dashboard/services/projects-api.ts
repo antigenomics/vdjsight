@@ -15,4 +15,9 @@ export namespace ProjectsAPI {
     readonly link: ProjectLink;
   }
 
+  export interface DeleteRequest {
+    readonly id: string;
+    readonly force: boolean;
+  }
+
 }

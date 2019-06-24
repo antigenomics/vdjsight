@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
-import { CreateProjectEntity } from 'pages/dashboard/models/projects/projects';
+import { CreateProjectEntity, ProjectEntity } from 'pages/dashboard/models/projects/projects';
 
 @Component({
   selector:        'vs-projects',
   templateUrl:     './projects.component.html',
+  styleUrls:       [ './projects.component.less' ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectsComponent {
@@ -23,6 +24,10 @@ export class ProjectsComponent {
       entity:  CreateProjectEntity(),
       request: { name: 'New project', description: 'No description' }
     }));
+  }
+
+  public delete(project: ProjectEntity): void {
+    this.store.dispatch(ProjectsActions.forceDelete({ entity: project }));
   }
 
 }

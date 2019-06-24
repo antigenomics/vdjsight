@@ -1,6 +1,6 @@
 <ng-container *ngIf="projects.length; else empty">
     <div class="ui divided items cursor pointer" smoothHeight [smoothTrigger]="projects">
-        <div class="item" *ngFor="let project of projects" vs-project-item [project]="project"></div>
+        <div class="item" *ngFor="let project of projects" vs-project-item [project]="project" (onDelete)="onDelete.emit(project)"></div>
     </div>
 </ng-container>
 <ng-template #empty>

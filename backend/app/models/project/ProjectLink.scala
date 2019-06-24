@@ -118,10 +118,10 @@ object ProjectLinkTable {
 trait ProjectLinkProviderEvent extends AbstractEffectEvent
 
 object ProjectLinkProviderEvents {
-  case class ProjectLinkCreated(userID: UUID, projectID: UUID) extends ProjectProviderEvent
-  case class ProjectLinkDeleteScheduled(linkID: UUID) extends ProjectProviderEvent
-  case class ProjectLinkDeleteCancelled(linkID: UUID) extends ProjectProviderEvent
-  case class ProjectLinkDeleted(userID: UUID, projectID: UUID) extends ProjectProviderEvent
+  case class ProjectLinkCreated(projectLink: ProjectLink) extends ProjectLinkProviderEvent
+  case class ProjectLinkDeleteScheduled(linkID: UUID) extends ProjectLinkProviderEvent
+  case class ProjectLinkDeleteCancelled(linkID: UUID) extends ProjectLinkProviderEvent
+  case class ProjectLinkDeleted(projectLink: ProjectLink) extends ProjectLinkProviderEvent
 }
 
 @Singleton
@@ -211,7 +211,7 @@ class ProjectLinkProvider @Inject()(
           case 1 => link
           case _ => throw new RuntimeException("Cannot create ProjectLink instance in database: Internal error")
         } onSuccessSideEffect { _ =>
-          events.publish(ProjectLinkProviderEvents.ProjectLinkCreated(userID, projectID))
+          events.publish(ProjectLinkProviderEvents.ProjectLinkCreated(link))
         }
 
       case ((None, _), _) => throw new RuntimeException("Cannot create VerificationToken instance in database: User does not exist")
@@ -238,15 +238,12 @@ class ProjectLinkProvider @Inject()(
   }
 
   def delete(uuid: UUID): Future[Int] = {
-    val userIDAction    = links.filter(_.uuid === uuid).map(_.userID).result.headOption
-    val projectIDAction = links.filter(_.uuid === uuid).map(_.projectID).result.headOption
-    val deleteAction    = links.filter(_.uuid === uuid).delete
+    val linkAction   = links.filter(_.uuid === uuid).result.headOption
+    val deleteAction = links.filter(_.uuid === uuid).delete
 
-    db.run((userIDAction zip projectIDAction zip deleteAction).transactionally) onSuccessSideEffect {
-      case ((Some(userID), Some(projectID)), 1) => events.publish(ProjectLinkProviderEvents.ProjectLinkDeleted(userID, projectID))
-      case ((None, _), _)                       => logger.warn(s"Empty user for project link: $uuid")
-      case ((_, None), _)                       => logger.warn(s"Empty project for project link: $uuid")
-      case _                                    => logger.warn(s"Cannot delete project link: $uuid")
+    db.run((linkAction zip deleteAction).transactionally) onSuccessSideEffect {
+      case (Some(link), 1) => events.publish(ProjectLinkProviderEvents.ProjectLinkDeleted(link))
+      case _               => logger.warn(s"Cannot delete project link: $uuid")
     } map (_._2)
   }
 

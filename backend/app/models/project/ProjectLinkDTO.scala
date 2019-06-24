@@ -1,8 +1,9 @@
 package models.project
 
-import java.util.UUID
+import java.sql.Timestamp
+import java.util.{Date, UUID}
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Json, Writes}
 
 case class ProjectLinkDTO(
   uuid: UUID,
@@ -12,11 +13,13 @@ case class ProjectLinkDTO(
   isShared: Boolean,
   isUploadAllowed: Boolean,
   isDeleteAllowed: Boolean,
-  isModificationAllowed: Boolean
+  isModificationAllowed: Boolean,
+  deleteOn: Option[Timestamp]
 )
 
 object ProjectLinkDTO {
-  implicit val projectDTOFormat: Format[ProjectLinkDTO] = Json.format[ProjectLinkDTO]
+  implicit val timestampWriter: Writes[Option[Timestamp]] = (o: Option[Timestamp]) => Json.toJson(o.map(t => new Date(t.getTime)))
+  implicit val projectDTOFormat: Writes[ProjectLinkDTO]   = Json.writes[ProjectLinkDTO]
 
   def apply(link: ProjectLink, project: Project): ProjectLinkDTO = {
     ProjectLinkDTO(
@@ -27,7 +30,8 @@ object ProjectLinkDTO {
       isShared              = link.isShared,
       isUploadAllowed       = link.isUploadAllowed,
       isDeleteAllowed       = link.isDeleteAllowed,
-      isModificationAllowed = link.isModificationAllowed
+      isModificationAllowed = link.isModificationAllowed,
+      deleteOn              = link.deleteOn
     )
   }
 

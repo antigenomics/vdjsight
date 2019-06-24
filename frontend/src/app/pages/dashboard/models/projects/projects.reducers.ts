@@ -30,11 +30,22 @@ const projectsReducer = createReducer(
   on(ProjectsActions.create, (state, { entity }) => {
     return ProjectsStateAdapter.addOne(entity, state);
   }),
-  on(ProjectsActions.createSuccess, (state, { entity, link }) => {
-    return ProjectsStateAdapter.updateOne({ id: entity.id, changes: { link } }, state);
+  on(ProjectsActions.createSuccess, (state, { entityId, link }) => {
+    return ProjectsStateAdapter.updateOne({ id: entityId, changes: { link } }, state);
   }),
-  on(ProjectsActions.createFailed, (state, { entity }) => {
-    return ProjectsStateAdapter.updateOne({ id: entity.id, changes: { isRejected: true } }, state);
+  on(ProjectsActions.createFailed, (state, { entityId }) => {
+    return ProjectsStateAdapter.updateOne({ id: entityId, changes: { isRejected: true } }, state);
+  }),
+
+  /** Force delete actions */
+  on(ProjectsActions.forceDelete, (state, { entity }) => {
+    return ProjectsStateAdapter.updateOne({ id: entity.id, changes: { isDeleting: true } }, state);
+  }),
+  on(ProjectsActions.forceDeleteSuccess, (state, { entityId }) => {
+    return ProjectsStateAdapter.removeOne(entityId, state);
+  }),
+  on(ProjectsActions.forceDeleteFailed, (state, { entityId }) => {
+    return ProjectsStateAdapter.updateOne({ id: entityId, changes: { isDeleting: false } }, state);
   })
 );
 

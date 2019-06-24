@@ -6,12 +6,13 @@ import { ApplicationActions } from 'models/application/application.actions';
 import { fromRoot, RootModuleState } from 'models/root';
 import { UserActions } from 'models/user/user.actions';
 import { Observable, throwError } from 'rxjs';
-import { catchError, flatMap, map, retryWhen, take } from 'rxjs/operators';
+import { catchError, flatMap, map, retryWhen, take, tap } from 'rxjs/operators';
 import { BackendRequest, BackendRequestEndpoint, BackendRequestOptions, BackendRequestType } from './backend-request';
 import { BackendErrorResponse, BackendSuccessResponse } from './backend-response';
 import { HttpStatusCode } from './http-codes';
 import { RateLimiter } from './rate-limiter';
 import { retryStrategy } from './retry-strategy';
+import { LoggerService } from 'utils/logger/logger.service';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,8 @@ export class BackendService {
 
   private readonly limiter: RateLimiter<BackendRequest<any>> = new RateLimiter(BackendService.rateTimeout, BackendService.rateCount); // tslint:disable-line:no-any
 
-  constructor(private http: HttpClient, private store: Store<RootModuleState>) {}
+  constructor(private readonly http: HttpClient, private readonly store: Store<RootModuleState>,
+              private readonly logger: LoggerService) {}
 
   public get<T, B = T>(endpoint: BackendRequestEndpoint, options?: BackendRequestOptions): Observable<B> {
     return this.next<T, B>({ endpoint: endpoint, type: BackendRequestType.GET }, options);
@@ -68,7 +70,12 @@ export class BackendService {
         default:
           break;
       }
-      return call.pipe(retryWhen(retryStrategy(BackendService.retryCount)), take(1), map((response) => response.data));
+      return call.pipe(
+        retryWhen(retryStrategy(BackendService.retryCount)),
+        take(1),
+        map((response) => response.data),
+        tap((data) => this.logger.debug('[BackendResponse]', data))
+      );
     }), catchError((error: HttpErrorResponse) => {
       if (error.status === 0) {
         return this.store.pipe(select(fromRoot.isApplicationBackendDead), take(1), flatMap((isBackendDead) => {

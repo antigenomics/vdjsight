@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ProjectButtonsModule } from 'pages/dashboard/pages/projects/containers/buttons/project-buttons.module';
-import { ProjectItemsModule } from 'pages/dashboard/pages/projects/containers/items/project-items.module';
+import { ProjectsListModule } from 'pages/dashboard/pages/projects/components/list/projects-list.module';
 import { ProjectsComponent } from 'pages/dashboard/pages/projects/projects.component';
 
 @NgModule({
-  imports:      [ CommonModule, ProjectItemsModule, ProjectButtonsModule ],
+  imports:      [ CommonModule, ProjectsListModule ],
   declarations: [ ProjectsComponent ],
   exports:      [ ProjectsComponent ]
 })

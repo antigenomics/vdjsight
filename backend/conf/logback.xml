@@ -44,6 +44,19 @@
         </encoder>
     </appender>
 
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%level] %logger{15} - %message%n%xException{10}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="STDOUT" />
+    </appender>
+
+    <logger name="play" level="INFO" />
+    <logger name="application" level="DEBUG" />
+
     <!-- additivity=false ensures access log data only goes to the access log -->
     <logger name="access" level="INFO" additivity="false">
         <appender-ref ref="ACCESS_FILE"/>
@@ -52,6 +65,7 @@
     <root level="WARN">
         <appender-ref ref="FILE"/>
         <appender-ref ref="SECURITY_FILE"/>
+        <appender-ref ref="ASYNCSTDOUT" />
     </root>
 
 </configuration>

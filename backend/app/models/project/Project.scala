@@ -62,9 +62,9 @@ object ProjectTable {
 trait ProjectProviderEvent extends AbstractEffectEvent
 
 object ProjectProviderEvents {
-  case class ProjectCreated(uuid: UUID) extends ProjectProviderEvent
-  case class ProjectUpdated(uuid: UUID) extends ProjectProviderEvent
-  case class ProjectDeleted(uuid: UUID) extends ProjectProviderEvent
+  case class ProjectCreated(project: Project) extends ProjectProviderEvent
+  case class ProjectUpdated(projectId: UUID) extends ProjectProviderEvent
+  case class ProjectDeleted(project: Project) extends ProjectProviderEvent
 }
 
 @Singleton
@@ -117,7 +117,7 @@ class ProjectProvider @Inject()(
             case 1 => project
             case _ => throw new RuntimeException("Cannot create Project instance in database: Internal error")
           } onSuccessSideEffect { _ =>
-            events.publish(ProjectProviderEvents.ProjectCreated(projectID))
+            events.publish(ProjectProviderEvents.ProjectCreated(project))
           }
         }
       case None => throw new RuntimeException("Cannot create Project instance in database: User does not exist")
@@ -131,6 +131,15 @@ class ProjectProvider @Inject()(
     } onSuccessSideEffect { _ =>
       events.publish(ProjectProviderEvents.ProjectUpdated(projectID))
     }
+  }
+
+  def delete(uuid: UUID): Future[Int] = {
+    val projectAction = projects.filter(_.uuid === uuid).result.headOption
+    val deleteAction  = projects.filter(_.uuid === uuid).delete
+    db.run(projectAction zip deleteAction) onSuccessSideEffect {
+      case (project, _) =>
+        project.foreach(p => events.publish(ProjectProviderEvents.ProjectDeleted(p)))
+    } map (_._2)
   }
 
 }

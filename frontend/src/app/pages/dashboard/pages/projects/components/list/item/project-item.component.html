@@ -4,6 +4,9 @@
         <div class="meta">
             <span>{{ project.link.description }}</span>
         </div>
+        <div class="extra">
+            <i class="right floated trash alternate outline icon" (click)="onDelete.emit()"></i>
+        </div>
     </ng-container>
     <ng-template #notLoaded>
         <ng-container *ngIf="project.isRejected; else loading">

@@ -2,7 +2,7 @@ package controllers.projects
 
 import actions.{SessionRequest, SessionRequestAction}
 import com.google.inject.{Inject, Singleton}
-import controllers.projects.dto.{ProjectsCreateRequest, ProjectsCreateResponse, ProjectsListResponse}
+import controllers.projects.dto.{ProjectsCreateRequest, ProjectsCreateResponse, ProjectsDeleteRequest, ProjectsListResponse}
 import controllers.{ControllerHelpers, WithRecoverAction}
 import models.project.{ProjectLinkDTO, ProjectLinkProvider, ProjectProvider}
 import models.user.UserProvider
@@ -10,7 +10,7 @@ import org.slf4j.{Logger, LoggerFactory}
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.libs.json.{JsValue, Reads}
 import play.api.mvc._
-import server.ServerResponse
+import server.{ServerResponse, ServerResponseError}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -40,16 +40,32 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
 
   def list: Action[Unit] = projectsAction(parse.empty) { implicit request =>
     plp.findForUserWithProject(request.userID.get).map { projects =>
-      Ok(ServerResponse(ProjectsListResponse(projects.filter(_._1.deleteOn.isEmpty).map(ProjectLinkDTO(_)))))
+      Ok(ServerResponse(ProjectsListResponse(projects.map(ProjectLinkDTO(_)))))
     }
   }
 
   def create: Action[JsValue] = projectsActionWithValidate[ProjectsCreateRequest]() { (request, create) =>
-    Thread.sleep(1000)
     pp.create(request.userID.get, create.name, create.description) flatMap { project =>
       plp.create(request.userID.get, project.uuid).map { link =>
         Ok(ServerResponse(ProjectsCreateResponse(ProjectLinkDTO(link, project))))
       }
+    }
+  }
+
+  def delete: Action[JsValue] = projectsActionWithValidate[ProjectsDeleteRequest]() { (request, delete) =>
+    plp.getWithUser(delete.id).flatMap {
+      case Some((link, user)) =>
+        if (user.uuid != request.userID.get) {
+          Future(Forbidden(ServerResponseError("You are not allowed to delete this link")))
+        } else {
+          if (delete.force) {
+            plp.delete(link.uuid)
+          } else {
+            plp.scheduleDelete(link.uuid)
+          }
+          Future(Ok(ServerResponse.EMPTY))
+        }
+      case _ => Future(BadRequest(ServerResponseError("Invalid request")))
     }
   }
 

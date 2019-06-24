@@ -31,8 +31,16 @@ export class ProjectsEffects implements OnInitEffects {
   public create$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectsActions.create),
     mergeMap((action) => this.projects.create(action.request).pipe(
-      map((response) => ProjectsActions.createSuccess({ entity: action.entity, link: response.link })),
-      catchError((error) => of(ProjectsActions.createFailed({ entity: action.entity, error })))
+      map((response) => ProjectsActions.createSuccess({ entityId: action.entity.id, link: response.link })),
+      catchError((error) => of(ProjectsActions.createFailed({ entityId: action.entity.id, error })))
+    ))
+  ));
+
+  public delete$ = createEffect(() => this.actions$.pipe(
+    ofType(ProjectsActions.forceDelete),
+    mergeMap((action) => this.projects.delete({ id: action.entity.link.uuid, force: true }).pipe(
+      map(() => ProjectsActions.forceDeleteSuccess({ entityId: action.entity.id })),
+      catchError(() => of(ProjectsActions.forceDeleteFailed({ entityId: action.entity.id })))
     ))
   ));
 

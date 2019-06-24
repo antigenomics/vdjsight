@@ -11,9 +11,9 @@ object ProjectEffectsActor {
 
 class ProjectEffectsActor() extends Actor {
   override def receive: Receive = {
-    case ProjectProviderEvents.ProjectCreated(uuid) =>
-    case ProjectProviderEvents.ProjectUpdated(uuid) =>
-    case ProjectProviderEvents.ProjectDeleted(uuid) =>
+    case ProjectProviderEvents.ProjectCreated(_) =>
+    case ProjectProviderEvents.ProjectUpdated(_) =>
+    case ProjectProviderEvents.ProjectDeleted(_) =>
   }
 }
 

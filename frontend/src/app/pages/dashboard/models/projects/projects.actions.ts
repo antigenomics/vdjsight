@@ -11,7 +11,11 @@ export namespace ProjectsActions {
   export const loadFailed  = createAction('[Projects] Load Failed', props<{ error: BackendErrorResponse }>());
 
   export const create        = createAction('[Projects] Create', props<{ entity: ProjectEntity, request: ProjectsAPI.CreateRequest }>());
-  export const createSuccess = createAction('[Projects] Create Success', props<{ entity: ProjectEntity, link: ProjectLink }>());
-  export const createFailed  = createAction('[Projects] Create Failed', props<{ entity: ProjectEntity, error: BackendErrorResponse }>());
+  export const createSuccess = createAction('[Projects] Create Success', props<{ entityId: number, link: ProjectLink }>());
+  export const createFailed  = createAction('[Projects] Create Failed', props<{ entityId: number, error: BackendErrorResponse }>());
+
+  export const forceDelete        = createAction('[Projects] Force Delete', props<{ entity: ProjectEntity }>());
+  export const forceDeleteSuccess = createAction('[Projects] Force Delete Success', props<{ entityId: number }>());
+  export const forceDeleteFailed  = createAction('[Projects] Force Delete Failed', props<{ entityId: number }>());
 
 }

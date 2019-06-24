@@ -2,24 +2,21 @@
     <div class="ui raised padded violet segment">
         <h2 class="ui header">Projects overview</h2>
         <div class="ui equal height top pushed full height stretched grid">
-            <div class="stretched row">
-                <div class="six wide column">
-                    <div style="min-height: 300px; padding-bottom: 20px">
-                        <ng-container *ngIf="isLoaded; else notLoaded">
-                            <div vs-project-items [projects]="projects$ | async"></div>
+            <div class="row">
+                <div class="six wide projects column">
+                    <ng-container *ngIf="isLoaded; else notLoaded">
+                        <div vs-projects-list [projects]="projects$ | async" (onDelete)="delete($event)"></div>
+                    </ng-container>
+                    <ng-template #notLoaded>
+                        <ng-container *ngIf="isLoading">
+                            <div class="ui active centered inline violet loader"></div>
                         </ng-container>
-                        <ng-template #notLoaded>
-                            <ng-container *ngIf="isLoading">
-                                <div class="ui active centered inline violet loader"></div>
-                            </ng-container>
-                            <ng-container *ngIf="isLoadFailed">
-                                Load failed??
-                            </ng-container>
-                        </ng-template>
-                    </div>
-                    <vs-projects-buttons (onCreate)="create()"></vs-projects-buttons>
+                        <ng-container *ngIf="isLoadFailed">
+                            Load failed??
+                        </ng-container>
+                    </ng-template>
                 </div>
-                <div class="ten wide column">
+                <div class="ten wide projects column">
                     <h3 class="ui center aligned top very pushed icon header">
                         <i class="clipboard outline icon"></i>
                         <div class="content">
@@ -27,6 +24,11 @@
                             <div class="sub header">Or create a new one</div>
                         </div>
                     </h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="six wide column">
+                    <vs-projects-list-util-buttons (onCreate)="create()"></vs-projects-list-util-buttons>
                 </div>
             </div>
         </div>
