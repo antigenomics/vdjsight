@@ -36,12 +36,30 @@ export class ProjectsEffects implements OnInitEffects {
     ))
   ));
 
+  public update$ = createEffect(() => this.actions$.pipe(
+    ofType(ProjectsActions.update),
+    mergeMap((action) =>
+      this.projects.update({ uuid: action.entity.link.uuid, name: action.name, description: action.description }).pipe(
+        map((response) => ProjectsActions.updateSuccess({ entityId: action.entity.id, link: response.link })),
+        catchError(() => of(ProjectsActions.updateFailed({ entityId: action.entity.id })))
+      ))
+  ));
+
   public delete$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectsActions.forceDelete),
-    mergeMap((action) => this.projects.delete({ id: action.entity.link.uuid, force: true }).pipe(
+    mergeMap((action) => this.projects.delete({ uuid: action.entity.link.uuid, force: true }).pipe(
       map(() => ProjectsActions.forceDeleteSuccess({ entityId: action.entity.id })),
       catchError(() => of(ProjectsActions.forceDeleteFailed({ entityId: action.entity.id })))
     ))
+  ));
+
+  public deleteSuccess$ = createEffect(() => this.actions$.pipe(
+    ofType(ProjectsActions.forceDeleteSuccess),
+    withLatestFrom(
+      this.store.pipe(select(fromDashboard.getHighlightedProject))
+    ),
+    filter(([ action, highlighted ]) => highlighted !== undefined && action.entityId === highlighted.id),
+    map(() => ProjectsActions.highlightClear())
   ));
 
   constructor(private readonly actions$: Actions, private readonly store: Store<DashboardModuleState>,

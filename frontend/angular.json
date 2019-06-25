@@ -30,6 +30,9 @@
               "src/styles/styles.less",
               "src/styles/semantic/dist/semantic.min.css"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [ "src/styles" ]
+            },
             "scripts": []
           },
           "configurations": {

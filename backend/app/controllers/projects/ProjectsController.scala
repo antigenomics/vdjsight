@@ -2,7 +2,7 @@ package controllers.projects
 
 import actions.{SessionRequest, SessionRequestAction}
 import com.google.inject.{Inject, Singleton}
-import controllers.projects.dto.{ProjectsCreateRequest, ProjectsCreateResponse, ProjectsDeleteRequest, ProjectsListResponse}
+import controllers.projects.dto._
 import controllers.{ControllerHelpers, WithRecoverAction}
 import models.project.{ProjectLinkDTO, ProjectLinkProvider, ProjectProvider}
 import models.user.UserProvider
@@ -45,6 +45,7 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
   }
 
   def create: Action[JsValue] = projectsActionWithValidate[ProjectsCreateRequest]() { (request, create) =>
+    // TODO check projects count
     pp.create(request.userID.get, create.name, create.description) flatMap { project =>
       plp.create(request.userID.get, project.uuid).map { link =>
         Ok(ServerResponse(ProjectsCreateResponse(ProjectLinkDTO(link, project))))
@@ -52,18 +53,32 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
     }
   }
 
-  def delete: Action[JsValue] = projectsActionWithValidate[ProjectsDeleteRequest]() { (request, delete) =>
-    plp.getWithUser(delete.id).flatMap {
-      case Some((link, user)) =>
-        if (user.uuid != request.userID.get) {
-          Future(Forbidden(ServerResponseError("You are not allowed to delete this link")))
+  def update: Action[JsValue] = projectsActionWithValidate[ProjectsUpdateRequest]() { (request, update) =>
+    plp.get(update.uuid) flatMap {
+      case Some(link) =>
+        if (link.userID == request.userID.get && link.isModificationAllowed) {
+          pp.update(link.projectID, update.name, update.description) map { project =>
+            Ok(ServerResponse(ProjectsUpdateResponse(ProjectLinkDTO(link, project))))
+          }
         } else {
+          Future(Forbidden(ServerResponseError("You are not allowed to do this")))
+        }
+      case None => Future(BadRequest(ServerResponseError("Invalid request")))
+    }
+  }
+
+  def delete: Action[JsValue] = projectsActionWithValidate[ProjectsDeleteRequest]() { (request, delete) =>
+    plp.get(delete.uuid).flatMap {
+      case Some(link) =>
+        if (link.userID == request.userID.get) {
           if (delete.force) {
             plp.delete(link.uuid)
+            Future(Ok(ServerResponse.EMPTY))
           } else {
-            plp.scheduleDelete(link.uuid)
+            Future(NotImplemented(ServerResponseError("Scheduled delete not implemented yet")))
           }
-          Future(Ok(ServerResponse.EMPTY))
+        } else {
+          Future(Forbidden(ServerResponseError("You are not allowed to do this")))
         }
       case _ => Future(BadRequest(ServerResponseError("Invalid request")))
     }

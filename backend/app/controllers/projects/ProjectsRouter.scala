@@ -9,6 +9,7 @@ class ProjectsRouter @Inject()(controller: ProjectsController) extends SimpleRou
   override def routes: Routes = {
     case GET(p"/list")         => controller.list
     case POST(p"/list/create") => controller.create
+    case POST(p"/list/update") => controller.update
     case POST(p"/list/delete") => controller.delete
   }
 }

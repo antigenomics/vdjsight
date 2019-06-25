@@ -1,19 +1,31 @@
-<div class="content">
-    <ng-container *ngIf="project.link; else notLoaded">
-        <a class="header">{{ project.link.name }}</a>
-        <div class="meta">
-            <span>{{ project.link.description }}</span>
-        </div>
-        <div class="extra">
-            <i class="right floated trash alternate outline icon" (click)="onDelete.emit()"></i>
-        </div>
-    </ng-container>
-    <ng-template #notLoaded>
+<div class="content" *ngIf="project.link; else notLoaded" [@project-item]="state">
+    <a class="header">{{ project.link.name }}</a>
+    <div class="meta">
+        <span>{{ project.link.description }}</span>
+    </div>
+    <div class="extra">
+        <i class="right floated trash alternate outline icon" (click)="onDelete.emit()"></i>
+    </div>
+</div>
+<ng-template #notLoaded>
+    <div @project-util>
         <ng-container *ngIf="project.isRejected; else loading">
-            Failed to create project
+            <div class="ui icon negative small message">
+                <i class="exclamation triangle red icon"></i>
+                <div class="content">
+                    <div class="header">
+                        Failed to create new project
+                    </div>
+                </div>
+            </div>
         </ng-container>
         <ng-template #loading>
-            <div class="ui active inline text violet slow double loader">Creating</div>
+            <div class="ui tiny image">
+                <div class="ui active inline violet slow double loader"></div>
+            </div>
+            <div class="middle aligned content">
+                Creating new project
+            </div>
         </ng-template>
-    </ng-template>
-</div>
+    </div>
+</ng-template>

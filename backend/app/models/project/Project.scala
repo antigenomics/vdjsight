@@ -124,10 +124,12 @@ class ProjectProvider @Inject()(
     }
   }
 
-  def update(projectID: UUID, name: String, description: String): Future[Boolean] = {
-    db.run(projects.filter(_.uuid === projectID).map(p => (p.name, p.description)).update((name, description))) map {
-      case 1 => true
-      case _ => throw new RuntimeException("Cannot create Project instance in database: Internal error")
+  def update(projectID: UUID, name: String, description: String): Future[Project] = {
+    val updateAction   = projects.filter(_.uuid === projectID).map(p => (p.name, p.description)).update((name, description))
+    val updatedProject = projects.filter(_.uuid === projectID).result.headOption
+    db.run(updateAction zip updatedProject) map {
+      case (1, Some(project)) => project
+      case _                  => throw new RuntimeException("Cannot create Project instance in database: Internal error")
     } onSuccessSideEffect { _ =>
       events.publish(ProjectProviderEvents.ProjectUpdated(projectID))
     }

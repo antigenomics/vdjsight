@@ -9,6 +9,7 @@ export class ProjectsService {
 
   private static readonly ProjectsListEndpoint       = '/projects/list';
   private static readonly ProjectsListCreateEndpoint = '/projects/list/create';
+  private static readonly ProjectsListUpdateEndpoint = '/projects/list/update';
   private static readonly ProjectsListDeleteEndpoint = '/projects/list/delete';
 
   constructor(private backend: BackendService) {}
@@ -19,6 +20,10 @@ export class ProjectsService {
 
   public create(request: ProjectsAPI.CreateRequest): Observable<ProjectsAPI.CreateResponse> {
     return this.backend.post<ProjectsAPI.CreateRequest, ProjectsAPI.CreateResponse>(ProjectsService.ProjectsListCreateEndpoint, request);
+  }
+
+  public update(request: ProjectsAPI.UpdateRequest): Observable<ProjectsAPI.UpdateResponse> {
+    return this.backend.post<ProjectsAPI.UpdateRequest, ProjectsAPI.UpdateResponse>(ProjectsService.ProjectsListUpdateEndpoint, request);
   }
 
   public delete(request: ProjectsAPI.DeleteRequest): Observable<BackendMessageResponse> {

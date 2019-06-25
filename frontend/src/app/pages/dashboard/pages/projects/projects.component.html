@@ -1,35 +1,29 @@
 <div class="ui container top pushed">
-    <div class="ui raised padded violet segment">
-        <h2 class="ui header">Projects overview</h2>
-        <div class="ui equal height top pushed full height stretched grid">
-            <div class="row">
-                <div class="six wide projects column">
-                    <ng-container *ngIf="isLoaded; else notLoaded">
-                        <div vs-projects-list [projects]="projects$ | async" (onDelete)="delete($event)"></div>
+    <div class="ui equal height top pushed full height grid">
+        <div class="ui row">
+            <div class="six wide column">
+                <div class="ui raised padded violet projects segment">
+                    <ng-container *ngIf="isLoaded | async; else notLoaded">
+                        <div vs-projects-list [projects]="projects$ | async" [highlighted]="highlighted$ | async"
+                             (onDelete)="delete($event)" (onHighlight)="highlight($event)">
+                        </div>
                     </ng-container>
                     <ng-template #notLoaded>
-                        <ng-container *ngIf="isLoading">
+                        <ng-container *ngIf="isLoading | async">
                             <div class="ui active centered inline violet loader"></div>
                         </ng-container>
-                        <ng-container *ngIf="isLoadFailed">
-                            Load failed??
+                        <ng-container *ngIf="isLoadFailed | async">
+                            Load failed
                         </ng-container>
                     </ng-template>
                 </div>
-                <div class="ten wide projects column">
-                    <h3 class="ui center aligned top very pushed icon header">
-                        <i class="clipboard outline icon"></i>
-                        <div class="content">
-                            Select project from left panel
-                            <div class="sub header">Or create a new one</div>
-                        </div>
-                    </h3>
-                </div>
+                <vs-projects-list-util-buttons (onCreate)="create()"></vs-projects-list-util-buttons>
             </div>
-            <div class="row">
-                <div class="six wide column">
-                    <vs-projects-list-util-buttons (onCreate)="create()"></vs-projects-list-util-buttons>
+            <div class="ten wide column">
+                <div class="ui raised padded violet projects segment">
+                    <vs-project-highlighted [highlighted]="highlighted$ | async" (onUpdate)="update($event)"></vs-project-highlighted>
                 </div>
+                <vs-project-highlighted-util-buttons></vs-project-highlighted-util-buttons>
             </div>
         </div>
     </div>

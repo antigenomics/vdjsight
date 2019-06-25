@@ -15,8 +15,18 @@ export namespace ProjectsAPI {
     readonly link: ProjectLink;
   }
 
+  export interface UpdateRequest {
+    readonly uuid: string;
+    readonly name: string;
+    readonly description: string;
+  }
+
+  export interface UpdateResponse {
+    readonly link: ProjectLink;
+  }
+
   export interface DeleteRequest {
-    readonly id: string;
+    readonly uuid: string;
     readonly force: boolean;
   }
 

@@ -37,6 +37,17 @@ const projectsReducer = createReducer(
     return ProjectsStateAdapter.updateOne({ id: entityId, changes: { isRejected: true } }, state);
   }),
 
+  /** Update actions */
+  on(ProjectsActions.update, (state, { entity }) => {
+    return ProjectsStateAdapter.updateOne({ id: entity.id, changes: { isUpdating: true } }, state);
+  }),
+  on(ProjectsActions.updateSuccess, (state, { entityId, link }) => {
+    return ProjectsStateAdapter.updateOne({ id: entityId, changes: { isUpdating: false, link } }, state);
+  }),
+  on(ProjectsActions.updateFailed, (state, { entityId }) => {
+    return ProjectsStateAdapter.updateOne({ id: entityId, changes: { isUpdating: false } }, state);
+  }),
+
   /** Force delete actions */
   on(ProjectsActions.forceDelete, (state, { entity }) => {
     return ProjectsStateAdapter.updateOne({ id: entity.id, changes: { isDeleting: true } }, state);
@@ -46,7 +57,15 @@ const projectsReducer = createReducer(
   }),
   on(ProjectsActions.forceDeleteFailed, (state, { entityId }) => {
     return ProjectsStateAdapter.updateOne({ id: entityId, changes: { isDeleting: false } }, state);
-  })
+  }),
+
+  /** Highlight actions */
+  on(ProjectsActions.highlight, (state, { entityId }) => produce(state, (draft) => {
+    draft.highlightedProjectID = entityId;
+  })),
+  on(ProjectsActions.highlightClear, (state) => produce(state, (draft) => {
+    draft.highlightedProjectID = undefined;
+  }))
 );
 
 export namespace __fromProjectsReducers {

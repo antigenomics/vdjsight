@@ -1,6 +1,9 @@
 <ng-container *ngIf="projects.length; else empty">
-    <div class="ui divided items cursor pointer" smoothHeight [smoothTrigger]="projects">
-        <div class="item" *ngFor="let project of projects" vs-project-item [project]="project" (onDelete)="onDelete.emit(project)"></div>
+    <div class="ui very relaxed items cursor pointer">
+        <div class="item" *ngFor="let project of projects; trackBy: trackProjectBy" vs-project-item [project]="project"
+             [ngClass]="{ 'active': project === highlighted }" [isHighlighted]="project === highlighted"
+             (onDelete)="onDelete.emit(project)" (onHighlight)="onHighlight.emit(project)">
+        </div>
     </div>
 </ng-container>
 <ng-template #empty>

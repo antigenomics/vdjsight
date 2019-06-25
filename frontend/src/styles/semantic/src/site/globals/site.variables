@@ -2,16 +2,4 @@
      User Global Variables
 *******************************/
 
-@red            : #e34a33;
-@orange         : #fdae6b;
-@yellow         : #fdcc8a;
-@olive          : #b2e2e2;
-@green          : #2ca25f;
-@teal           : #66c2a4;
-@blue           : #6baed6;
-@violet         : #9e9ac8;
-@purple         : #d7b5d8;
-@pink           : #df65b0;
-@brown          : #a6611a;
-@grey           : #ececec;
-@black          : #000000;
+@import "../../../../color-scheme.variables";
