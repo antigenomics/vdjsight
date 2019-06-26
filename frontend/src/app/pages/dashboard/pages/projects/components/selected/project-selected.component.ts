@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
 
 @Component({
-  selector:        'vs-project-highlighted',
+  selector:        'div[vs-project-highlighted]',
   templateUrl:     './project-highlighted.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
