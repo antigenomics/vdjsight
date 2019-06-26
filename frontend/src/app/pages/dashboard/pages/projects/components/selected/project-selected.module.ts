@@ -2,13 +2,14 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DebouncedInputModule } from 'directives/debounced_input/debounced-input.module';
-import { ProjectHighlightedFormComponent } from 'pages/dashboard/pages/projects/components/highlighted/project-form/project-highlighted-form.component';
-import { ProjectHighlightedComponent } from 'pages/dashboard/pages/projects/components/highlighted/project-highlighted.component';
-import { ProjectHighlightedUtilButtonsComponent } from 'pages/dashboard/pages/projects/components/highlighted/util-buttons/project-highlighted-util-buttons.component';
+import { ProjectHighlightedFormComponent } from 'pages/dashboard/pages/projects/components/selected/project-form/project-highlighted-form.component';
+import { ProjectSelectedComponent } from 'pages/dashboard/pages/projects/components/selected/project-selected.component';
+import { ProjectHighlightedUtilButtonsComponent } from 'pages/dashboard/pages/projects/components/selected/util-buttons/project-highlighted-util-buttons.component';
+import { EnterInputModule } from 'directives/enter_input/enter-input.module';
 
 @NgModule({
-  imports:      [ CommonModule, FormsModule, DebouncedInputModule ],
-  declarations: [ ProjectHighlightedComponent, ProjectHighlightedFormComponent, ProjectHighlightedUtilButtonsComponent ],
-  exports:      [ ProjectHighlightedComponent, ProjectHighlightedUtilButtonsComponent ]
+  imports:      [ CommonModule, FormsModule, DebouncedInputModule, EnterInputModule ],
+  declarations: [ ProjectSelectedComponent, ProjectHighlightedFormComponent, ProjectHighlightedUtilButtonsComponent ],
+  exports:      [ ProjectSelectedComponent, ProjectHighlightedUtilButtonsComponent ]
 })
-export class ProjectHighlightedModule {}
+export class ProjectSelectedModule {}

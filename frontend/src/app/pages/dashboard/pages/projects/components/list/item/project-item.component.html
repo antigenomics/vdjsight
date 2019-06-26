@@ -1,30 +1,40 @@
-<div class="content" *ngIf="project.link; else notLoaded" [@project-item]="state">
-    <a class="header">{{ project.link.name }}</a>
-    <div class="meta">
-        <span>{{ project.link.description }}</span>
+<ng-container *ngIf="project.link; else notLoaded">
+    <div class="content" [@content]="state">
+        <div class="project" (click)="select($event)" [@project]="state" smoothHeight [smoothTrigger]="project.link">
+            <a class="header" [@flicker]="project.link.name">{{ project.link.name }}</a>
+            <div class="meta" [@flicker]="project.link.description">
+                <span>{{ project.link.description }}</span>
+            </div>
+            <div class="extra">
+                <ng-container *ngIf="!project.isDeleting; else deleting">
+                    <i class="right floated trash alternate outline icon" (click)="delete($event)"></i>
+                </ng-container>
+                <ng-template #deleting>
+                    <i class="notched circle loading icon"></i>
+                </ng-template>
+            </div>
+        </div>
     </div>
-    <div class="extra">
-        <i class="right floated trash alternate outline icon" (click)="onDelete.emit()"></i>
-    </div>
-</div>
+</ng-container>
 <ng-template #notLoaded>
-    <div @project-util>
+    <div class="util" smoothHeight [smoothTrigger]="project">
         <ng-container *ngIf="project.isRejected; else loading">
-            <div class="ui icon negative small message">
-                <i class="exclamation triangle red icon"></i>
-                <div class="content">
-                    <div class="header">
-                        Failed to create new project
+            <div class="failed">
+                <div class="ui icon negative small message">
+                    <i class="exclamation triangle red icon"></i>
+                    <div class="content">
+                        <div class="header">
+                            Failed to create new project
+                        </div>
                     </div>
                 </div>
             </div>
         </ng-container>
         <ng-template #loading>
-            <div class="ui tiny image">
-                <div class="ui active inline violet slow double loader"></div>
-            </div>
-            <div class="middle aligned content">
-                Creating new project
+            <div class="loading">
+                <div class="ui active centered inline violet slow double text loader">
+                    Creating new project
+                </div>
             </div>
         </ng-template>
     </div>

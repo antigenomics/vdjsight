@@ -146,7 +146,7 @@ class ProjectLinkProvider @Inject()(
 
   final private val expiredLinksDeleteScheduler: Option[Cancellable] = Option(!configuration.delete.interval.isZero).collect {
     case true =>
-      actorSystem.scheduler.schedule(0 seconds, configuration.delete.interval.getSeconds seconds) {
+      actorSystem.scheduler.schedule(10 seconds, configuration.delete.interval.getSeconds seconds) {
         expired().map(_.map(_.uuid)).flatMap(delete) onComplete {
           case Failure(exception) => logger.warn("Cannot delete expired project links", exception)
           case _                  =>

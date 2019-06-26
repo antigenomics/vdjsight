@@ -1,44 +1,65 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, HostListener, OnChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnChanges, Output } from '@angular/core';
+import { FlickerAnimation } from 'animations/flicker.animation';
 import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
-import { ProjectItemMainAnimation, ProjectItemUtilAnimation } from 'pages/dashboard/pages/projects/components/list/item/project-item.animation';
+import { ContentAnimation, ProjectAnimation, ProjectSmoothHeightAnimation } from 'pages/dashboard/pages/projects/components/list/item/project-item.animation';
+
+type ProjectItemState = 'nothing' | 'highlight' | 'selected' | 'deleting' | 'updating';
 
 @Component({
   selector:        'div[vs-project-item]',
   templateUrl:     './project-item.component.html',
+  styleUrls:       [ './project-item.component.less' ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations:      [ ProjectItemMainAnimation, ProjectItemUtilAnimation ]
+  animations:      [ ContentAnimation, ProjectAnimation, ProjectSmoothHeightAnimation, FlickerAnimation ]
 })
 export class ProjectItemComponent implements OnChanges {
   @Input()
   public project: ProjectEntity;
 
   @Input()
-  public isHighlighted: boolean;
+  public isSelected: boolean;
+
+  @Output()
+  public onSelect = new EventEmitter();
 
   @Output()
   public onDelete = new EventEmitter();
 
-  @Output()
-  public onHighlight = new EventEmitter();
-
-  public state: 'nothing' | 'highlight' = 'nothing';
+  public state: ProjectItemState = 'nothing';
 
   @HostListener('mouseenter')
   public mouseenter(): void {
-    this.state = 'highlight';
+    this.state = this._state('highlight');
   }
 
   @HostListener('mouseleave')
   public mouseleave(): void {
-    this.state = this.isHighlighted ? 'highlight' : 'nothing';
-  }
-
-  @HostListener('click')
-  public click(): void {
-    this.onHighlight.emit();
+    this.state = this._state('nothing');
   }
 
   public ngOnChanges(): void {
-    this.state = this.isHighlighted ? 'highlight' : 'nothing';
+    this.state = this._state('nothing');
+  }
+
+  public select(event: Event) {
+    event.stopPropagation();
+    this.onSelect.emit();
+  }
+
+  public delete(event: Event) {
+    event.stopPropagation();
+    this.onDelete.emit();
+  }
+
+  private _state(fallback: ProjectItemState): ProjectItemState {
+    if (this.project.isDeleting) {
+      return 'deleting';
+    } else if (this.project.isUpdating) {
+      return 'updating';
+    } else if (this.isSelected) {
+      return 'selected';
+    } else {
+      return fallback;
+    }
   }
 }

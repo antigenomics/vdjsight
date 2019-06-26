@@ -94,9 +94,9 @@ class ProjectSpec extends BaseTestSpecWithDatabaseAndApplication with DatabasePr
     "be able to update existing project" taggedAs ModelsTestTag in {
       val p = events.probe[ProjectProviderEvent]
       for {
-        isUpdated <- pp.update(projects.existingProject(users.verifiedUser).uuid, "new-name", "new-description")
+        project <- pp.update(projects.existingProject(users.verifiedUser).uuid, "new-name", "new-description")
         _         <- Future(p.expectMsgType[ProjectProviderEvents.ProjectUpdated])
-        _         <- isUpdated shouldEqual true
+        _         <- project.uuid shouldEqual projects.existingProject(users.verifiedUser).uuid
         updated   <- pp.get(projects.existingProject(users.verifiedUser).uuid)
         _         <- updated should not be empty
         _         <- updated.get.name shouldEqual "new-name"

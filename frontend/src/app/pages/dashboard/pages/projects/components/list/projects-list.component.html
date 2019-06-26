@@ -1,17 +1,18 @@
-<ng-container *ngIf="projects.length; else empty">
-    <div class="ui very relaxed items cursor pointer">
-        <div class="item" *ngFor="let project of projects; trackBy: trackProjectBy" vs-project-item [project]="project"
-             [ngClass]="{ 'active': project === highlighted }" [isHighlighted]="project === highlighted"
-             (onDelete)="onDelete.emit(project)" (onHighlight)="onHighlight.emit(project)">
+<div class="content">
+    <ng-container *ngIf="projects.length; else empty">
+        <div class="project item" @list *ngFor="let project of projects; trackBy: trackProjectBy" vs-project-item [project]="project"
+             [ngClass]="{ 'active': project === selected.get }" [isSelected]="project === selected.get"
+             (onDelete)="onDelete.emit(project)" (onSelect)="onSelect.emit(project)">
         </div>
-    </div>
-</ng-container>
-<ng-template #empty>
-    <h3 class="ui center aligned top very pushed icon header">
-        <i class="folder plus icon"></i>
-        <div class="content">
-            You don't have any project yet
-            <div class="sub header">Click on 'Create new project' button to start</div>
-        </div>
-    </h3>
-</ng-template>
+        <div class="project filler item"></div>
+    </ng-container>
+    <ng-template #empty>
+        <h3 class="ui center aligned icon header vertically centered" @fade-in>
+            <i class="folder plus icon"></i>
+            <div class="content">
+                You don't have any project yet
+                <div class="sub header">Click on 'Create new project' button to start</div>
+            </div>
+        </h3>
+    </ng-template>
+</div>

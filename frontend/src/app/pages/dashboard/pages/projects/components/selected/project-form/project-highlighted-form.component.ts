@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { ProjectHighlightedDescriptionAnimation } from 'pages/dashboard/pages/projects/components/highlighted/project-form/project-highlighted-form.animations';
+import { ProjectHighlightedDescriptionAnimation } from 'pages/dashboard/pages/projects/components/selected/project-form/project-highlighted-form.animations';
 
 @Component({
   selector:        'vs-highlighted-project-form',

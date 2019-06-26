@@ -1,5 +1,23 @@
-.projects.segment {
-  min-height: 400px;
-  max-height: 700px;
+.ui.projects.grid {
+  padding: 0 !important;
+  min-height: 500px !important;
+  max-height: 500px !important;
+}
+
+.projects.list {
+  padding: 0 !important;
+  border-right: 1px solid #d4d4d5 !important;
+  min-height: 500px !important;
+  max-height: 500px !important;
   overflow-y: auto;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+
+.projects.list > div {
+  height: 100%;
+}
+
+.projects.list::-webkit-scrollbar {
+  display: none;
 }

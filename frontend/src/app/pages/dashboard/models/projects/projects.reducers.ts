@@ -60,11 +60,11 @@ const projectsReducer = createReducer(
   }),
 
   /** Highlight actions */
-  on(ProjectsActions.highlight, (state, { entityId }) => produce(state, (draft) => {
-    draft.highlightedProjectID = entityId;
+  on(ProjectsActions.selectProject, (state, { entityId }) => produce(state, (draft) => {
+    draft.selectedID = entityId;
   })),
-  on(ProjectsActions.highlightClear, (state) => produce(state, (draft) => {
-    draft.highlightedProjectID = undefined;
+  on(ProjectsActions.clearProjectSelection, (state) => produce(state, (draft) => {
+    draft.selectedID = undefined;
   }))
 );
 

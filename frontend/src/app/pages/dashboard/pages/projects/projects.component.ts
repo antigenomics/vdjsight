@@ -18,7 +18,7 @@ export class ProjectsComponent {
   public readonly isLoaded     = this.store.pipe(select(fromDashboard.isProjectsLoaded));
   public readonly isLoadFailed = this.store.pipe(select(fromDashboard.isProjectsLoadFailed));
   public readonly projects$    = this.store.pipe(select(fromDashboard.getAllProjects));
-  public readonly highlighted$ = this.store.pipe(select(fromDashboard.getHighlightedProject));
+  public readonly selected$    = this.store.pipe(select(fromDashboard.getSelectedProjectOption));
 
   constructor(private readonly store: Store<DashboardModuleState>) {}
 
@@ -37,8 +37,8 @@ export class ProjectsComponent {
     this.store.dispatch(ProjectsActions.forceDelete({ entity: project }));
   }
 
-  public highlight(project: ProjectEntity): void {
-    this.store.dispatch(ProjectsActions.highlight({ entityId: project.id }));
+  public select(project: ProjectEntity): void {
+    this.store.dispatch(ProjectsActions.selectProject({ entityId: project.id }));
   }
 
 }

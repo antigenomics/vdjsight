@@ -35,6 +35,7 @@
     "strictNullChecks": false,
     "extendedDiagnostics": true,
     "paths": {
+      "animations/*"  : [ "src/app/animations/*" ],
       "components/*"  : [ "src/app/components/*" ],
       "directives/*"  : [ "src/app/directives/*" ],
       "pages/*"       : [ "src/app/pages/*" ],

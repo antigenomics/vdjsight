@@ -3,10 +3,10 @@ import { NgModule } from '@angular/core';
 import { ProjectsListModule } from 'pages/dashboard/pages/projects/components/list/projects-list.module';
 import { ProjectsComponent } from 'pages/dashboard/pages/projects/projects.component';
 import { SmoothHeightModule } from 'directives/smooth_height/smooth-height.module';
-import { ProjectHighlightedModule } from 'pages/dashboard/pages/projects/components/highlighted/project-highlighted.module';
+import { ProjectSelectedModule } from 'pages/dashboard/pages/projects/components/selected/project-selected.module';
 
 @NgModule({
-  imports:      [ CommonModule, ProjectsListModule, ProjectHighlightedModule, SmoothHeightModule ],
+  imports:      [ CommonModule, ProjectsListModule, ProjectSelectedModule, SmoothHeightModule ],
   declarations: [ ProjectsComponent ],
   exports:      [ ProjectsComponent ]
 })

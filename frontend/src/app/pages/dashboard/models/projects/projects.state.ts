@@ -5,7 +5,7 @@ interface __ProjectStateInner { // tslint:disable-line:class-name
   loading: boolean;
   loaded: boolean;
   loadFailed: boolean;
-  highlightedProjectID?: number;
+  selectedID?: number;
 }
 
 export type __ProjectsState = EntityState<ProjectEntity> & __ProjectStateInner;
@@ -29,13 +29,10 @@ export namespace __fromProjectsState {
 
   export const { selectIds, selectEntities, selectAll, selectTotal } = ProjectsStateAdapter.getSelectors();
 
-  export const isSomeProjectHighlighted = (state: __ProjectsState) => state.highlightedProjectID !== undefined;
-  export const getHighlightedProjectID  = (state: __ProjectsState) => state.highlightedProjectID;
-  export const getHighlightedProject    = (state: __ProjectsState) => {
-    if (state.highlightedProjectID !== undefined) {
-      return selectByID(state, { id: getHighlightedProjectID(state) });
-    }
-    return undefined;
+  export const isSomeProjectSelected    = (state: __ProjectsState) => state.selectedID !== undefined && state.entities[ state.selectedID ] !== undefined;
+  export const getSelectedProject       = (state: __ProjectsState) => state.selectedID !== undefined ? state.entities[ state.selectedID ] : undefined;
+  export const getSelectedProjectOption = (state: __ProjectsState) => {
+    return { isDefined: isSomeProjectSelected(state), get: getSelectedProject(state) };
   };
 
 }

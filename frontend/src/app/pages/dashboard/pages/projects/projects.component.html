@@ -1,29 +1,30 @@
 <div class="ui container top pushed">
-    <div class="ui equal height top pushed full height grid">
-        <div class="ui row">
-            <div class="six wide column">
-                <div class="ui raised padded violet projects segment">
-                    <ng-container *ngIf="isLoaded | async; else notLoaded">
-                        <div vs-projects-list [projects]="projects$ | async" [highlighted]="highlighted$ | async"
-                             (onDelete)="delete($event)" (onHighlight)="highlight($event)">
-                        </div>
+    <div class="ui raised violet attached segment">
+        <div class="ui projects grid">
+            <div class="six wide projects list column">
+                <ng-container *ngIf="isLoaded | async; else notLoaded">
+                    <div vs-projects-list [projects]="projects$ | async" [selected]="selected$ | async"
+                         (onDelete)="delete($event)" (onSelect)="select($event)">
+                    </div>
+                </ng-container>
+                <ng-template #notLoaded>
+                    <ng-container *ngIf="isLoading | async">
+                        <div class="ui active centered inline violet loader"></div>
                     </ng-container>
-                    <ng-template #notLoaded>
-                        <ng-container *ngIf="isLoading | async">
-                            <div class="ui active centered inline violet loader"></div>
-                        </ng-container>
-                        <ng-container *ngIf="isLoadFailed | async">
-                            Load failed
-                        </ng-container>
-                    </ng-template>
-                </div>
-                <vs-projects-list-util-buttons (onCreate)="create()"></vs-projects-list-util-buttons>
+                    <ng-container *ngIf="isLoadFailed | async">
+                        Load failed
+                    </ng-container>
+                </ng-template>
             </div>
-            <div class="ten wide column">
-                <div class="ui raised padded violet projects segment">
-                    <vs-project-highlighted [highlighted]="highlighted$ | async" (onUpdate)="update($event)"></vs-project-highlighted>
-                </div>
-                <vs-project-highlighted-util-buttons></vs-project-highlighted-util-buttons>
+            <div class="ten wide projects list column">
+                <div vs-project-selected [selected]="selected$ | async" (onUpdate)="update($event)"></div>
+            </div>
+        </div>
+    </div>
+    <div class="ui secondary bottom attached raised segment">
+        <div class="ui grid">
+            <div class="six wide column">
+                <vs-projects-list-util-buttons (onCreate)="create()"></vs-projects-list-util-buttons>
             </div>
         </div>
     </div>

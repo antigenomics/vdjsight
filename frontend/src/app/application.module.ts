@@ -39,7 +39,7 @@ const ApplicationRouting = RouterModule.forRoot([
     runGuardsAndResolvers: 'always'
   },
   {
-    path:                  'projects',
+    path:                  'dashboard',
     loadChildren:          () => import('pages/dashboard/dashboard.module').then((m) => m.DashboardModule),
     canLoad:               [ AuthorizedOnlyGuard ],
     canActivate:           [ AuthorizedOnlyGuard ],

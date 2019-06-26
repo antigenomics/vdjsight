@@ -1,20 +1,22 @@
-<ng-container *ngIf="highlighted && highlighted.link; else empty">
-    <div class="ui grid">
-        <div class="sixteen wide column">
-            <vs-highlighted-project-form
-                    [name]="highlighted.link.name" [description]="highlighted.link.description"
-                    [isUpdating]="highlighted.isUpdating"
-                    (onUpdate)="update($event)">
-            </vs-highlighted-project-form>
+<div class="content">
+    <ng-container *ngIf="selected.isDefined; else empty">
+        <div class="ui grid">
+            <div class="sixteen wide column">
+                <vs-highlighted-project-form
+                        [name]="selected.get.link.name" [description]="selected.get.link.description"
+                        [isUpdating]="selected.get.isUpdating"
+                        (onUpdate)="update($event)">
+                </vs-highlighted-project-form>
+            </div>
         </div>
-    </div>
-</ng-container>
-<ng-template #empty>
-    <h3 class="ui center aligned top middle pushed icon header">
-        <i class="clipboard outline icon"></i>
-        <div class="content">
-            Select project from left panel
-            <div class="sub header">Or create a new one</div>
-        </div>
-    </h3>
-</ng-template>
+    </ng-container>
+    <ng-template #empty>
+        <h3 class="ui center aligned icon header vertically centered" @fade-in>
+            <i class="clipboard outline icon"></i>
+            <div class="content">
+                Select project from left panel
+                <div class="sub header">Or create a new one</div>
+            </div>
+        </h3>
+    </ng-template>
+</div>

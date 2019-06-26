@@ -5,7 +5,7 @@ import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dash
 import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
 import { ProjectsService } from 'pages/dashboard/services/projects.service';
 import { of } from 'rxjs';
-import { catchError, filter, map, mergeMap, withLatestFrom } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, withLatestFrom, tap } from 'rxjs/operators';
 
 @Injectable()
 export class ProjectsEffects implements OnInitEffects {
@@ -56,10 +56,11 @@ export class ProjectsEffects implements OnInitEffects {
   public deleteSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectsActions.forceDeleteSuccess),
     withLatestFrom(
-      this.store.pipe(select(fromDashboard.getHighlightedProject))
+      this.store.pipe(select(fromDashboard.getSelectedProjectOption))
     ),
-    filter(([ action, highlighted ]) => highlighted !== undefined && action.entityId === highlighted.id),
-    map(() => ProjectsActions.highlightClear())
+    tap((a) => console.log(a)),
+    filter(([ action, selected ]) => selected.isDefined && action.entityId === selected.get.id),
+    map(() => ProjectsActions.clearProjectSelection())
   ));
 
   constructor(private readonly actions$: Actions, private readonly store: Store<DashboardModuleState>,
