@@ -14,6 +14,9 @@ export class ProjectSelectedComponent {
   public selected: { isDefined: boolean, get?: ProjectEntity };
 
   @Output()
+  public onClose = new EventEmitter();
+
+  @Output()
   public onUpdate = new EventEmitter<{ project: ProjectEntity, name: string, description: string }>();
 
   public update(event: { name: string, description: string }): void {

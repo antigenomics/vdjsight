@@ -1,19 +1,19 @@
 <div class="ui form" [ngClass]="{ 'violet double loading': isUpdating }">
     <div class="field">
         <label>Project name:</label>
-        <div class="ui huge transparent icon input" [ngClass]="{ 'disabled' : isUpdating }">
+        <div class="ui huge transparent icon input" [ngClass]="{ 'disabled' : isUpdating || isDeleting }">
             <input enter-input (onEnterPressed)="updateName($event)"
-                   type="text" [attr.placeholder]="namePlaceholder" [ngModel]="name" [disabled]="isUpdating">
+                   type="text" [attr.placeholder]="namePlaceholder" [ngModel]="name" [disabled]="isUpdating || isDeleting">
             <i class="icon"></i>
         </div>
     </div>
     <div class="field">
         <label>Description:</label>
-        <div class="ui description fluid large icon input" [ngClass]="{ 'disabled' : isUpdating }">
+        <div class="ui description fluid large icon input" [ngClass]="{ 'disabled' : isUpdating || isDeleting }">
             <textarea enter-input (onEnterPressed)="updateDescription($event)" style="width: 100%;" [@description]="descriptionState"
                       [attr.placeholder]="descriptionPlaceholder" [ngModel]="description"
                       (focusin)="selectDescription()" (focusout)="deselectDescription()"
-                      maxlength="150" rows="3" [disabled]="isUpdating">
+                      maxlength="150" rows="3" [disabled]="isUpdating || isDeleting">
             </textarea>
         </div>
     </div>

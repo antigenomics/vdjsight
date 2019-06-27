@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { ProjectHighlightedDescriptionAnimation } from 'pages/dashboard/pages/projects/components/selected/project-form/project-highlighted-form.animations';
+import { ProjectSelectedDescriptionAnimation } from 'pages/dashboard/pages/projects/components/selected/project-form/project-selected-form.animations';
 
 @Component({
-  selector:        'vs-highlighted-project-form',
-  templateUrl:     './project-highlighted-form.component.html',
-  styleUrls:       [ './project-highlighted-form.component.less' ],
+  selector:        'vs-selected-project-form',
+  templateUrl:     './project-selected-form.component.html',
+  styleUrls:       [ './project-selected-form.component.less' ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations:      [ ProjectHighlightedDescriptionAnimation ]
+  animations:      [ ProjectSelectedDescriptionAnimation ]
 })
-export class ProjectHighlightedFormComponent {
+export class ProjectSelectedFormComponent {
   private isDescriptionSelected = false;
 
   @Input()
@@ -19,6 +19,9 @@ export class ProjectHighlightedFormComponent {
 
   @Input()
   public isUpdating: boolean;
+
+  @Input()
+  public isDeleting: boolean;
 
   @Output()
   public onUpdate = new EventEmitter<{ name: string, description: string }>();
@@ -44,13 +47,15 @@ export class ProjectHighlightedFormComponent {
   }
 
   public updateName(name: string) {
-    if (name !== '') {
+    if (name && name !== '' && name !== this.name) {
       this.onUpdate.emit({ name, description: this.description });
     }
   }
 
   public updateDescription(description: string) {
-    this.onUpdate.emit({ name: this.name, description });
+    if (description) {
+      this.onUpdate.emit({ name: this.name, description });
+    }
   }
 
 }

@@ -41,4 +41,8 @@ export class ProjectsComponent {
     this.store.dispatch(ProjectsActions.selectProject({ entityId: project.id }));
   }
 
+  public deselect(): void {
+    this.store.dispatch(ProjectsActions.clearProjectSelection());
+  }
+
 }

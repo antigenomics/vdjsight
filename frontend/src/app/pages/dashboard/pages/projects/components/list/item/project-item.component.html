@@ -1,17 +1,9 @@
 <ng-container *ngIf="project.link; else notLoaded">
     <div class="content" [@content]="state">
-        <div class="project" (click)="select($event)" [@project]="state" smoothHeight [smoothTrigger]="project.link">
+        <div class="project" (click)="onSelect.emit()" [@project]="state" smoothHeight [smoothTrigger]="project.link">
             <a class="header" [@flicker]="project.link.name">{{ project.link.name }}</a>
             <div class="meta" [@flicker]="project.link.description">
                 <span>{{ project.link.description }}</span>
-            </div>
-            <div class="extra">
-                <ng-container *ngIf="!project.isDeleting; else deleting">
-                    <i class="right floated trash alternate outline icon" (click)="delete($event)"></i>
-                </ng-container>
-                <ng-template #deleting>
-                    <i class="notched circle loading icon"></i>
-                </ng-template>
             </div>
         </div>
     </div>

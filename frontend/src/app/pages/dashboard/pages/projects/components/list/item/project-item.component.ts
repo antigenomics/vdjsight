@@ -22,9 +22,6 @@ export class ProjectItemComponent implements OnChanges {
   @Output()
   public onSelect = new EventEmitter();
 
-  @Output()
-  public onDelete = new EventEmitter();
-
   public state: ProjectItemState = 'nothing';
 
   @HostListener('mouseenter')
@@ -39,16 +36,6 @@ export class ProjectItemComponent implements OnChanges {
 
   public ngOnChanges(): void {
     this.state = this._state('nothing');
-  }
-
-  public select(event: Event) {
-    event.stopPropagation();
-    this.onSelect.emit();
-  }
-
-  public delete(event: Event) {
-    event.stopPropagation();
-    this.onDelete.emit();
   }
 
   private _state(fallback: ProjectItemState): ProjectItemState {

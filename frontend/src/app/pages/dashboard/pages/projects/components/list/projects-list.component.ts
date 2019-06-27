@@ -20,9 +20,6 @@ export class ProjectsListComponent {
   @Output()
   public onSelect = new EventEmitter<ProjectEntity>();
 
-  @Output()
-  public onDelete = new EventEmitter<ProjectEntity>();
-
   public trackProjectBy(_: number, item: ProjectEntity) {
     return item.id;
   }

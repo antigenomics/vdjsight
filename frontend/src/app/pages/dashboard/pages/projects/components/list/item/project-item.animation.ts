@@ -22,6 +22,8 @@ export const ProjectAnimation = trigger('project', [
   state('nothing', style({ padding: '2em', 'padding-right': '2em' })),
   state('highlight', style({ 'padding-right': '1.5em' })),
   state('selected', style({ 'padding-right': '1.5em' })),
+  state('deleting', style({ 'padding-right': '1.5em' })),
+  state('updating', style({ 'padding-right': '1.5em' })),
   transition('* => *', [ animate('0.25s ease-in-out') ])
 ]);
 

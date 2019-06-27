@@ -1,6 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
-export const ProjectHighlightedDescriptionAnimation = trigger('description', [
+export const ProjectSelectedDescriptionAnimation = trigger('description', [
   state('transparent', style({
     'border-radius': 0,
     border:          '1px solid rgba(34, 36, 38,.0)',

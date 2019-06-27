@@ -1,10 +1,9 @@
 <div class="ui container top pushed">
     <div class="ui raised violet attached segment">
         <div class="ui projects grid">
-            <div class="six wide projects list column">
+            <div class="six wide projects list column right vertically divided">
                 <ng-container *ngIf="isLoaded | async; else notLoaded">
-                    <div vs-projects-list [projects]="projects$ | async" [selected]="selected$ | async"
-                         (onDelete)="delete($event)" (onSelect)="select($event)">
+                    <div vs-projects-list [projects]="projects$ | async" [selected]="selected$ | async" (onSelect)="select($event)">
                     </div>
                 </ng-container>
                 <ng-template #notLoaded>
@@ -17,14 +16,17 @@
                 </ng-template>
             </div>
             <div class="ten wide projects list column">
-                <div vs-project-selected [selected]="selected$ | async" (onUpdate)="update($event)"></div>
+                <div vs-project-selected [selected]="selected$ | async" (onUpdate)="update($event)" (onClose)="deselect()"></div>
             </div>
         </div>
     </div>
     <div class="ui secondary bottom attached raised segment">
         <div class="ui grid">
-            <div class="six wide column">
+            <div class="six wide column right vertically divided">
                 <vs-projects-list-util-buttons (onCreate)="create()"></vs-projects-list-util-buttons>
+            </div>
+            <div class="ten wide column">
+                <vs-project-selected-util-buttons [selected]="selected$ | async" (onDelete)="delete($event)"></vs-project-selected-util-buttons>
             </div>
         </div>
     </div>

@@ -1,0 +1,6 @@
+<ng-container *ngIf="selected.isDefined">
+    <button class="ui left floated orange button" [ngClass]="{ 'loading': selected.get.isDeleting }"
+            (click)="onDelete.emit(selected.get)">Delete
+    </button>
+    <button class="ui right floated violet button">Select</button>
+</ng-container>

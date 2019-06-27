@@ -1,12 +1,15 @@
 <div class="content">
     <ng-container *ngIf="selected.isDefined; else empty">
         <div class="ui grid">
-            <div class="sixteen wide column">
-                <vs-highlighted-project-form
+            <div class="fifteen wide column">
+                <vs-selected-project-form
                         [name]="selected.get.link.name" [description]="selected.get.link.description"
-                        [isUpdating]="selected.get.isUpdating"
+                        [isUpdating]="selected.get.isUpdating" [isDeleting]="selected.get.isDeleting"
                         (onUpdate)="update($event)">
-                </vs-highlighted-project-form>
+                </vs-selected-project-form>
+            </div>
+            <div class="one wide column">
+                <i class="times close icon cursor pointer" (click)="onClose.emit()"></i>
             </div>
         </div>
     </ng-container>
