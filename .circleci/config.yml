@@ -35,15 +35,13 @@ commands:
 jobs:
   frontend:
     executor: frontend-executor
-    environment:
-      CACHE_VERSION_ENV: 4
     steps:
       - checkout
       - restore_cache:
           keys:
-            - frontend-cache-{{ .Environment.CACHE_VERSION_ENV }}-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
-            - frontend-cache-{{ .Environment.CACHE_VERSION_ENV }}-{{ .Branch }}
-            - frontend-cache-{{ .Environment.CACHE_VERSION_ENV }}
+            - frontend-cache-4-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
+            - frontend-cache-4-{{ .Branch }}
+            - frontend-cache-4
       - run:
           name: Install frontend dependencies
           command: ./vdjsight.sh frontend install
@@ -68,21 +66,19 @@ jobs:
             rm -rf node_modules/semantic-ui || true
             rm -rf node_modules/fomantic-ui || true
       - save_cache:
-          key: frontend-cache-3-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
+          key: frontend-cache-4-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
           paths:
             - frontend/node_modules
 
   backend:
     executor: backend-executor
-    environment:
-      CACHE_VERSION_ENV: 4
     steps:
       - checkout
       - restore_cache:
           keys:
-            - backend-cache-{{ .Environment.CACHE_VERSION_ENV }}-{{ .Branch }}-{{ checksum "backend/build.sbt" }}
-            - backend-cache-{{ .Environment.CACHE_VERSION_ENV }}-{{ .Branch }}
-            - backend-cache-{{ .Environment.CACHE_VERSION_ENV }}
+            - backend-cache-4-{{ .Branch }}-{{ checksum "backend/build.sbt" }}
+            - backend-cache-4-{{ .Branch }}
+            - backend-cache-4
       - run:
           name: Building backend
           command: ./vdjsight.sh backend build
@@ -98,7 +94,7 @@ jobs:
       - docker-publish:
           project: bvdmitri/vdjsight-backend
       - save_cache:
-          key: backend-cache-2-{{ .Branch }}-{{ checksum "backend/build.sbt" }}
+          key: backend-cache-4-{{ .Branch }}-{{ checksum "backend/build.sbt" }}
           paths:
             - "~/.ivy2/cache"
             - "~/.sbt"
