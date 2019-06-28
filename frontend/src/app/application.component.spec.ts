@@ -1,12 +1,13 @@
 import { async, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { provideMockStore } from '@ngrx/store/testing';
+import { NotificationsModule } from 'components/notifications/notifications.module';
 import { ApplicationComponent } from './application.component';
 
 describe('ApplicationComponent', () => {
 
   beforeEach(async(() => TestBed.configureTestingModule({
-      imports:      [ RouterTestingModule ],
+      imports:      [ RouterTestingModule, NotificationsModule ],
       declarations: [ ApplicationComponent ],
       providers:    [ provideMockStore() ]
     }).compileComponents()

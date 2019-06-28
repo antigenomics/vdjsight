@@ -1,0 +1,148 @@
+@import "color-scheme.variables";
+
+.notification {
+  text-align: left;
+  background-color: #fff;
+  max-width: 500px;
+  top: 0;
+  position: relative;
+  box-shadow: 1px 7px 14px -5px rgba(0, 0, 0, 0.2);
+  height: 100%;
+  display: flex;
+  font-size: .92857143em;
+  min-height: 1em;
+  margin: 1em 0;
+  padding: 1em 1.5em;
+  line-height: 1.4285em;
+  color: rgba(0, 0, 0, .87);
+  transition: opacity .1s ease, color .1s ease, background .1s ease, box-shadow .1s ease;
+  cursor: pointer;
+}
+
+.notification:first-child {
+  margin-top: 0;
+}
+
+.notification > .icon {
+  display: block;
+  -webkit-flex: 0 0 auto;
+  flex: 0 0 auto;
+  width: auto;
+  line-height: 1;
+  vertical-align: middle;
+  font-size: 3em;
+  opacity: .8;
+  margin-right: .5em;
+  margin-top: .2em;
+}
+
+.notification > .content {
+  display: block;
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+  vertical-align: middle;
+  margin-right: 1.5em;
+}
+
+.notification > .content > .header {
+  color: #3e3e3e;
+  font-weight: 700;
+  font-size: larger;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.notification > .content > .message {
+  font-size: 14px;
+  margin-top: 0;
+  margin-bottom: 0;
+  color: #878787;
+}
+
+.notification.closable > .content > .close {
+  display: block;
+}
+
+.notification > .content > .close {
+  position: absolute;
+  right: 22px;
+  top: 20%;
+  width: 14px;
+  cursor: pointer;
+  height: 14px;
+  fill: #878787;
+  transform: translateY(-50%);
+  display: none;
+}
+
+.notification > .remaining {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 0.15em;
+  width: 100%;
+}
+
+.notification.success {
+  border-left: 0.15em solid @teal;
+}
+
+.notification.success > .remaining {
+  background-color: @teal;
+}
+
+.notification.success > .icon {
+  color: @teal;
+
+  &:before {
+    content: "\f00c"
+  }
+}
+
+.notification.info {
+  border-left: 0.15em solid @blue;
+}
+
+.notification.info > .remaining {
+  background-color: @blue;
+}
+
+.notification.info > .icon {
+  color: @blue;
+
+  &:before {
+    content: "\f129"
+  }
+}
+
+.notification.warning {
+  border-left: 0.15em solid @orange;
+}
+
+.notification.warning > .remaining {
+  background-color: @orange;
+}
+
+.notification.warning > .icon {
+  color: @orange;
+
+  &:before {
+    content: "\f071";
+  }
+}
+
+.notification.error {
+  border-left: 0.15em solid @red;
+}
+
+.notification.error > .remaining {
+  background-color: @red;
+}
+
+.notification.error > .icon {
+  color: @red;
+
+  &:before {
+    content: "\f00d"
+  }
+}

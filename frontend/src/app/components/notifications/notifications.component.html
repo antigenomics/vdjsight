@@ -1,5 +1,8 @@
-<ng-container> <!--  *ngIf="(notifications$ | async) as notifications" -->
-<!--    <div class="notifier-container" [@notifications]="notifications.length">-->
-<!--        <div ic-notification-item *ngFor="let item of notifications; trackBy: trackNotificationBy" [item]="item"></div>-->
-<!--    </div>-->
+<ng-container *ngIf="(notifications$ | async) as notifications">
+    <div class="notifications-container" [@notifications]="notifications.length">
+        <div vs-notification-item *ngFor="let notification of notifications; trackBy: trackNotificationBy"
+             [notification]="notification"
+             (onBlur)="blur(notification)" (onFocus)="focus(notification)" (onClose)="remove(notification)">
+        </div>
+    </div>
 </ng-container>

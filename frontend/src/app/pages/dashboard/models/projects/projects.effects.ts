@@ -5,7 +5,8 @@ import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dash
 import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
 import { ProjectsService } from 'pages/dashboard/services/projects.service';
 import { of } from 'rxjs';
-import { catchError, filter, map, mergeMap, withLatestFrom } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
+import { NotificationsService } from 'services/notifications/notifications.service';
 
 @Injectable()
 export class ProjectsEffects implements OnInitEffects {
@@ -33,7 +34,14 @@ export class ProjectsEffects implements OnInitEffects {
     mergeMap((action) => this.projects.create(action.request).pipe(
       map((response) => ProjectsActions.createSuccess({ entityId: action.entity.id, link: response.link })),
       catchError((error) => of(ProjectsActions.createFailed({ entityId: action.entity.id, error })))
-    ))
+    )),
+    tap((actions) => {
+      if (actions.type === ProjectsActions.createSuccess.type) {
+        this.notifications.success('Projects', 'New project has been created', { timeout: 2500 });
+      } else if (actions.type === ProjectsActions.createFailed.type) {
+        this.notifications.error('Projects', 'An error occurred while creating the project', { timeout: 5000 });
+      }
+    })
   ));
 
   public update$ = createEffect(() => this.actions$.pipe(
@@ -63,7 +71,7 @@ export class ProjectsEffects implements OnInitEffects {
   ));
 
   constructor(private readonly actions$: Actions, private readonly store: Store<DashboardModuleState>,
-              private readonly projects: ProjectsService) {}
+              private readonly projects: ProjectsService, private readonly notifications: NotificationsService) {}
 
   public ngrxOnInitEffects(): Action {
     return ProjectsActions.load();
