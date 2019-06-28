@@ -1,19 +1,28 @@
-<div class="ui form" [ngClass]="{ 'violet double loading': isUpdating }">
+<div class="ui form" [ngClass]="{ 'violet double loading': updating.active, 'warning': updating.error }">
+    <div class="ui icon warning small message" *ngIf="updating.error as error" @fade-in>
+        <i class="exclamation triangle icon"></i>
+        <div class="content">
+            <div class="header">
+                Update failed
+            </div>
+            <div class="extra">{{ error }}</div>
+        </div>
+    </div>
     <div class="field">
         <label>Project name:</label>
-        <div class="ui huge transparent icon input" [ngClass]="{ 'disabled' : isUpdating || isDeleting }">
+        <div class="ui huge transparent icon input" [ngClass]="{ 'disabled' : updating.active || updating.active }">
             <input enter-input (onEnterPressed)="updateName($event)"
-                   type="text" [attr.placeholder]="namePlaceholder" [ngModel]="name" [disabled]="isUpdating || isDeleting">
+                   type="text" [attr.placeholder]="namePlaceholder" [ngModel]="name" [disabled]="updating.active || updating.active">
             <i class="icon"></i>
         </div>
     </div>
     <div class="field">
         <label>Description:</label>
-        <div class="ui description fluid large icon input" [ngClass]="{ 'disabled' : isUpdating || isDeleting }">
+        <div class="ui description fluid large icon input" [ngClass]="{ 'disabled' : updating.active || updating.active }">
             <textarea enter-input (onEnterPressed)="updateDescription($event)" style="width: 100%;" [@description]="descriptionState"
                       [attr.placeholder]="descriptionPlaceholder" [ngModel]="description"
                       (focusin)="selectDescription()" (focusout)="deselectDescription()"
-                      maxlength="150" rows="3" [disabled]="isUpdating || isDeleting">
+                      maxlength="150" rows="3" [disabled]="updating.active || updating.active">
             </textarea>
         </div>
     </div>

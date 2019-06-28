@@ -1,6 +1,39 @@
 <ng-container *ngIf="selected.isDefined">
-    <button class="ui left floated orange button" [ngClass]="{ 'loading': selected.get.isDeleting }"
-            (click)="onDelete.emit(selected.get)">Delete
+    <button [vs-tooltip]="deleteButtonTooltip" class="ui left floated orange button"
+            [ngClass]="{ 'loading': selected.get.deleting.active }">Delete
     </button>
+    <ng-template #deleteButtonTooltip let-hide="hide">
+        <div class="ui raised card">
+            <div class="content">
+                <div class="header">Confirm</div>
+                <div class="description">
+                    Are you sure you want to remove this project?
+                </div>
+            </div>
+            <div class="extra content" *ngIf="selected.get.deleting.error as error" @fade-in>
+                <div class="ui icon negative small message">
+                    <i class="exclamation triangle red icon"></i>
+                    <div class="content">
+                        <div class="header">
+                            Delete failed
+                        </div>
+                        <div class="extra">{{ error }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="extra content">
+                <div class="ui two buttons" *ngIf="!selected.get.deleting.active else deleting">
+                    <button class="ui button" (click)="hide()">Cancel</button>
+                    <div class="or"></div>
+                    <button class="ui orange button" [ngClass]="{ 'loading': selected.get.deleting.active }"
+                            (click)="onDelete.emit(selected.get)">Confirm
+                    </button>
+                </div>
+                <ng-template #deleting>
+                    <button class="ui fluid disabled loading button">Loading</button>
+                </ng-template>
+            </div>
+        </div>
+    </ng-template>
     <button class="ui right floated violet button">Select</button>
 </ng-container>

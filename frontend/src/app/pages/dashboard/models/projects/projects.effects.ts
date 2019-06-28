@@ -5,7 +5,7 @@ import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dash
 import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
 import { ProjectsService } from 'pages/dashboard/services/projects.service';
 import { of } from 'rxjs';
-import { catchError, filter, map, mergeMap, withLatestFrom, tap } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 
 @Injectable()
 export class ProjectsEffects implements OnInitEffects {
@@ -41,7 +41,7 @@ export class ProjectsEffects implements OnInitEffects {
     mergeMap((action) =>
       this.projects.update({ uuid: action.entity.link.uuid, name: action.name, description: action.description }).pipe(
         map((response) => ProjectsActions.updateSuccess({ entityId: action.entity.id, link: response.link })),
-        catchError(() => of(ProjectsActions.updateFailed({ entityId: action.entity.id })))
+        catchError((error) => of(ProjectsActions.updateFailed({ entityId: action.entity.id, error })))
       ))
   ));
 
@@ -49,7 +49,7 @@ export class ProjectsEffects implements OnInitEffects {
     ofType(ProjectsActions.forceDelete),
     mergeMap((action) => this.projects.delete({ uuid: action.entity.link.uuid, force: true }).pipe(
       map(() => ProjectsActions.forceDeleteSuccess({ entityId: action.entity.id })),
-      catchError(() => of(ProjectsActions.forceDeleteFailed({ entityId: action.entity.id })))
+      catchError((error) => of(ProjectsActions.forceDeleteFailed({ entityId: action.entity.id, error })))
     ))
   ));
 
@@ -58,7 +58,6 @@ export class ProjectsEffects implements OnInitEffects {
     withLatestFrom(
       this.store.pipe(select(fromDashboard.getSelectedProjectOption))
     ),
-    tap((a) => console.log(a)),
     filter(([ action, selected ]) => selected.isDefined && action.entityId === selected.get.id),
     map(() => ProjectsActions.clearProjectSelection())
   ));

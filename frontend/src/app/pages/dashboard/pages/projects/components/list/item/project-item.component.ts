@@ -13,6 +13,8 @@ type ProjectItemState = 'nothing' | 'highlight' | 'selected' | 'deleting' | 'upd
   animations:      [ ContentAnimation, ProjectAnimation, ProjectSmoothHeightAnimation, FlickerAnimation ]
 })
 export class ProjectItemComponent implements OnChanges {
+  public state: ProjectItemState = 'nothing';
+
   @Input()
   public project: ProjectEntity;
 
@@ -21,8 +23,6 @@ export class ProjectItemComponent implements OnChanges {
 
   @Output()
   public onSelect = new EventEmitter();
-
-  public state: ProjectItemState = 'nothing';
 
   @HostListener('mouseenter')
   public mouseenter(): void {
@@ -39,9 +39,9 @@ export class ProjectItemComponent implements OnChanges {
   }
 
   private _state(fallback: ProjectItemState): ProjectItemState {
-    if (this.project.isDeleting) {
+    if (this.project.deleting.active) {
       return 'deleting';
-    } else if (this.project.isUpdating) {
+    } else if (this.project.updating.active) {
       return 'updating';
     } else if (this.isSelected) {
       return 'selected';

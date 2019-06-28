@@ -4,10 +4,14 @@ executors:
   frontend-executor:
     docker:
       - image: circleci/node:11-browsers
+        environment:
+          CACHE_VERSION_ENV: 4
 
   backend-executor:
     docker:
       - image: bvdmitri/scala-sbt-docker:latest
+        environment:
+          CACHE_VERSION_ENV: 3
 
 
 commands:
@@ -39,7 +43,9 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - frontend-cache-3-{{ checksum "frontend/yarn.lock" }}
+            - frontend-cache-{{ .Environment.CACHE_VERSION_ENV }}-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
+            - frontend-cache-{{ .Environment.CACHE_VERSION_ENV }}-{{ .Branch }}
+            - frontend-cache-{{ .Environment.CACHE_VERSION_ENV }}
       - run:
           name: Install frontend dependencies
           command: ./vdjsight.sh frontend install
@@ -64,7 +70,7 @@ jobs:
             rm -rf node_modules/semantic-ui || true
             rm -rf node_modules/fomantic-ui || true
       - save_cache:
-          key: frontend-cache-3-{{ checksum "frontend/yarn.lock" }}
+          key: frontend-cache-3-{{ .Branch }}-{{ checksum "frontend/yarn.lock" }}
           paths:
             - frontend/node_modules
 
@@ -73,7 +79,10 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: backend-cache-2-{{ checksum "backend/build.sbt" }}
+          keys:
+            - backend-cache-{{ .Environment.CACHE_VERSION_ENV }}-{{ .Branch }}-{{ checksum "backend/build.sbt" }}
+            - backend-cache-{{ .Environment.CACHE_VERSION_ENV }}-{{ .Branch }}
+            - backend-cache-{{ .Environment.CACHE_VERSION_ENV }}
       - run:
           name: Building backend
           command: ./vdjsight.sh backend build
@@ -89,7 +98,7 @@ jobs:
       - docker-publish:
           project: bvdmitri/vdjsight-backend
       - save_cache:
-          key: backend-cache-2-{{ checksum "backend/build.sbt" }}
+          key: backend-cache-2-{{ .Branch }}-{{ checksum "backend/build.sbt" }}
           paths:
             - "~/.ivy2/cache"
             - "~/.sbt"

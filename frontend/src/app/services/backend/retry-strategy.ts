@@ -1,26 +1,18 @@
 import { Observable, throwError, timer } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
-
-export const enum ExcludedStatusCodes {
-  BadRequest          = 400,
-  NonAuthorized       = 401,
-  Forbidden           = 403,
-  NotFound            = 404,
-  InternalServerError = 500,
-  ServiceUnavailable  = 503
-}
+import { HttpStatusCode } from 'services/backend/http-codes';
 
 // tslint:disable-next-line:no-magic-numbers
-export const retryStrategy = (maxRetry: number              = 3,
-                              scalingDuration: number       = 250,
-                              excludedStatusCodes: number[] = [
-                                ExcludedStatusCodes.BadRequest,
-                                ExcludedStatusCodes.NonAuthorized,
-                                ExcludedStatusCodes.Forbidden,
-                                ExcludedStatusCodes.NotFound,
-                                ExcludedStatusCodes.InternalServerError,
-                                ExcludedStatusCodes.ServiceUnavailable
-                              ]) => (attempts: Observable<any>) => { // tslint:disable-line:no-any
+export const retryStrategy = <T extends { status: number }>(maxRetry: number              = 3,
+                                                            scalingDuration: number       = 250,
+                                                            excludedStatusCodes: number[] = [
+                                                              HttpStatusCode.BAD_REQUEST,
+                                                              HttpStatusCode.UNAUTHORIZED,
+                                                              HttpStatusCode.FORBIDDEN,
+                                                              HttpStatusCode.NOT_FOUND,
+                                                              HttpStatusCode.INTERNAL_SERVER_ERROR,
+                                                              HttpStatusCode.SERVICE_UNAVAILABLE
+                                                            ]) => (attempts: Observable<T>) => { // tslint:disable-line:no-any
   return attempts.pipe(mergeMap((error, i) => {
       const retryAttempt = i + 1;
       // if maximum number of retries have been met

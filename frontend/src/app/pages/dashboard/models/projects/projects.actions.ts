@@ -16,11 +16,11 @@ export namespace ProjectsActions {
 
   export const update        = createAction('[Projects] Update', props<{ entity: ProjectEntity, name: string, description: string }>());
   export const updateSuccess = createAction('[Projects] Update Success', props<{ entityId: number, link: ProjectLink }>());
-  export const updateFailed  = createAction('[Projects] Update Failed', props<{ entityId: number }>());
+  export const updateFailed  = createAction('[Projects] Update Failed', props<{ entityId: number, error: BackendErrorResponse }>());
 
   export const forceDelete        = createAction('[Projects] Force Delete', props<{ entity: ProjectEntity }>());
   export const forceDeleteSuccess = createAction('[Projects] Force Delete Success', props<{ entityId: number }>());
-  export const forceDeleteFailed  = createAction('[Projects] Force Delete Failed', props<{ entityId: number }>());
+  export const forceDeleteFailed  = createAction('[Projects] Force Delete Failed', props<{ entityId: number, error: BackendErrorResponse }>());
 
   export const selectProject         = createAction('[Projects] Select Project', props<{ entityId: number }>());
   export const clearProjectSelection = createAction('[Projects] Clear Project Selection');

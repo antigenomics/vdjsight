@@ -4,7 +4,7 @@
             <div class="fifteen wide column">
                 <vs-selected-project-form
                         [name]="selected.get.link.name" [description]="selected.get.link.description"
-                        [isUpdating]="selected.get.isUpdating" [isDeleting]="selected.get.isDeleting"
+                        [updating]="selected.get.updating" [deleting]="selected.get.deleting"
                         (onUpdate)="update($event)">
                 </vs-selected-project-form>
             </div>

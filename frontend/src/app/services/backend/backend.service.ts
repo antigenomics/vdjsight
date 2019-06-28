@@ -13,6 +13,7 @@ import { HttpStatusCode } from './http-codes';
 import { RateLimiter } from './rate-limiter';
 import { retryStrategy } from './retry-strategy';
 import { LoggerService } from 'utils/logger/logger.service';
+import { backendDebug } from 'services/backend/backend-debug';
 
 @Injectable({
   providedIn: 'root'
@@ -52,7 +53,7 @@ export class BackendService {
 
   private next<T, B = T>(request: BackendRequest<T>, options?: BackendRequestOptions): Observable<B> {
     const url = BackendService.endpointToURL(request.endpoint);
-    return this.limiter.request(request).pipe(flatMap((r: BackendRequest<T>) => {
+    return this.limiter.request(request).pipe(backendDebug(), flatMap((r: BackendRequest<T>) => {
       let call: Observable<BackendSuccessResponse<B>>;
       switch (r.type) {
         case BackendRequestType.GET:

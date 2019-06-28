@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { SmoothHeightAnimation } from 'directives/smooth_height/smooth-height.animation';
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
-import { CreateProjectEntity, ProjectEntity } from 'pages/dashboard/models/projects/projects';
+import { CreateEmptyProjectEntity, ProjectEntity } from 'pages/dashboard/models/projects/projects';
 import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
 
 @Component({
@@ -24,7 +24,7 @@ export class ProjectsComponent {
 
   public create(): void {
     this.store.dispatch(ProjectsActions.create({
-      entity:  CreateProjectEntity(),
+      entity:  CreateEmptyProjectEntity(),
       request: { name: 'New project', description: 'No description' }
     }));
   }

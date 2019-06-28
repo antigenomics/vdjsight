@@ -1,9 +1,16 @@
-import { Directive, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Directive({
   selector: '[enter-input]'
 })
-export class EnterInputDirective<T> {
+export class EnterInputDirective<T> implements OnInit, OnDestroy {
+  private static readonly DebounceDefaultDelayTime: number = 20;
+
+  private subscription: Subscription;
+
+  private enter    = new Subject();
   private input: T = undefined;
 
   @Input()
@@ -24,8 +31,9 @@ export class EnterInputDirective<T> {
 
   @HostListener('keypress', [ '$event' ])
   public press($event: KeyboardEvent) {
+    $event.stopPropagation();
     if ($event.key === 'Enter' || $event.keyCode === 13) { // tslint:disable-line:no-magic-numbers
-      this.onEnterPressed.emit(this.input);
+      this.enter.next();
       if (this.focusOutOnEnter) {
         this.element.nativeElement.blur();
       }
@@ -35,7 +43,17 @@ export class EnterInputDirective<T> {
   @HostListener('focusout')
   public focusout() {
     if (this.emitEnterEventOnFocusOut) {
-      this.onEnterPressed.emit(this.input);
+      this.enter.next();
     }
+  }
+
+  public ngOnInit(): void {
+    this.subscription = this.enter.pipe(
+      debounceTime(EnterInputDirective.DebounceDefaultDelayTime)
+    ).subscribe(() => this.onEnterPressed.emit(this.input));
+  }
+
+  public ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 }

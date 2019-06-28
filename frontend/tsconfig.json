@@ -38,9 +38,11 @@
       "animations/*"  : [ "src/app/animations/*" ],
       "components/*"  : [ "src/app/components/*" ],
       "directives/*"  : [ "src/app/directives/*" ],
-      "pages/*"       : [ "src/app/pages/*" ],
-      "services/*"    : [ "src/app/services/*" ],
+      "guards/*"      : [ "src/app/guards/*" ],
       "models/*"      : [ "src/app/models/*" ],
+      "pages/*"       : [ "src/app/pages/*" ],
+      "pipes/*"       : [ "src/app/pipes/*" ],
+      "services/*"    : [ "src/app/services/*" ],
       "utils/*"       : [ "src/app/utils/*" ],
       "environments/*": [ "src/environments/*" ]
     }
