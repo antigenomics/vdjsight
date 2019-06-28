@@ -55,7 +55,7 @@ export class ProjectSelectedFormComponent {
   }
 
   public updateDescription(description: string) {
-    if (description) {
+    if (description && description !== this.description) {
       this.onUpdate.emit({ name: this.name, description });
     }
   }
