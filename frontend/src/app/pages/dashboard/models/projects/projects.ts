@@ -1,4 +1,4 @@
-import { EntityState } from 'utils/enitity/entity';
+import { EntityStatus } from 'utils/enitity/entity';
 import { IncrementalGlobalUUID } from 'utils/uuid/incremental-global-uuid';
 
 export interface ProjectLink {
@@ -14,9 +14,9 @@ export interface ProjectLink {
 
 export interface ProjectEntity {
   readonly id: number;
-  readonly updating: EntityState;
-  readonly deleting: EntityState;
-  readonly creating: EntityState;
+  readonly updating: EntityStatus;
+  readonly deleting: EntityStatus;
+  readonly creating: EntityStatus;
   readonly link?: ProjectLink;
 }
 

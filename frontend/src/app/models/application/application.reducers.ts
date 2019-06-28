@@ -11,7 +11,7 @@ const applicationReducer = createReducer(
   on(ApplicationActions.clearLastSavedURL, (state) => produce(state, (draft) => { draft.savedURLs.pop(); }))
 );
 
-export namespace fromApplicationReducers {
+export namespace __fromApplicationReducers {
 
   export function reducer(state: __ApplicationState | undefined, action: Action) {
     return applicationReducer(state, action);

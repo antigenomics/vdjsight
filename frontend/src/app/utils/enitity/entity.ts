@@ -1,4 +1,4 @@
-export interface EntityState {
+export interface EntityStatus {
   active: boolean;
   error?: string;
 }

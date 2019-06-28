@@ -17,7 +17,7 @@ const userReducer = createReducer(
   }))
 );
 
-export namespace fromUserReducers {
+export namespace __fromUserReducers {
   export function reducer(state: __UserState | undefined, action: Action) {
     return userReducer(state, action);
   }

@@ -1,0 +1,83 @@
+@import 'color-scheme.variables';
+
+.notfound-container {
+  position: relative;
+  height: 100vh
+}
+
+.notfound-container > .notfound-content {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%)
+}
+
+.notfound-content {
+  max-width: 820px;
+  width: 100%;
+  line-height: 1.4;
+  text-align: center;
+  padding-left: 15px;
+  padding-right: 15px
+}
+
+.notfound-content .notfound-404 {
+  position: absolute;
+  height: 100px;
+  top: 0;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+  z-index: -1
+}
+
+.notfound-content .notfound-404 h1 {
+  color: @grey;
+  font-weight: 900;
+  font-size: 276px;
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%)
+}
+
+.notfound-content h2 {
+  font-size: 46px;
+  color: rgba(0, 0, 0, .75);
+  font-weight: 900;
+  text-transform: uppercase;
+  margin: 0
+}
+
+.notfound-content p {
+  font-size: 16px;
+  color: #000;
+  font-weight: 400;
+  text-transform: uppercase;
+  margin-top: 15px
+}
+
+.notfound-content > .button {
+  font-size: 14px;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-weight: 400;
+  -webkit-transition: .2s all;
+  transition: .2s all
+}
+
+@media only screen and (max-width: 480px) {
+  .notfound-content .notfound-404 h1 {
+    font-size: 162px
+  }
+
+  .notfound-content h2 {
+    font-size: 26px
+  }
+}

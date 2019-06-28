@@ -17,9 +17,13 @@ import { AboutPageComponent } from 'pages/about/about.component';
 import { AboutPageModule } from 'pages/about/about.module';
 import { HomePageComponent } from 'pages/home/home.component';
 import { HomePageModule } from 'pages/home/home.module';
+import { NotFoundPageComponent } from 'pages/not_found/not-found.component';
+import { NotFoundPageModule } from 'pages/not_found/not-found.module';
 import { ApplicationComponent } from './application.component';
 import { AuthorizedOnlyGuard } from './guards/authorized-only.guard';
 import { NonAuthorizedOnlyGuard } from './guards/non-authorized-only.guard';
+import { NotificationsModule } from 'components/notifications/notifications.module';
+import { NotificationsEffects } from 'models/notifications/notifications.effects';
 
 const ApplicationRouting = RouterModule.forRoot([
   {
@@ -45,13 +49,15 @@ const ApplicationRouting = RouterModule.forRoot([
     canActivate:           [ AuthorizedOnlyGuard ],
     data:                  { authorizedOnlyGuardFallbackURL: '/auth/login' },
     runGuardsAndResolvers: 'always'
-  }
+  },
+  { path: '**', component: NotFoundPageComponent }
 ], { onSameUrlNavigation: 'reload' });
 
 @NgModule({
   imports:      [
     BrowserModule, BrowserAnimationsModule, HttpClientModule,
     ApplicationRouting, HomePageModule, AboutPageModule,
+    NotFoundPageModule,
     StoreModule.forRoot(RootReducers, {
       metaReducers:  metaReducers,
       runtimeChecks: {
@@ -61,14 +67,14 @@ const ApplicationRouting = RouterModule.forRoot([
         strictActionSerializability: true
       }
     }),
-    EffectsModule.forRoot([ ApplicationEffects, UserEffects ]),
+    EffectsModule.forRoot([ ApplicationEffects, NotificationsEffects, UserEffects ]),
     StoreRouterConnectingModule.forRoot({
       stateKey:               'router',
       navigationActionTiming: NavigationActionTiming.PostActivation,
       routerState:            RouterState.Minimal
     }),
     !environment.production ? StoreDevtoolsModule.instrument({ maxAge: 50 }) : [],
-    NavigationBarModule
+    NavigationBarModule, NotificationsModule
   ],
   declarations: [ ApplicationComponent, ShellComponent ],
   bootstrap:    [ ApplicationComponent ]

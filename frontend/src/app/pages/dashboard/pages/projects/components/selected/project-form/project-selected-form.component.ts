@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FadeInAnimation } from 'animations/fade-in.animation';
 import { ProjectSelectedDescriptionAnimation } from 'pages/dashboard/pages/projects/components/selected/project-form/project-selected-form.animations';
-import { EntityState } from 'utils/enitity/entity';
+import { EntityStatus } from 'utils/enitity/entity';
 
 @Component({
   selector:        'vs-selected-project-form',
@@ -20,10 +20,10 @@ export class ProjectSelectedFormComponent {
   public description: string;
 
   @Input()
-  public updating: EntityState;
+  public updating: EntityStatus;
 
   @Input()
-  public deleting: EntityState;
+  public deleting: EntityStatus;
 
   @Output()
   public onUpdate = new EventEmitter<{ name: string, description: string }>();
