@@ -4,14 +4,14 @@ executors:
   frontend-executor:
     docker:
       - image: circleci/node:11-browsers
-        environment:
-          CACHE_VERSION_ENV: 4
+    environment:
+      CACHE_VERSION_ENV: 4
 
   backend-executor:
     docker:
       - image: bvdmitri/scala-sbt-docker:latest
-        environment:
-          CACHE_VERSION_ENV: 3
+    environment:
+      CACHE_VERSION_ENV: 3
 
 
 commands:
