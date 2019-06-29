@@ -13,7 +13,7 @@ export class NotificationsEffects {
     ofType(NotificationActions.create),
     tap(({ entity }) => {
       if (entity.options.autoRemove) {
-        setTimeout(() => {
+        window.setTimeout(() => {
           this.store.dispatch(NotificationActions.scheduleRemove({ entity }));
         }, NotificationsEffects.NotificationScheduleRemoveDelay);
       }
@@ -24,7 +24,7 @@ export class NotificationsEffects {
     ofType(NotificationActions.scheduleRemove),
     map(({ entity }) => {
       clearTimeout(entity.scheduledId);
-      const scheduledId = setTimeout(() => {
+      const scheduledId = window.setTimeout(() => {
         this.store.dispatch(NotificationActions.remove({ entity }));
       }, entity.options.timeout);
       return NotificationActions.startScheduledRemove({ entity, scheduledId });
@@ -34,7 +34,7 @@ export class NotificationsEffects {
   public cancelScheduledRemove$ = createEffect(() => this.actions.pipe(
     ofType(NotificationActions.cancelScheduledRemove),
     tap(({ entity }) => {
-      clearTimeout(entity.scheduledId);
+      window.clearTimeout(entity.scheduledId);
     })
   ), { dispatch: false });
 

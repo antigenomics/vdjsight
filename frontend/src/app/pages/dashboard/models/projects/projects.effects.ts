@@ -5,8 +5,9 @@ import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dash
 import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
 import { ProjectsService } from 'pages/dashboard/services/projects.service';
 import { of } from 'rxjs';
-import { catchError, filter, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
+import { withNotification } from 'utils/effects/effects-helper';
 
 @Injectable()
 export class ProjectsEffects implements OnInitEffects {
@@ -26,7 +27,10 @@ export class ProjectsEffects implements OnInitEffects {
     mergeMap(() => this.projects.list().pipe(
       map((response) => ProjectsActions.loadSuccess({ projects: response.projects })),
       catchError((error) => of(ProjectsActions.loadFailed({ error })))
-    ))
+    )),
+    withNotification('Projects', {
+      error: { action: ProjectsActions.loadFailed, message: 'An error occurred while loading the projects', options: { timeout: 5000 } }
+    }, this.notifications)
   ));
 
   public create$ = createEffect(() => this.actions$.pipe(
@@ -35,13 +39,10 @@ export class ProjectsEffects implements OnInitEffects {
       map((response) => ProjectsActions.createSuccess({ entityId: action.entity.id, link: response.link })),
       catchError((error) => of(ProjectsActions.createFailed({ entityId: action.entity.id, error })))
     )),
-    tap((actions) => {
-      if (actions.type === ProjectsActions.createSuccess.type) {
-        this.notifications.success('Projects', 'New project has been created', { timeout: 2500 });
-      } else if (actions.type === ProjectsActions.createFailed.type) {
-        this.notifications.error('Projects', 'An error occurred while creating the project', { timeout: 5000 });
-      }
-    })
+    withNotification('Projects', {
+      success: { action: ProjectsActions.createSuccess, message: 'New project has been created', options: { timeout: 2500 } },
+      error:   { action: ProjectsActions.createFailed, message: 'An error occurred while creating the project', options: { timeout: 5000 } }
+    }, this.notifications)
   ));
 
   public update$ = createEffect(() => this.actions$.pipe(
@@ -50,7 +51,12 @@ export class ProjectsEffects implements OnInitEffects {
       this.projects.update({ uuid: action.entity.link.uuid, name: action.name, description: action.description }).pipe(
         map((response) => ProjectsActions.updateSuccess({ entityId: action.entity.id, link: response.link })),
         catchError((error) => of(ProjectsActions.updateFailed({ entityId: action.entity.id, error })))
-      ))
+      )
+    ),
+    withNotification('Projects', {
+      success: { action: ProjectsActions.updateSuccess, message: 'Project has been updated', options: { timeout: 1500 } },
+      error:   { action: ProjectsActions.updateFailed, message: 'An error occurred while updating the project', options: { timeout: 5000 } }
+    }, this.notifications)
   ));
 
   public delete$ = createEffect(() => this.actions$.pipe(
@@ -58,7 +64,11 @@ export class ProjectsEffects implements OnInitEffects {
     mergeMap((action) => this.projects.delete({ uuid: action.entity.link.uuid, force: true }).pipe(
       map(() => ProjectsActions.forceDeleteSuccess({ entityId: action.entity.id })),
       catchError((error) => of(ProjectsActions.forceDeleteFailed({ entityId: action.entity.id, error })))
-    ))
+    )),
+    withNotification('Projects', {
+      success: { action: ProjectsActions.forceDeleteSuccess, message: 'Project has been deleted', options: { timeout: 2500 } },
+      error:   { action: ProjectsActions.forceDeleteFailed, message: 'An error occurred while deleting the project', options: { timeout: 5000 } }
+    }, this.notifications)
   ));
 
   public deleteSuccess$ = createEffect(() => this.actions$.pipe(

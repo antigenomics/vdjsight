@@ -1,4 +1,4 @@
-<div class="notification {{ notification.options.type }} closable" [@notification]="state"
+<div class="notification {{ notification.options.type }} closable" [@notification]="state | async"
      (@notification.done)="onNotificationAnimationDoneEvent($event)">
     <i class="ui icon"></i>
     <div class="content">
@@ -11,5 +11,5 @@
             </svg>
         </div>
     </div>
-    <div class="remaining" [@remaining]="remaining"></div>
+    <div class="remaining" [@remaining]="remaining | async"></div>
 </div>
