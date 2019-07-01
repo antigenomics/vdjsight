@@ -3,6 +3,8 @@ import { ActionReducer, createFeatureSelector, createSelector, MetaReducer } fro
 import { environment } from 'environments/environment';
 import { __fromApplicationReducers } from 'models/application/application.reducers';
 import { __ApplicationState, __fromApplicationState } from 'models/application/application.state';
+import { __fromNetworkReducers } from 'models/network/network.reducers';
+import { __fromNetworkState, __NetworkState } from 'models/network/network.state';
 import { __fromNotificationsReducers } from 'models/notifications/notifications.reducers';
 import { __fromNotificationsState, __NotificationsState } from 'models/notifications/notifications.state';
 import { RootModuleState } from 'models/root';
@@ -16,13 +18,15 @@ export interface RootModuleState {
   notifications: __NotificationsState;
   user: __UserState;
   router: __RouterState;
+  network: __NetworkState;
 }
 
 export const RootReducers = {
   application:   __fromApplicationReducers.reducer,
   notifications: __fromNotificationsReducers.reducer,
   user:          __fromUserReducers.reducer,
-  router:        __fromRouterReducers.reducer
+  router:        __fromRouterReducers.reducer,
+  network:       __fromNetworkReducers.reducer
 };
 
 export function LoggerDebugReducer(reducer: ActionReducer<any>): ActionReducer<any> { // tslint:disable-line:no-any
@@ -41,6 +45,7 @@ export namespace fromRoot {
   const getNotificationsState = (state: RootModuleState) => state.notifications;
   const getUserState          = (state: RootModuleState) => state.user;
   const getRouterState        = createFeatureSelector<RootModuleState, RouterReducerState<MinimalRouterStateSnapshot>>('router');
+  const getNetworkState       = (state: RootModuleState) => state.network;
 
   /** Application state selectors */
   export const isApplicationBackendDead   = createSelector(getApplicationState, __fromApplicationState.isBackendDead);
@@ -70,4 +75,8 @@ export namespace fromRoot {
   export const getRouterStateRouteData    = routerStateSelectors.selectRouteData;
   export const getRouterStateRouteParams  = routerStateSelectors.selectRouteParams;
   export const getRouterStateURL          = routerStateSelectors.selectUrl;
+
+  /** Network state selectors */
+  export const isNetworkOffline = createSelector(getNetworkState, __fromNetworkState.isOffline);
+  export const isNetworkOnline  = createSelector(getNetworkState, __fromNetworkState.isOnline);
 }

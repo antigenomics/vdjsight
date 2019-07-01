@@ -3,17 +3,18 @@ import { Injectable } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { environment } from 'environments/environment';
 import { ApplicationActions } from 'models/application/application.actions';
+import { NetworkActions } from 'models/network/network.actions';
 import { fromRoot, RootModuleState } from 'models/root';
 import { UserActions } from 'models/user/user.actions';
 import { Observable, throwError } from 'rxjs';
 import { catchError, flatMap, map, retryWhen, take, tap } from 'rxjs/operators';
+import { backendDebug } from 'services/backend/backend-debug';
+import { LoggerService } from 'utils/logger/logger.service';
 import { BackendRequest, BackendRequestEndpoint, BackendRequestOptions, BackendRequestType } from './backend-request';
 import { BackendErrorResponse, BackendSuccessResponse } from './backend-response';
 import { HttpStatusCode } from './http-codes';
 import { RateLimiter } from './rate-limiter';
 import { retryStrategy } from './retry-strategy';
-import { LoggerService } from 'utils/logger/logger.service';
-import { backendDebug } from 'services/backend/backend-debug';
 
 @Injectable({
   providedIn: 'root'
@@ -78,6 +79,9 @@ export class BackendService {
         tap((data) => this.logger.debug('[BackendResponse]', data))
       );
     }), catchError((error: HttpErrorResponse) => {
+      if (!navigator.onLine) {
+        this.store.dispatch(NetworkActions.GoOffline());
+      }
       if (error.status === 0) {
         return this.store.pipe(select(fromRoot.isApplicationBackendDead), take(1), flatMap((isBackendDead) => {
           if (isBackendDead) {

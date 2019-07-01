@@ -7,7 +7,7 @@ export class SmoothHeightDirective implements OnChanges {
 
   @HostBinding('@smoothHeightAnimation')
   public get animation() {
-    return { value: this.pulse, params: { startFrom: this.startHeightFrom } };
+    return { value: this.pulse, params: { startFrom: this.startHeightFrom, time: this.smoothTime } };
   }
 
   private pulse: boolean;
@@ -16,8 +16,11 @@ export class SmoothHeightDirective implements OnChanges {
   @Input()
   public smoothTrigger: any; // tslint:disable-line:no-any
 
-  @HostBinding('style.display')
-  public hostDisplayStyle = 'block';
+  @Input()
+  public smoothTime: number = 350;
+
+  // @HostBinding('style.display')
+  // public hostDisplayStyle = 'block';
 
   @HostBinding('style.overflow')
   public hostOverflowStyle = 'hidden';

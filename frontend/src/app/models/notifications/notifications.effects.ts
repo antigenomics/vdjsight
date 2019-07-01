@@ -23,7 +23,7 @@ export class NotificationsEffects {
   public scheduleRemove$ = createEffect(() => this.actions.pipe(
     ofType(NotificationActions.scheduleRemove),
     map(({ entity }) => {
-      clearTimeout(entity.scheduledId);
+      window.clearTimeout(entity.scheduledId);
       const scheduledId = window.setTimeout(() => {
         this.store.dispatch(NotificationActions.remove({ entity }));
       }, entity.options.timeout);

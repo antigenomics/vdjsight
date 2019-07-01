@@ -1,13 +1,20 @@
+@list_height: 700px;
+
+.ui.projects.segment {
+  min-height: @list_height;
+  max-height: @list_height;
+}
+
 .ui.projects.grid {
   padding: 0 !important;
-  min-height: 700px !important;
-  max-height: 700px !important;
+  min-height: @list_height !important;
+  max-height: @list_height !important;
 }
 
 .projects.list {
   padding: 0 !important;
-  min-height: 700px !important;
-  max-height: 700px !important;
+  min-height: @list_height !important;
+  max-height: @list_height !important;
   overflow-y: auto;
   scrollbar-width: none;
   scroll-behavior: smooth;

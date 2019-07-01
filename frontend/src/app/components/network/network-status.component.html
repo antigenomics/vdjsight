@@ -1,0 +1,15 @@
+<ng-container *ngIf="(isOffline$ | async)">
+    <div class="network-status-container" [@status]>
+        <div class="ui negative icon compact message">
+            <i class="wifi icon"></i>
+            <div class="content">
+                <div class="header">
+                    Your device lost its internet connection
+                </div>
+                <p>Some features may be unavailable</p>
+                <p class="hide" (click)="hideOfflineWarning()">Close</p>
+            </div>
+        </div>
+    </div>
+    <div class="network-status-blur-background" [@background]></div>
+</ng-container>

@@ -2,6 +2,8 @@ import { createAction, props } from '@ngrx/store';
 
 export namespace ApplicationActions {
 
+  export const noop = createAction('[Application] Noop action');
+
   export const pingBackend         = createAction('[Application] Ping Backend');
   export const pingBackendSchedule = createAction('[Application] Ping Backend Schedule', props<{ timeout: number }>());
   export const pingBackendSuccess  = createAction('[Application] Ping Backend Success');

@@ -4,13 +4,14 @@ import { SmoothHeightAnimation } from 'directives/smooth_height/smooth-height.an
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { CreateEmptyProjectEntity, ProjectEntity } from 'pages/dashboard/models/projects/projects';
 import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
+import { ProjectsFooterAnimation } from 'pages/dashboard/pages/projects/projects.animations';
 
 @Component({
   selector:        'vs-projects',
   templateUrl:     './projects.component.html',
   styleUrls:       [ './projects.component.less' ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations:      [ SmoothHeightAnimation ]
+  animations:      [ SmoothHeightAnimation, ProjectsFooterAnimation ]
 })
 export class ProjectsComponent {
 
@@ -43,6 +44,10 @@ export class ProjectsComponent {
 
   public deselect(): void {
     this.store.dispatch(ProjectsActions.clearProjectSelection());
+  }
+
+  public reload(): void {
+    this.store.dispatch(ProjectsActions.load());
   }
 
 }
