@@ -29,6 +29,9 @@ export namespace __fromProjectsState {
 
   export const { selectIds, selectEntities, selectAll, selectTotal } = ProjectsStateAdapter.getSelectors();
 
+  export const selectByLinkUUID = (state: __ProjectsState, props: { linkUUID: string }) =>
+    selectAll(state).find((p) => p.link !== undefined && p.link.uuid === props.linkUUID);
+
   export const isSomeProjectSelected    = (state: __ProjectsState) => state.selectedID !== undefined && state.entities[ state.selectedID ] !== undefined;
   export const getSelectedProject       = (state: __ProjectsState) => state.selectedID !== undefined ? state.entities[ state.selectedID ] : undefined;
   export const getSelectedProjectOption = (state: __ProjectsState) => {

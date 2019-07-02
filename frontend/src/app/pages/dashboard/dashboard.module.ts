@@ -15,6 +15,7 @@ const ProjectsRouting = RouterModule.forChild([
     path:     '', component: DashboardPageComponent,
     children: [
       { path: 'projects', component: ProjectsComponent },
+      { path: 'p', loadChildren: () => import('./pages/project/project.module').then((m) => m.ProjectModule) },
       { path: '', redirectTo: 'projects', pathMatch: 'full' }
     ]
   }

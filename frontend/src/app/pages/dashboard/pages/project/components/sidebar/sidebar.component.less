@@ -1,0 +1,48 @@
+@import "color-scheme.variables";
+
+.sidebar {
+  width: 100%;
+  height: 100%;
+  user-select: none;
+}
+
+.sidebar > .item {
+  padding: 1em;
+  border-bottom: 1px solid #d4d4d5;
+  cursor: pointer;
+  transition: border-left 0.3s ease-in-out, background 0.3s ease-in-out;
+  user-select: none;
+  display: block;
+  outline: none;
+  color: inherit;
+
+  &:hover {
+    outline: none;
+    text-decoration: none;
+    -webkit-tap-highlight-color: white;
+    color: inherit;
+  }
+
+  &:visited {
+    outline: none;
+    text-decoration: none;
+    -webkit-tap-highlight-color: white;
+    color: inherit;
+  }
+}
+
+.sidebar > .item.upload {
+  border-left: 0.5em solid #e6e6e6;
+  outline: none;
+  width: 100%;
+
+  &:hover {
+    border-left: 0.5em solid @teal;
+    background: rgb(243, 244, 245, .5)
+  }
+
+  &.active {
+    border-left: 0.5em solid @teal;
+    background: rgb(243, 244, 245, .5);
+  }
+}

@@ -1,4 +1,4 @@
-<div class="ui container top pushed">
+<div class="ui projects container">
     <div class="ui raised violet attached projects segment" [ngClass]="{ 'placeholder': !(isLoaded | async) }">
         <div class="ui projects grid" *ngIf="isLoaded | async; else notLoaded">
             <div class="six wide projects list column right vertically divided">

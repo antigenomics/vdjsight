@@ -77,6 +77,7 @@ export namespace fromRoot {
   export const getRouterStateURL          = routerStateSelectors.selectUrl;
 
   /** Network state selectors */
-  export const isNetworkOffline = createSelector(getNetworkState, __fromNetworkState.isOffline);
-  export const isNetworkOnline  = createSelector(getNetworkState, __fromNetworkState.isOnline);
+  export const isNetworkOffline    = createSelector(getNetworkState, __fromNetworkState.isOffline);
+  export const isNetworkOnline     = createSelector(getNetworkState, __fromNetworkState.isOnline);
+  export const getNetworkGuardInfo = createSelector(getNetworkState, __fromNetworkState.getGuardInfo);
 }

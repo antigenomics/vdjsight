@@ -26,6 +26,7 @@ export namespace fromDashboard {
   export const isProjectsLoaded         = createSelector(selectDashboardModuleProjectsState, __fromProjectsState.isLoaded);
   export const isProjectsLoadFailed     = createSelector(selectDashboardModuleProjectsState, __fromProjectsState.isLoadFailed);
   export const getProjectByID           = createSelector(selectDashboardModuleProjectsState, __fromProjectsState.selectByID);
+  export const getProjectByLinkUUID     = createSelector(selectDashboardModuleProjectsState, __fromProjectsState.selectByLinkUUID);
   export const getProjectsIDs           = createSelector(selectDashboardModuleProjectsState, __fromProjectsState.selectIds);
   export const getProjectEntities       = createSelector(selectDashboardModuleProjectsState, __fromProjectsState.selectEntities);
   export const getAllProjects           = createSelector(selectDashboardModuleProjectsState, __fromProjectsState.selectAll);

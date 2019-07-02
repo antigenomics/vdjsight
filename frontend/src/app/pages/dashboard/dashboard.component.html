@@ -1,9 +1,21 @@
-<div class="ui attached stackable menu">
-    <a class="item">
-        <i class="list ul icon" routerLink="list"></i> Projects
-    </a>
-    <div class="right item">
-        <i class="sign out alternate icon" routerLink="/"></i> Close
+<div class="dashboard container">
+    <div class="header">
+        <div class="ui text attached menu">
+            <div class="ui container">
+                <div class="header item" style="margin-right: 30px">
+                    DASHBOARD
+                </div>
+                <a class="item" routerLink="projects">
+                    <i class="list ul icon"></i> Projects
+                </a>
+                <a class="right item" routerLink="/">
+                    <i class="sign out alternate icon"></i> Close
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <router-outlet></router-outlet>
     </div>
 </div>
-<router-outlet></router-outlet>
+

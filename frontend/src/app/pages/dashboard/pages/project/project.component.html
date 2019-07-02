@@ -1,0 +1,10 @@
+<div class="project container">
+    <div class="ui grid">
+        <div class="three wide sidebar column">
+            <vs-project-sidebar [project]="project$ | async"></vs-project-sidebar>
+        </div>
+        <div class="thirteen wide main column">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+</div>

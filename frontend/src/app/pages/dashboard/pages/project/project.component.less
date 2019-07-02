@@ -1,0 +1,41 @@
+.project.container {
+  width: 100%;
+  height: 100%;
+}
+
+.project.container > .grid {
+  margin: 0 !important;
+  height: 100%;
+}
+
+.project.container > .grid > .column {
+  height: 100%;
+}
+
+.project.container > .grid > .sidebar.column {
+  border-right: 1px solid #d4d4d5;
+  height: 100%;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  padding: 0;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.project.container > .grid > .main.column {
+  height: 100%;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+
+
+

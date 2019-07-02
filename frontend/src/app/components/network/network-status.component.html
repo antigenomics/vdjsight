@@ -11,5 +11,21 @@
             </div>
         </div>
     </div>
-    <div class="network-status-blur-background" [@background]></div>
+    <div class="network-blur-background" [@background]></div>
+</ng-container>
+<ng-container *ngIf="(guardInfo$ | async) as guard">
+    <ng-container *ngIf="guard.active">
+        <div class="network-guard-container" [@guard]>
+            <div class="ui info icon compact message">
+                <i class="notched circle loading icon"></i>
+                <div class="content">
+                    <div class="header">
+                        {{ guard.title }}
+                    </div>
+                    <p>{{ guard.message }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="network-blur-background" [@background]></div>
+    </ng-container>
 </ng-container>
