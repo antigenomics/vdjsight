@@ -118,10 +118,10 @@ trait ProjectLinkProviderEvent extends AbstractEffectEvent
 
 object ProjectLinkProviderEvents {
   case class ProjectLinkProviderInitialized(configuration: ProjectLinksConfiguration) extends ProjectLinkProviderEvent
-  case class ProjectLinkCreated(projectLink: ProjectLink) extends ProjectLinkProviderEvent
+  case class ProjectLinkCreated(link: ProjectLink) extends ProjectLinkProviderEvent
   case class ProjectLinkDeleteScheduled(linkID: UUID) extends ProjectLinkProviderEvent
   case class ProjectLinkDeleteCancelled(linkID: UUID) extends ProjectLinkProviderEvent
-  case class ProjectLinkDeleted(projectLink: ProjectLink) extends ProjectLinkProviderEvent
+  case class ProjectLinkDeleted(link: ProjectLink) extends ProjectLinkProviderEvent
 }
 
 @Singleton

@@ -96,13 +96,6 @@ class ProjectProvider @Inject()(
 
   def findForOwner(userID: UUID): Future[Seq[Project]] = db.run(projects.filter(_.ownerID === userID).result)
 
-  def countForOwner(userID: UUID, includeDangling: Boolean = false): Future[Int] =
-    if (includeDangling) {
-      db.run(projects.filter(p => p.ownerID === userID && p.isDangling === true).length.result)
-    } else {
-      db.run(projects.filter(p => p.ownerID === userID).length.result)
-    }
-
   def getWithOwner(uuid: UUID): Future[Option[(Project, User)]] = db.run(projects.withOwner.filter(_._1.uuid === uuid).result.headOption)
 
   def create(
@@ -141,13 +134,13 @@ class ProjectProvider @Inject()(
   }
 
   def update(projectID: UUID, name: String, description: String): Future[Project] = {
-    val actions = projects.filter(_.uuid === projectID).result.headOption flatMap {
-        case Some(project) =>
-          projects.filter(_.uuid === projectID).map(p => (p.name, p.description)).update((name, description)) flatMap {
-            case 0 => DBIO.failed(new Exception("Cannot update Project instance in database: Unknown error"))
-            case _ => DBIO.successful(project)
+    val actions = projects.filter(_.uuid === projectID).map(p => (p.name, p.description)).update((name, description)) flatMap {
+        case 0 => DBIO.failed(new Exception("Cannot update Project instance in database: Project does not exist"))
+        case _ =>
+          projects.filter(_.uuid === projectID).result.headOption flatMap {
+            case Some(project) => DBIO.successful(project)
+            case None          => DBIO.failed(new Exception("Cannot update Project instance in database: Unknown error"))
           }
-        case None => DBIO.failed(new Exception("Cannot update Project instance in database: Project does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { project =>
@@ -159,7 +152,7 @@ class ProjectProvider @Inject()(
     val actions = projects.filter(_.uuid === uuid).result.headOption flatMap {
         case Some(project) =>
           projects.filter(_.uuid === uuid).delete flatMap {
-            case 0 => DBIO.failed(new Exception("Cannot create Project instance in database: Unknown error"))
+            case 0 => DBIO.failed(new Exception("Cannot delete Project instance in database: Unknown error"))
             case _ => DBIO.successful(project)
           }
         case None => DBIO.failed(new Exception("Cannot delete Project instance in database: Project does not exist"))

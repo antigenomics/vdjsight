@@ -17,7 +17,7 @@ class ProjectEffectsActor() extends Actor with Logging {
   override def receive: Receive = {
     case ProjectProviderEvents.ProjectProviderInitialized(configuration) =>
       if (!Files.exists(Paths.get(configuration.storagePath))) {
-        logger.info("[ProjectProvider] Initializing projects storage folder")
+        logger.info("Initializing projects storage folder")
         Files.createDirectories(Paths.get(configuration.storagePath))
       }
     case ProjectProviderEvents.ProjectCreated(project) => Files.createDirectories(Paths.get(project.folder))
