@@ -9,10 +9,9 @@ import com.google.inject.{Inject, Singleton}
 import com.typesafe.config.Config
 import effects.{AbstractEffectEvent, EffectsEventsStream}
 import models.user.{User, UserProvider, UserTable}
-import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.inject.ApplicationLifecycle
-import play.api.{ConfigLoader, Configuration}
+import play.api.{ConfigLoader, Configuration, Logging}
 import play.db.NamedDatabase
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
@@ -37,12 +36,12 @@ object ProjectLinkDeleteConfiguration {
   }
 }
 
-case class ProjectLinkConfiguration(delete: ProjectLinkDeleteConfiguration)
+case class ProjectLinksConfiguration(delete: ProjectLinkDeleteConfiguration)
 
-object ProjectLinkConfiguration {
-  implicit val projectLinkConfigurationLoader: ConfigLoader[ProjectLinkConfiguration] = (root: Config, path: String) => {
+object ProjectLinksConfiguration {
+  implicit val projectLinkConfigurationLoader: ConfigLoader[ProjectLinksConfiguration] = (root: Config, path: String) => {
     val config = root.getConfig(path)
-    ProjectLinkConfiguration(
+    ProjectLinksConfiguration(
       delete = ProjectLinkDeleteConfiguration.projectLinkDeleteConfigurationLoader.load(config, "delete")
     )
   }
@@ -84,13 +83,13 @@ class ProjectLinkTable(tag: Tag)(implicit pp: ProjectProvider, up: UserProvider)
   def project = foreignKey("project_link_table_project_fk", projectID, pp.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
-    onDelete = ForeignKeyAction.Restrict
+    onDelete = ForeignKeyAction.Cascade
   )
 
   def user = foreignKey("project_link_table_project_fk", userID, up.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
-    onDelete = ForeignKeyAction.Restrict
+    onDelete = ForeignKeyAction.Cascade
   )
 
   def project_id_idx = index("project_link_table_project_id_idx", projectID, unique = false)
@@ -118,6 +117,7 @@ object ProjectLinkTable {
 trait ProjectLinkProviderEvent extends AbstractEffectEvent
 
 object ProjectLinkProviderEvents {
+  case class ProjectLinkProviderInitialized(configuration: ProjectLinksConfiguration) extends ProjectLinkProviderEvent
   case class ProjectLinkCreated(projectLink: ProjectLink) extends ProjectLinkProviderEvent
   case class ProjectLinkDeleteScheduled(linkID: UUID) extends ProjectLinkProviderEvent
   case class ProjectLinkDeleteCancelled(linkID: UUID) extends ProjectLinkProviderEvent
@@ -135,14 +135,16 @@ class ProjectLinkProvider @Inject()(
   implicit ec: ExecutionContext,
   pp: ProjectProvider,
   up: UserProvider
-) extends HasDatabaseConfigProvider[JdbcProfile] {
+) extends HasDatabaseConfigProvider[JdbcProfile]
+    with Logging {
 
-  final private val logger        = LoggerFactory.getLogger(this.getClass)
-  final private val configuration = conf.get[ProjectLinkConfiguration]("application.projects.links")
+  final private val configuration = conf.get[ProjectLinksConfiguration]("application.projects.links")
 
   import dbConfig.profile.api._
 
   final private val links = TableQuery[ProjectLinkTable]
+
+  events.publish(ProjectLinkProviderEvents.ProjectLinkProviderInitialized(configuration))
 
   final private val expiredLinksDeleteScheduler: Option[Cancellable] = Option(!configuration.delete.interval.isZero).collect {
     case true =>
@@ -168,6 +170,10 @@ class ProjectLinkProvider @Inject()(
 
   def findForUserWithProject(userID: UUID): Future[Seq[(ProjectLink, Project)]] = db.run(links.withProject.filter(_._1.userID === userID).result)
 
+  def findForProject(projectID: UUID): Future[Seq[ProjectLink]] = db.run(links.filter(_.projectID === projectID).result)
+
+  def findForProjectWithUser(projectID: UUID): Future[Seq[(ProjectLink, User)]] = db.run(links.withUser.filter(_._1.projectID === projectID).result)
+
   def getWithUser(uuid: UUID): Future[Option[(ProjectLink, User)]] = db.run(links.withUser.filter(_._1.uuid === uuid).result.headOption)
 
   def getWithProject(uuid: UUID): Future[Option[(ProjectLink, Project)]] = db.run(links.withProject.filter(_._1.uuid === uuid).result.headOption)
@@ -179,75 +185,92 @@ class ProjectLinkProvider @Inject()(
     isDeleteAllowed: Boolean       = true,
     isModificationAllowed: Boolean = true
   ): Future[ProjectLink] = {
+    val actions = up.table.filter(_.uuid === userID).result.headOption flatMap {
+        case Some(user) =>
+          pp.table.filter(_.uuid === projectID).result.headOption flatMap {
+            case Some(project) =>
+              links.filter(link => link.userID === userID && link.projectID === projectID).result.headOption flatMap {
+                case Some(link) => DBIO.successful(link)
+                case None =>
+                  val isShared = project.ownerID != user.uuid
+                  val linkID   = UUID.randomUUID()
+                  val link = ProjectLink(
+                    uuid                  = linkID,
+                    projectID             = projectID,
+                    userID                = userID,
+                    isShared              = isShared,
+                    isUploadAllowed       = isUploadAllowed,
+                    isDeleteAllowed       = isDeleteAllowed,
+                    isModificationAllowed = isModificationAllowed,
+                    deleteOn              = None
+                  )
+                  (links += link) flatMap {
+                    case 1 => DBIO.successful(link)
+                    case _ => DBIO.failed(new Exception("Cannot create ProjectLink instance in database: Unknown error"))
+                  }
+              }
+            case None => DBIO.failed(new Exception("Cannot create ProjectLink instance in database: Project does not exist"))
+          }
+        case None => DBIO.failed(new Exception("Cannot create ProjectLink instance in database: User does not exist"))
+      }
 
-    val checkUserExist    = up.table.filter(_.uuid === userID).result.headOption
-    val checkProjectExist = pp.table.filter(_.uuid === projectID).result.headOption
-    val checkLinkExist = links
-      .filter(
-        link =>
-          link.userID    === userID &&
-          link.projectID === projectID
-      )
-      .result
-      .headOption
-
-    db.run((checkUserExist zip checkProjectExist zip checkLinkExist).transactionally) flatMap {
-      case ((Some(_), Some(_)), Some(link)) => Future.successful(link)
-      case ((Some(user), Some(project)), None) =>
-        val isShared = project.ownerID != user.uuid
-        val linkID   = UUID.randomUUID()
-        val link = ProjectLink(
-          linkID,
-          projectID,
-          userID,
-          isShared,
-          isUploadAllowed,
-          isDeleteAllowed,
-          isModificationAllowed,
-          None
-        )
-
-        db.run(links += link) map {
-          case 1 => link
-          case _ => throw new RuntimeException("Cannot create ProjectLink instance in database: Internal error")
-        } onSuccessSideEffect { _ =>
-          events.publish(ProjectLinkProviderEvents.ProjectLinkCreated(link))
-        }
-
-      case ((None, _), _) => throw new RuntimeException("Cannot create VerificationToken instance in database: User does not exist")
-      case ((_, None), _) => throw new RuntimeException("Cannot create VerificationToken instance in database: Project does not exist")
+    db.run(actions.transactionally) onSuccessSideEffect { link =>
+      events.publish(ProjectLinkProviderEvents.ProjectLinkCreated(link))
     }
   }
 
-  def scheduleDelete(uuid: UUID): Future[Int] = {
-    db.run(
-      links.filter(_.uuid === uuid).map(_.deleteOn).update(Some(TimeUtils.getExpiredAt(configuration.delete.keep)))
-    ) onSuccessSideEffect {
-      case 1 => events.publish(ProjectLinkProviderEvents.ProjectLinkDeleteScheduled(uuid))
-      case _ =>
+  def scheduleDelete(uuid: UUID): Future[Boolean] = {
+    val actions = links.withProject.filter(_._1.uuid === uuid).result.headOption flatMap {
+        case Some((link, project)) =>
+          links.filter(_.uuid === link.uuid).map(_.deleteOn).update(Some(TimeUtils.getExpiredAt(configuration.delete.keep))) flatMap { u =>
+            project.ownerID match {
+              case link.userID => pp.table.filter(_.uuid === link.projectID).map(_.isDangling).update(true).map(_ + u)
+              case _           => DBIO.successful(u)
+            }
+          }
+        case None => DBIO.failed(new Exception("Cannot schedule ProjectLink instance delete: Link does not exist"))
+      }
+
+    db.run(actions.transactionally) onSuccessSideEffect { _ =>
+      events.publish(ProjectLinkProviderEvents.ProjectLinkDeleteScheduled(uuid))
+    } map {
+      case 0 => false
+      case _ => true
     }
   }
 
-  def cancelScheduledDelete(uuid: UUID): Future[Int] = {
-    db.run(
-      links.filter(_.uuid === uuid).map(_.deleteOn).update(None)
-    ) onSuccessSideEffect {
-      case 1 => events.publish(ProjectLinkProviderEvents.ProjectLinkDeleteCancelled(uuid))
-      case _ =>
+  def cancelScheduledDelete(uuid: UUID): Future[Boolean] = {
+    val actions = links.withProject.filter(_._1.uuid === uuid).result.headOption flatMap {
+        case Some((link, project)) =>
+          links.filter(_.uuid === link.uuid).map(_.deleteOn).update(None) flatMap { u =>
+            project.ownerID match {
+              case link.userID => pp.table.filter(_.uuid === link.projectID).map(_.isDangling).update(false).map(_ + u)
+              case _           => DBIO.successful(u)
+            }
+          }
+        case None => DBIO.failed(new Exception("Cannot cancel scheduled ProjectLink instance deletion: Link does not exist"))
+      }
+
+    db.run(actions.transactionally) onSuccessSideEffect { _ =>
+      events.publish(ProjectLinkProviderEvents.ProjectLinkDeleteCancelled(uuid))
+    } map {
+      case 0 => false
+      case _ => true
     }
   }
 
-  def delete(uuid: UUID): Future[Int] = {
-    val linkAction   = links.filter(_.uuid === uuid).result.headOption
-    val deleteAction = links.filter(_.uuid === uuid).delete
+  def delete(uuid: UUID): Future[Boolean] = {
+    val actions = links.filter(_.uuid === uuid).result.headOption flatMap {
+        case Some(link) => links.filter(_.uuid === uuid).delete map (_ => link)
+        case None       => DBIO.failed(new Exception("Cannot delete ProjectLink instance: Link does not exist"))
+      }
 
-    db.run((linkAction zip deleteAction).transactionally) onSuccessSideEffect {
-      case (Some(link), 1) => events.publish(ProjectLinkProviderEvents.ProjectLinkDeleted(link))
-      case _               => logger.warn(s"Cannot delete project link: $uuid")
-    } map (_._2)
+    db.run(actions.transactionally) onSuccessSideEffect { link =>
+      events.publish(ProjectLinkProviderEvents.ProjectLinkDeleted(link))
+    } map (_ => true)
   }
 
-  def delete(seq: Seq[UUID]): Future[Int] = Future.sequence(seq.map(delete)).map(_.sum)
+  def delete(seq: Seq[UUID]): Future[Boolean] = Future.sequence(seq.map(delete)).map(_.forall(_ == true))
 
   def expired(date: Timestamp = TimeUtils.getCurrentTimestamp): Future[Seq[ProjectLink]] =
     db.run(links.filter(l => l.deleteOn.nonEmpty && l.deleteOn < date).result)

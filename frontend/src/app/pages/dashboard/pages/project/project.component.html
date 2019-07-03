@@ -1,10 +1,12 @@
 <div class="project container">
     <div class="ui grid">
-        <div class="three wide sidebar column">
+        <div class="three wide sidebar column" @sidebar>
             <vs-project-sidebar [project]="project$ | async"></vs-project-sidebar>
         </div>
-        <div class="thirteen wide main column">
-            <router-outlet></router-outlet>
+        <div class="thirteen wide main column" @content>
+            <div class="content container">
+                <router-outlet></router-outlet>
+            </div>
         </div>
     </div>
 </div>

@@ -6,7 +6,7 @@ import com.google.inject.{Inject, Singleton}
 import effects.{AbstractEffectEvent, EffectsEventsStream}
 import io.github.nremond.SecureHash
 import models.token.{ResetTokenProvider, VerificationTokenProvider}
-import org.slf4j.LoggerFactory
+import play.api.Logging
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.db.NamedDatabase
 import slick.jdbc.JdbcProfile
@@ -36,10 +36,10 @@ object UserTable {
 trait UserProviderEvent extends AbstractEffectEvent
 
 object UserProviderEvents {
-  case class UserCreated(uuid: UUID) extends UserProviderEvent
+  case class UserCreated(user: User) extends UserProviderEvent
   case class UserVerified(uuid: UUID) extends UserProviderEvent
   case class UserReset(uuid: UUID) extends UserProviderEvent
-  case class UserDeleted(uuid: UUID) extends UserProviderEvent
+  case class UserDeleted(user: User) extends UserProviderEvent
 }
 
 @Singleton
@@ -48,9 +48,8 @@ class UserProvider @Inject()(
   events: EffectsEventsStream
 )(
   implicit ec: ExecutionContext
-) extends HasDatabaseConfigProvider[JdbcProfile] {
-
-  final private val logger = LoggerFactory.getLogger(this.getClass)
+) extends HasDatabaseConfigProvider[JdbcProfile]
+    with Logging {
 
   import dbConfig.profile.api._
 
@@ -86,48 +85,71 @@ class UserProvider @Inject()(
     getByEmail(email).map(_.filter(u => SecureHash.validatePassword(password, u.password)))
   }
 
-  def create(login: String, email: String, password: String): Future[UUID] = {
-    val check = for {
-      user <- users if user.login === login || user.email === email
-    } yield user
+  def create(login: String, email: String, password: String): Future[User] = {
+    val actions = users.filter(u => u.login === login || u.email === email).result.headOption flatMap {
+        case Some(_) => DBIO.failed(new Exception("Cannot create User instance in database: User already exist"))
+        case None =>
+          val uuid = UUID.randomUUID()
+          val user = User(
+            uuid     = uuid,
+            login    = login,
+            email    = email,
+            verified = false,
+            password = SecureHash.createHash(password)
+          )
+          (users += user) flatMap {
+            case 1 => DBIO.successful(user)
+            case _ => DBIO.failed(new Exception("Cannot create User instance in database: Unknown error"))
+          }
+      }
 
-    db.run(check.result.headOption) flatMap {
-      case Some(_) => Future.failed(new RuntimeException("Cannot create User instance in database: User already exist"))
-      case None =>
-        val uuid = UUID.randomUUID()
-        db.run(users += User(uuid, login, email, verified = false, SecureHash.createHash(password))) map {
-          case 1 => uuid
-          case _ => throw new RuntimeException("Cannot create User instance in database: Internal error")
-        } onSuccessSideEffect { uuid =>
-          events.publish(UserProviderEvents.UserCreated(uuid))
-        }
+    db.run(actions.transactionally) onSuccessSideEffect { user =>
+      events.publish(UserProviderEvents.UserCreated(user))
     }
   }
 
-  def verify(verificationTokenID: UUID)(implicit vtp: VerificationTokenProvider): Future[Option[User]] = {
-    vtp.get(verificationTokenID) flatMap {
-      case Some(token) => db.run(users.filter(_.uuid === token.userID).map(_.verified).update(true)).flatMap(_ => get(token.userID))
-      case None        => Future.successful(None)
-    } onSuccessSideEffect { user =>
-      user.foreach(u => events.publish(UserProviderEvents.UserVerified(u.uuid)))
-    }
+  def verify(tokenID: UUID)(implicit vtp: VerificationTokenProvider): Future[Boolean] = {
+    val actions = vtp.table.filter(_.token === tokenID).result.headOption flatMap {
+        case Some(token) =>
+          users.filter(_.uuid === token.userID).map(_.verified).update(true) map {
+            case 1 =>
+              events.publish(UserProviderEvents.UserVerified(token.userID))
+              true
+            case _ => false
+          }
+        case None => DBIO.successful(false)
+      }
+
+    db.run(actions.transactionally)
   }
 
-  def reset(resetTokenID: UUID, password: String)(implicit rtp: ResetTokenProvider): Future[Option[User]] = {
-    rtp.get(resetTokenID) flatMap {
-      case Some(token) =>
-        db.run(users.filter(_.uuid === token.userID).map(u => (u.password, u.verified)).update((SecureHash.createHash(password), true)))
-          .flatMap(_ => get(token.userID))
-      case None => Future.successful(None)
-    } onSuccessSideEffect { user =>
-      user.foreach(u => events.publish(UserProviderEvents.UserReset(u.uuid)))
-    }
+  def reset(tokenID: UUID, password: String)(implicit rtp: ResetTokenProvider): Future[Boolean] = {
+    val actions = rtp.table.filter(_.token === tokenID).result.headOption flatMap {
+        case Some(token) =>
+          users.filter(_.uuid === token.userID).map(u => (u.password, u.verified)).update((SecureHash.createHash(password), true)) map {
+            case 1 =>
+              events.publish(UserProviderEvents.UserReset(token.userID))
+              true
+            case _ => false
+          }
+        case None => DBIO.successful(false)
+      }
+
+    db.run(actions.transactionally)
   }
 
-  def delete(uuid: UUID): Future[Int] =
-    db.run(users.filter(_.uuid === uuid).delete) onSuccessSideEffect { _ =>
-      events.publish(UserProviderEvents.UserDeleted(uuid))
-    }
+  def delete(uuid: UUID): Future[Boolean] = {
+    val actions = users.filter(_.uuid === uuid).result.headOption flatMap {
+        case Some(user) =>
+          users.filter(_.uuid === uuid).delete map {
+            case 1 =>
+              events.publish(UserProviderEvents.UserDeleted(user))
+              true
+            case _ => false
+          }
+        case None => DBIO.failed(new Exception("Cannot delete User instance in database: User does not exist"))
+      }
+    db.run(actions.transactionally)
+  }
 
-  def delete(uuidSet: Set[UUID]): Future[Int] = Future.sequence(uuidSet.map(delete)).map(_.sum)
 }

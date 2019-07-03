@@ -67,7 +67,9 @@ javaOptions in Test ++= Seq(
   "-Dapplication.temporary.interval=0",
   "-Dapplication.auth.verification.method=noop",
   "-Dapplication.auth.reset.method=noop",
-  "-Dapplication.auth.controller.delay=0 seconds"
+  "-Dapplication.auth.controller.delay=0 seconds",
+  "-Dapplication.projects.storagePath=/tmp/vdjsight-test/projects",
+  "-Dapplication.samples.storagePath=/tmp/vdjsight-test/samples",
 )
 
 libraryDependencies ++= Seq(

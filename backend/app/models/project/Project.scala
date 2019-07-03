@@ -6,9 +6,8 @@ import com.google.inject.{Inject, Singleton}
 import com.typesafe.config.Config
 import effects.{AbstractEffectEvent, EffectsEventsStream}
 import models.user.{User, UserPermissionsProvider, UserProvider, UserTable}
-import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import play.api.{ConfigLoader, Configuration}
+import play.api.{ConfigLoader, Configuration, Logging}
 import play.db.NamedDatabase
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
@@ -18,19 +17,19 @@ import utils.FutureUtils._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
-case class ProjectPermissionsConfiguration(storagePath: String, maxSamplesCount: Long)
+case class ProjectsConfiguration(storagePath: String, maxSamplesCount: Long)
 
-object ProjectPermissionsConfiguration {
-  implicit val projectPermissionsDefaultConfigurationLoader: ConfigLoader[ProjectPermissionsConfiguration] = (root: Config, path: String) => {
+object ProjectsConfiguration {
+  implicit val projectPermissionsDefaultConfigurationLoader: ConfigLoader[ProjectsConfiguration] = (root: Config, path: String) => {
     val config = root.getConfig(path)
-    ProjectPermissionsConfiguration(
+    ProjectsConfiguration(
       storagePath     = config.getString("storagePath"),
       maxSamplesCount = config.getLong("maxSamplesCount")
     )
   }
 }
 
-case class Project(uuid: UUID, name: String, description: String, ownerID: UUID, folder: String, maxSampleCount: Long)
+case class Project(uuid: UUID, name: String, description: String, ownerID: UUID, folder: String, maxSamplesCount: Long, isDangling: Boolean)
 
 class ProjectTable(tag: Tag)(implicit up: UserProvider) extends Table[Project](tag, ProjectTable.TABLE_NAME) {
   def uuid            = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
@@ -39,8 +38,9 @@ class ProjectTable(tag: Tag)(implicit up: UserProvider) extends Table[Project](t
   def ownerID         = column[UUID]("owner_id", O.SqlType("uuid"))
   def folder          = column[String]("folder", O.Unique)
   def maxSamplesCount = column[Long]("max_samples_count")
+  def isDangling      = column[Boolean]("is_dangling")
 
-  def * = (uuid, name, description, ownerID, folder, maxSamplesCount) <> (Project.tupled, Project.unapply)
+  def * = (uuid, name, description, ownerID, folder, maxSamplesCount, isDangling) <> (Project.tupled, Project.unapply)
 
   def owner = foreignKey("project_table_owner_fk", ownerID, up.table)(
     _.uuid,
@@ -62,8 +62,9 @@ object ProjectTable {
 trait ProjectProviderEvent extends AbstractEffectEvent
 
 object ProjectProviderEvents {
+  case class ProjectProviderInitialized(configuration: ProjectsConfiguration) extends ProjectProviderEvent
   case class ProjectCreated(project: Project) extends ProjectProviderEvent
-  case class ProjectUpdated(projectId: UUID) extends ProjectProviderEvent
+  case class ProjectUpdated(project: Project) extends ProjectProviderEvent
   case class ProjectDeleted(project: Project) extends ProjectProviderEvent
 }
 
@@ -76,14 +77,16 @@ class ProjectProvider @Inject()(
   implicit ec: ExecutionContext,
   up: UserProvider,
   upp: UserPermissionsProvider
-) extends HasDatabaseConfigProvider[JdbcProfile] {
+) extends HasDatabaseConfigProvider[JdbcProfile]
+    with Logging {
 
-  final private val logger               = LoggerFactory.getLogger(this.getClass)
-  final private val defaultConfiguration = conf.get[ProjectPermissionsConfiguration]("application.projects.permissions")
+  final private val configuration = conf.get[ProjectsConfiguration]("application.projects")
 
   import dbConfig.profile.api._
 
   final private val projects = TableQuery[ProjectTable]
+
+  events.publish(ProjectProviderEvents.ProjectProviderInitialized(configuration))
 
   def table: TableQuery[ProjectTable] = projects
 
@@ -93,55 +96,78 @@ class ProjectProvider @Inject()(
 
   def findForOwner(userID: UUID): Future[Seq[Project]] = db.run(projects.filter(_.ownerID === userID).result)
 
+  def countForOwner(userID: UUID, includeDangling: Boolean = false): Future[Int] =
+    if (includeDangling) {
+      db.run(projects.filter(p => p.ownerID === userID && p.isDangling === true).length.result)
+    } else {
+      db.run(projects.filter(p => p.ownerID === userID).length.result)
+    }
+
   def getWithOwner(uuid: UUID): Future[Option[(Project, User)]] = db.run(projects.withOwner.filter(_._1.uuid === uuid).result.headOption)
 
   def create(
     userID: UUID,
-    name: String                                           = "New project",
-    description: String                                    = "",
-    configuration: Option[ProjectPermissionsConfiguration] = None
+    name: String                                         = "New project",
+    description: String                                  = "",
+    overrideConfiguration: Option[ProjectsConfiguration] = None
   ): Future[Project] = {
-    up.get(userID).flatMap {
-      case Some(user) =>
-        val projectID = UUID.randomUUID()
-        val config    = configuration.getOrElse(defaultConfiguration)
-
-        val maxSamplesCountFuture = config.maxSamplesCount match {
-          case 0 => upp.findForUser(userID).map(_.map(_.maxSamplesCount)).map(_.getOrElse(defaultConfiguration.maxSamplesCount))
-          case _ => Future.successful(config.maxSamplesCount)
-        }
-
-        maxSamplesCountFuture flatMap { maxSamplesCount =>
-          val project = Project(projectID, name, description, user.uuid, s"${config.storagePath}/$projectID", maxSamplesCount)
-          db.run(projects += project) map {
-            case 1 => project
-            case _ => throw new RuntimeException("Cannot create Project instance in database: Internal error")
-          } onSuccessSideEffect { _ =>
-            events.publish(ProjectProviderEvents.ProjectCreated(project))
+    val actions = upp.table.filter(_.userID === userID).result.headOption flatMap {
+        case Some(permissions) =>
+          val config    = overrideConfiguration.getOrElse(configuration)
+          val projectID = UUID.randomUUID()
+          val maxSamplesCount = config.maxSamplesCount match {
+            case 0 => permissions.maxSamplesCount
+            case _ => config.maxSamplesCount
           }
-        }
-      case None => throw new RuntimeException("Cannot create Project instance in database: User does not exist")
+          val project = Project(
+            uuid            = projectID,
+            name            = name,
+            description     = description,
+            ownerID         = userID,
+            folder          = s"${config.storagePath}/$projectID",
+            maxSamplesCount = maxSamplesCount,
+            isDangling      = false
+          )
+          (projects += project) flatMap {
+            case 1 => DBIO.successful(project)
+            case _ => DBIO.failed(new Exception("Cannot create Project instance in database: Unknown error"))
+          }
+        case None => DBIO.failed(new Exception("Cannot create Project instance in database: User does not exist"))
+      }
+
+    db.run(actions.transactionally) onSuccessSideEffect { project =>
+      events.publish(ProjectProviderEvents.ProjectCreated(project))
     }
   }
 
   def update(projectID: UUID, name: String, description: String): Future[Project] = {
-    val updateAction   = projects.filter(_.uuid === projectID).map(p => (p.name, p.description)).update((name, description))
-    val updatedProject = projects.filter(_.uuid === projectID).result.headOption
-    db.run(updateAction zip updatedProject) map {
-      case (1, Some(project)) => project
-      case _                  => throw new RuntimeException("Cannot create Project instance in database: Internal error")
-    } onSuccessSideEffect { _ =>
-      events.publish(ProjectProviderEvents.ProjectUpdated(projectID))
+    val actions = projects.filter(_.uuid === projectID).result.headOption flatMap {
+        case Some(project) =>
+          projects.filter(_.uuid === projectID).map(p => (p.name, p.description)).update((name, description)) flatMap {
+            case 1 => DBIO.successful(project)
+            case _ => DBIO.failed(new Exception("Cannot update Project instance in database: Unknown error"))
+          }
+        case None => DBIO.failed(new Exception("Cannot update Project instance in database: Project does not exist"))
+      }
+
+    db.run(actions.transactionally) onSuccessSideEffect { project =>
+      events.publish(ProjectProviderEvents.ProjectUpdated(project))
     }
   }
 
-  def delete(uuid: UUID): Future[Int] = {
-    val projectAction = projects.filter(_.uuid === uuid).result.headOption
-    val deleteAction  = projects.filter(_.uuid === uuid).delete
-    db.run(projectAction zip deleteAction) onSuccessSideEffect {
-      case (project, _) =>
-        project.foreach(p => events.publish(ProjectProviderEvents.ProjectDeleted(p)))
-    } map (_._2)
+  def delete(uuid: UUID): Future[Project] = {
+    val actions = projects.filter(_.uuid === uuid).result.headOption flatMap {
+        case Some(project) =>
+          projects.filter(_.uuid === uuid).delete flatMap {
+            case 1 => DBIO.successful(project)
+            case 0 => DBIO.failed(new Exception("Cannot create Project instance in database: Unknown error"))
+          }
+        case None => DBIO.failed(new Exception("Cannot delete Project instance in database: Project does not exist"))
+      }
+
+    db.run(actions.transactionally) onSuccessSideEffect { project =>
+      events.publish(ProjectProviderEvents.ProjectDeleted(project))
+    }
   }
 
 }

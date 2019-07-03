@@ -11,7 +11,7 @@ object UserPermissionsEffectsActor {
 
 class UserPermissionsEffectsActor() extends Actor {
   override def receive: Receive = {
-    case UserPermissionsProviderEvents.UserPermissionCreated(_) =>
+    case UserPermissionsProviderEvents.UserPermissionsCreated(_) =>
   }
 }
 

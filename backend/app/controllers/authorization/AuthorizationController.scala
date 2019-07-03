@@ -72,9 +72,9 @@ class AuthorizationController @Inject()(cc: ControllerComponents, session: Sessi
     up.isUserWithEmailOrLoginExist(signup.email, signup.login).flatMap {
       case (isExistWithEmail, isExistWithLogin) =>
         if (isExistWithEmail) {
-          Future.successful(BadRequest(ServerResponseError(messages("authorization.signup.validation.email.exist"))))
+          Future(BadRequest(ServerResponseError(messages("authorization.signup.validation.email.exist"))))
         } else if (isExistWithLogin) {
-          Future.successful(BadRequest(ServerResponseError(messages("authorization.signup.validation.login.exist"))))
+          Future(BadRequest(ServerResponseError(messages("authorization.signup.validation.login.exist"))))
         } else {
           up.create(signup.login, signup.email, signup.password1) map { _ =>
             Ok(ServerResponse.MESSAGE(messages("authorization.signup.success")))
@@ -91,16 +91,16 @@ class AuthorizationController @Inject()(cc: ControllerComponents, session: Sessi
   }
 
   def change: Action[JsValue] = authorizationAction[AuthorizationChangeRequest](AuthorizationChangeRequest.failedValidationMessage) { (_, reset) =>
-    up.reset(reset.token, reset.password1).map {
-      case Some(_) => Ok(ServerResponse.MESSAGE(messages("authorization.change.success")))
-      case None    => BadRequest(ServerResponseError("Invalid reset token provided"))
+    up.reset(reset.token, reset.password1) map {
+      case true  => Ok(ServerResponse.MESSAGE(messages("authorization.change.success")))
+      case false => BadRequest(ServerResponseError("Invalid reset token provided"))
     }
   }
 
   def verify: Action[JsValue] = authorizationAction[AuthorizationVerifyRequest]() { (_, verify) =>
-    up.verify(verify.token).map {
-      case Some(_) => Ok(ServerResponse.MESSAGE(messages("authorization.verify.success")))
-      case None    => BadRequest(ServerResponseError("Invalid verification token provided"))
+    up.verify(verify.token) map {
+      case true  => Ok(ServerResponse.MESSAGE(messages("authorization.verify.success")))
+      case false => BadRequest(ServerResponseError("Invalid verification token provided"))
     }
   }
 

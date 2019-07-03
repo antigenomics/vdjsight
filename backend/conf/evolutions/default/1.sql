@@ -35,6 +35,7 @@ create table "project"
     owner_id          uuid         not null,
     folder            text         not null,
     max_samples_count bigint       not null,
+    is_dangling       boolean      not null,
     foreign key (owner_id) references "user" (uuid) on update cascade on delete restrict
 );
 
@@ -50,8 +51,8 @@ create table "project_link"
     is_delete_allowed       boolean not null,
     is_modification_allowed boolean not null,
     delete_on               timestamp default null,
-    foreign key (project_id) REFERENCES "project" (uuid) on update cascade on delete restrict,
-    foreign key (user_id) REFERENCES "user" (uuid) on update cascade on delete restrict
+    foreign key (project_id) REFERENCES "project" (uuid) on update cascade on delete cascade,
+    foreign key (user_id) REFERENCES "user" (uuid) on update cascade on delete cascade
 );
 
 create index project_link_table_project_id_idx on "project_link" (project_id);

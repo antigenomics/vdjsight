@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Router } from '@angular/router';
 import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
 
 @Component({
@@ -11,10 +10,4 @@ import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
 export class SidebarComponent {
   @Input()
   public project: ProjectEntity;
-
-  constructor(private router: Router) {}
-
-  public upload(): void {
-    this.router.navigate([ 'upload' ]);
-  }
 }

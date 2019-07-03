@@ -10,6 +10,7 @@ create table "sample_file"
     owner_id uuid         not null,
     name     varchar(255) not null,
     software varchar(64)  not null,
+    folder   text         not null,
     foreign key (owner_id) references "user" (uuid) on update cascade on delete restrict
 );
 

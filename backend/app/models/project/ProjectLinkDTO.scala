@@ -26,7 +26,7 @@ object ProjectLinkDTO {
       uuid                  = link.uuid,
       name                  = project.name,
       description           = project.description,
-      maxSamplesCount       = project.maxSampleCount,
+      maxSamplesCount       = project.maxSamplesCount,
       isShared              = link.isShared,
       isUploadAllowed       = link.isUploadAllowed,
       isDeleteAllowed       = link.isDeleteAllowed,

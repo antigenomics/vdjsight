@@ -1,5 +1,7 @@
 @import "color-scheme.variables";
 
+@notification-border-width: 2px;
+
 .notification {
   text-align: left;
   background-color: #fff;
@@ -79,12 +81,12 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  height: 0.15em;
+  height: @notification-border-width;
   width: 100%;
 }
 
 .notification.success {
-  border-left: 0.15em solid @teal;
+  border-left: @notification-border-width solid @teal;
 }
 
 .notification.success > .remaining {
@@ -100,7 +102,7 @@
 }
 
 .notification.info {
-  border-left: 0.15em solid @blue;
+  border-left: @notification-border-width solid @blue;
 }
 
 .notification.info > .remaining {
@@ -116,7 +118,7 @@
 }
 
 .notification.warning {
-  border-left: 0.15em solid @orange;
+  border-left: @notification-border-width solid @orange;
 }
 
 .notification.warning > .remaining {
@@ -132,7 +134,7 @@
 }
 
 .notification.error {
-  border-left: 0.15em solid @red;
+  border-left: @notification-border-width solid @red;
 }
 
 .notification.error > .remaining {

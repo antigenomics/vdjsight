@@ -101,7 +101,7 @@ class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProvi
           _       <- byLogin should not be empty
           _       <- byEmail.get.uuid shouldEqual byLogin.get.uuid
           delete  <- up.delete(byEmail.get.uuid)
-        } yield delete shouldEqual 1
+        } yield delete should be(true)
       }
     }
   }

@@ -5,7 +5,8 @@ import specs.BaseTestSpecWithDatabaseAndApplication
 import traits.{DatabaseProjects, DatabaseProviders, DatabaseUsers, EffectsStream}
 
 import scala.concurrent.Future
-import scala.language.reflectiveCalls
+import scala.concurrent.duration._
+import scala.language.{postfixOps, reflectiveCalls}
 
 class ProjectSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProviders with DatabaseUsers with DatabaseProjects with EffectsStream {
 
@@ -52,8 +53,10 @@ class ProjectSpec extends BaseTestSpecWithDatabaseAndApplication with DatabasePr
     }
 
     "not be able to create new project for not existing user" taggedAs ModelsTestTag in {
+      val p = events.probe[ProjectProviderEvent]
       pp.create(users.notExistingUser.uuid).map(_ => w.dismiss())
       assertThrows[Exception] {
+        p.expectNoMessage(100 milliseconds)
         w.await()
       }
     }
@@ -61,32 +64,34 @@ class ProjectSpec extends BaseTestSpecWithDatabaseAndApplication with DatabasePr
     "be able to create new project" taggedAs ModelsTestTag in {
       val p = events.probe[ProjectProviderEvent]
       for {
-        created <- pp.create(users.verifiedUser.uuid, "name", "description", configuration = Some(ProjectPermissionsConfiguration("path", 10)))
+        created <- pp.create(users.verifiedUser.uuid, "name", "description", overrideConfiguration = Some(ProjectsConfiguration("path", 10)))
         _       <- Future(p.expectMsgType[ProjectProviderEvents.ProjectCreated])
         _       <- created.ownerID shouldEqual users.verifiedUser.uuid
         _       <- created.name shouldEqual "name"
         _       <- created.description shouldEqual "description"
         _       <- created.folder should include("path")
-        check   <- created.maxSampleCount shouldEqual 10
+        check   <- created.maxSamplesCount shouldEqual 10
       } yield check
     }
 
     "be able to create project with user permission by default" taggedAs ModelsTestTag in {
       val p = events.probe[ProjectProviderEvent]
       for {
-        created     <- pp.create(users.verifiedUser.uuid, configuration = Some(ProjectPermissionsConfiguration("path", 0)))
+        created     <- pp.create(users.verifiedUser.uuid, overrideConfiguration = Some(ProjectsConfiguration("path", 0)))
         _           <- Future(p.expectMsgType[ProjectProviderEvents.ProjectCreated])
         _           <- created.ownerID shouldEqual users.verifiedUser.uuid
         _           <- created.folder should include("path")
         permissions <- upp.findForUser(users.verifiedUser.uuid)
         _           <- permissions should not be empty
-        check       <- created.maxSampleCount shouldEqual permissions.get.maxSamplesCount
+        check       <- created.maxSamplesCount shouldEqual permissions.get.maxSamplesCount
       } yield check
     }
 
     "not be able to update not existing project" taggedAs ModelsTestTag in {
-      pp.update(projects.notExistingProject(users.verifiedUser).uuid, "new-name", "new-description")
+      val p = events.probe[ProjectProviderEvent]
+      pp.update(projects.notExistingProject(users.verifiedUser).uuid, "new-name", "new-description").map(_ => w.dismiss())
       assertThrows[Exception] {
+        p.expectNoMessage(100 milliseconds)
         w.await()
       }
     }

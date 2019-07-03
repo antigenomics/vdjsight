@@ -5,14 +5,12 @@ import java.util.UUID
 import com.google.inject.{Inject, Singleton}
 import com.typesafe.config.Config
 import effects.{AbstractEffectEvent, EffectsEventsStream}
-import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import play.api.{ConfigLoader, Configuration}
+import play.api.{ConfigLoader, Configuration, Logging}
 import play.db.NamedDatabase
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
-import utils.FutureUtils._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.{higherKinds, implicitConversions, postfixOps}
@@ -92,7 +90,7 @@ object UserPermissionsTable {
 trait UserPermissionsProviderEvent extends AbstractEffectEvent
 
 object UserPermissionsProviderEvents {
-  case class UserPermissionCreated(permissions: UserPermissions) extends UserPermissionsProviderEvent
+  case class UserPermissionsCreated(permissions: UserPermissions) extends UserPermissionsProviderEvent
 }
 
 @Singleton
@@ -103,10 +101,10 @@ class UserPermissionsProvider @Inject()(
 )(
   implicit ec: ExecutionContext,
   up: UserProvider
-) extends HasDatabaseConfigProvider[JdbcProfile] {
+) extends HasDatabaseConfigProvider[JdbcProfile]
+    with Logging {
 
-  final private val logger               = LoggerFactory.getLogger(this.getClass)
-  final private val defaultConfiguration = conf.get[UserPermissionsConfiguration]("application.users.permissions")
+  final private val configuration = conf.get[UserPermissionsConfiguration]("application.users.permissions")
 
   import dbConfig.profile.api._
 
@@ -122,31 +120,34 @@ class UserPermissionsProvider @Inject()(
 
   def getWithUser(uuid: UUID): Future[Option[(UserPermissions, User)]] = db.run(permissions.withUser.filter(_._1.uuid === uuid).result.headOption)
 
-  def create(userID: UUID, configuration: Option[UserPermissionsConfiguration] = None): Future[UUID] = {
-    val checkUserExist        = up.table.filter(_.uuid      === userID).result.headOption
-    val checkPermissionsExist = permissions.filter(_.userID === userID).result.headOption
+  def create(userID: UUID, overrideConfiguration: Option[UserPermissionsConfiguration] = None): Future[UserPermissions] = {
+    val actions = up.table.filter(_.uuid === userID).result.headOption flatMap {
+        case Some(_) =>
+          permissions.filter(_.userID === userID).result.headOption flatMap {
+            case Some(permission) => DBIO.successful(permission)
+            case None =>
+              val uuid = UUID.randomUUID()
+              val conf = overrideConfiguration.getOrElse(configuration)
+              val permission = UserPermissions(
+                uuid                    = uuid,
+                userID                  = userID,
+                maxProjectsCount        = conf.maxProjectsCount,
+                maxSamplesCount         = conf.maxSamplesCount,
+                maxSampleSize           = conf.maxSampleSize,
+                maxDanglingProjectLinks = conf.maxDanglingProjectLinks,
+                maxDanglingSampleLinks  = conf.maxDanglingSampleLinks
+              )
+              (permissions += permission) flatMap {
+                case 1 =>
+                  events.publish(UserPermissionsProviderEvents.UserPermissionsCreated(permission))
+                  DBIO.successful(permission)
+                case _ => DBIO.failed(new Exception("Cannot create UserPermissions instance in database: Unknown error"))
+              }
+          }
+        case None => DBIO.failed(new Exception("Cannot create UserPermissions instance in database: User does not exist"))
+      }
 
-    db.run((checkUserExist zip checkPermissionsExist).transactionally) flatMap {
-      case (Some(_), Some(permission)) => Future.successful(permission.uuid)
-      case (Some(_), None) =>
-        val uuid = UUID.randomUUID()
-        val permission = UserPermissions(
-          uuid                    = uuid,
-          userID                  = userID,
-          maxProjectsCount        = configuration.getOrElse(defaultConfiguration).maxProjectsCount,
-          maxSamplesCount         = configuration.getOrElse(defaultConfiguration).maxSamplesCount,
-          maxSampleSize           = configuration.getOrElse(defaultConfiguration).maxSampleSize,
-          maxDanglingProjectLinks = configuration.getOrElse(defaultConfiguration).maxDanglingProjectLinks,
-          maxDanglingSampleLinks  = configuration.getOrElse(defaultConfiguration).maxDanglingSampleLinks
-        )
-        db.run(permissions += permission) map {
-          case 1 => uuid
-          case _ => throw new RuntimeException("Cannot create VerificationToken instance in database: Internal error")
-        } onSuccessSideEffect { _ =>
-          events.publish(UserPermissionsProviderEvents.UserPermissionCreated(permission))
-        }
-      case (None, _) => throw new RuntimeException("Cannot create UserPermissions instance in database: User does not exist")
-    }
+    db.run(actions.transactionally)
   }
 
 }

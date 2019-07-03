@@ -66,13 +66,11 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
       val p = events.probe[UserProviderEvent]
       val c = users.notExistingUser.credentials
       for {
-        newUserUUID <- up.create(c.login, c.email, c.password)
-        _           <- Future(p.expectMsgType[UserProviderEvents.UserCreated])
-        newUser     <- up.get(newUserUUID)
-        _           <- newUser should not be empty
-        _           <- newUser.get.login shouldEqual c.login
-        _           <- newUser.get.verified shouldEqual false
-        check       <- newUser.get.email shouldEqual c.email
+        newUser <- up.create(c.login, c.email, c.password)
+        _       <- Future(p.expectMsgType[UserProviderEvents.UserCreated])
+        _       <- newUser.login shouldEqual c.login
+        _       <- newUser.verified shouldEqual false
+        check   <- newUser.email shouldEqual c.email
       } yield check
     }
 
@@ -81,9 +79,10 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
       val u = users.notVerifiedUser
       for {
         verificationToken <- vtp.create(u.uuid)
-        verifiedUser      <- up.verify(verificationToken)
+        verified          <- up.verify(verificationToken)
         _                 <- Future(p.expectMsgType[UserProviderEvents.UserVerified])
-        _                 <- verifiedUser should not be empty
+        _                 <- verified should be(true)
+        verifiedUser      <- up.get(u.uuid)
         _                 <- verifiedUser.get.login shouldEqual u.credentials.login
         _                 <- verifiedUser.get.email shouldEqual u.credentials.email
         check             <- verifiedUser.get.verified shouldEqual true
@@ -96,8 +95,10 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
         for {
           resetTokenForTestUser <- rtp.create(user.uuid)
           testInDBBeforeReset   <- up.get(user.uuid)
-          resetTestUser         <- up.reset(resetTokenForTestUser, user.credentials.password + "_")
+          reset                 <- up.reset(resetTokenForTestUser, user.credentials.password + "_")
           _                     <- Future(p.expectMsgType[UserProviderEvents.UserReset])
+          _                     <- reset should be(true)
+          resetTestUser         <- up.get(user.uuid)
           _                     <- testInDBBeforeReset should not be empty
           _                     <- resetTestUser should not be empty
           _                     <- testInDBBeforeReset.get.uuid shouldEqual resetTestUser.get.uuid
@@ -117,7 +118,8 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
       val p = events.probe[UserProviderEvent]
       val u = users.verifiedUser
       for {
-        _           <- up.delete(u.uuid)
+        deleted     <- up.delete(u.uuid)
+        _           <- deleted should be(true)
         _           <- Future(p.expectMsgType[UserProviderEvents.UserDeleted])
         deletedUser <- up.get(u.uuid)
       } yield deletedUser should be(empty)

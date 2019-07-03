@@ -11,16 +11,16 @@ import scala.language.reflectiveCalls
 
 trait DatabaseProjects extends Matchers with OptionValues with DatabaseProviders with DatabaseUsers with EffectsStream {
 
-  case class TestProject(uuid: UUID, name: String)
+  case class TestProject(uuid: UUID, name: String, user: TestUser)
 
-  private def generateNotExistingProject: TestProject = {
+  private def generateNotExistingProject(user: TestUser): TestProject = {
     val uuid = UUID.randomUUID()
 
     val isExistByUUID = Await.result(pp.get(uuid), Duration.Inf)
 
     isExistByUUID should be(empty)
 
-    TestProject(uuid, "not-existing-project")
+    TestProject(uuid, "not-existing-project", user)
   }
 
   private def generateExistingProject(user: TestUser): TestProject = {
@@ -30,17 +30,18 @@ trait DatabaseProjects extends Matchers with OptionValues with DatabaseProviders
 
     projectEventProbe.expectMsgType[ProjectProviderEvents.ProjectCreated]
 
-    TestProject(project.uuid, name)
+    TestProject(project.uuid, name, user)
   }
 
-  private var _notExistingProjects: scala.collection.mutable.Map[TestUser, TestProject] = scala.collection.mutable.Map()
-  private var _existingProjects: scala.collection.mutable.Map[TestUser, TestProject]    = scala.collection.mutable.Map()
+  type TestProjectsMap = scala.collection.mutable.Map[TestUser, TestProject]
+
+  private var _notExistingProjects: TestProjectsMap = scala.collection.mutable.Map()
+  private var _existingProjects: TestProjectsMap    = scala.collection.mutable.Map()
 
   final val projects = new {
 
-    def notExistingProject(user: TestUser): TestProject = _notExistingProjects.getOrElseUpdate(user, generateNotExistingProject)
-
-    def existingProject(user: TestUser): TestProject = _existingProjects.getOrElseUpdate(user, generateExistingProject(user))
+    def notExistingProject(user: TestUser): TestProject = _notExistingProjects.getOrElseUpdate(user, generateNotExistingProject(user))
+    def existingProject(user: TestUser): TestProject    = _existingProjects.getOrElseUpdate(user, generateExistingProject(user))
 
   }
 

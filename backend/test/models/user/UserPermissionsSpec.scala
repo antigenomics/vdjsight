@@ -38,7 +38,7 @@ class UserPermissionsSpec extends BaseTestSpecWithDatabaseAndApplication with Da
       } yield check
     }
 
-    "not create many tokens for one user and return the single one" taggedAs ModelsTestTag in {
+    "not be able to create multiple permissions for one user" taggedAs ModelsTestTag in {
       val probe = events.probe[UserPermissionsProviderEvent]
       for {
         permissions1 <- upp.create(users.notVerifiedUser.uuid)
@@ -53,10 +53,10 @@ class UserPermissionsSpec extends BaseTestSpecWithDatabaseAndApplication with Da
       val c   = users.notExistingUser.credentials
       for {
         newUser     <- up.create(c.login, c.email, c.password)
-        _           <- Future(p.expectMsgType[UserPermissionsProviderEvents.UserPermissionCreated])
-        permissions <- upp.findForUser(newUser)
+        _           <- Future(p.expectMsgType[UserPermissionsProviderEvents.UserPermissionsCreated])
+        permissions <- upp.findForUser(newUser.uuid)
         _           <- permissions should not be empty
-        check       <- permissions.get.userID shouldEqual newUser
+        check       <- permissions.get.userID shouldEqual newUser.uuid
       } yield check
     }
 

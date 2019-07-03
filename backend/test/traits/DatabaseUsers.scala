@@ -45,13 +45,13 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders wi
       password = "tokens-test-not-verified"
     )
 
-    val uuid = Await.result(up.create(credentials.login, credentials.email, credentials.password), Duration.Inf)
+    val user = Await.result(up.create(credentials.login, credentials.email, credentials.password), Duration.Inf)
 
     userEventProbe.expectMsgType[UserProviderEvents.UserCreated]
-    userPermissionsEventProbe.expectMsgType[UserPermissionsProviderEvents.UserPermissionCreated]
+    userPermissionsEventProbe.expectMsgType[UserPermissionsProviderEvents.UserPermissionsCreated]
     verificationEventProbe.expectMsgType[VerificationTokenProviderEvents.TokenCreated]
 
-    val foundByUUID  = Await.result(up.get(uuid), Duration.Inf)
+    val foundByUUID  = Await.result(up.get(user.uuid), Duration.Inf)
     val foundByEmail = Await.result(up.getByEmail(credentials.email), Duration.Inf)
     val foundByLogin = Await.result(up.getByLogin(credentials.login), Duration.Inf)
 
@@ -67,7 +67,7 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders wi
     foundByLogin.get.email shouldEqual credentials.email
     foundByLogin.get.login shouldEqual credentials.login
 
-    TestUser(uuid, credentials)
+    TestUser(user.uuid, credentials)
   }
 
   private def generateVerifiedUser: TestUser = {
@@ -80,13 +80,13 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders wi
       password = "tokens-test-verified"
     )
 
-    val uuid = Await.result(up.create(credentials.login, credentials.email, credentials.password), Duration.Inf)
+    val user = Await.result(up.create(credentials.login, credentials.email, credentials.password), Duration.Inf)
 
     userEventProbe.expectMsgType[UserProviderEvents.UserCreated]
-    userPermissionsEventProbe.expectMsgType[UserPermissionsProviderEvents.UserPermissionCreated]
+    userPermissionsEventProbe.expectMsgType[UserPermissionsProviderEvents.UserPermissionsCreated]
     verificationEventProbe.expectMsgType[VerificationTokenProviderEvents.TokenCreated]
 
-    val foundByUUID  = Await.result(up.get(uuid), Duration.Inf)
+    val foundByUUID  = Await.result(up.get(user.uuid), Duration.Inf)
     val foundByEmail = Await.result(up.getByEmail(credentials.email), Duration.Inf)
     val foundByLogin = Await.result(up.getByLogin(credentials.login), Duration.Inf)
 
@@ -102,24 +102,27 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders wi
     foundByLogin.get.email shouldEqual credentials.email
     foundByLogin.get.login shouldEqual credentials.login
 
-    val createdToken = Await.result(vtp.create(uuid), Duration.Inf)
-    val foundToken   = Await.result(vtp.findForUser(uuid), Duration.Inf)
+    val createdToken = Await.result(vtp.create(user.uuid), Duration.Inf)
+    val foundToken   = Await.result(vtp.findForUser(user.uuid), Duration.Inf)
 
     foundToken should not be empty
     foundToken.map(_.token) shouldEqual Set(createdToken)
 
-    val user = Await.result(up.verify(createdToken), Duration.Inf)
+    val verified = Await.result(up.verify(createdToken), Duration.Inf)
+
+    verified should be(true)
 
     userEventProbe.expectMsgType[UserProviderEvents.UserVerified]
     verificationEventProbe.expectMsgType[VerificationTokenProviderEvents.TokenDeleted]
 
-    user should not be empty
+    val checkUser = Await.result(up.get(user.uuid), Duration.Inf)
 
-    user.get.login shouldEqual credentials.login
-    user.get.email shouldEqual credentials.email
-    user.get.verified shouldEqual true
+    checkUser should not be empty
+    checkUser.get.login shouldEqual credentials.login
+    checkUser.get.email shouldEqual credentials.email
+    checkUser.get.verified shouldEqual true
 
-    TestUser(uuid, credentials)
+    TestUser(checkUser.get.uuid, credentials)
   }
 
   private var _notExistingUser: Option[TestUser] = None
@@ -142,6 +145,7 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders wi
       _verifiedUser = Some(generateVerifiedUser)
       _verifiedUser.get
     }
+
   }
 
 }

@@ -12,9 +12,9 @@ object UserEffectsActor {
 
 class UserEffectsActor(upp: UserPermissionsProvider, vtp: VerificationTokenProvider, rtp: ResetTokenProvider) extends Actor {
   override def receive: Receive = {
-    case UserProviderEvents.UserCreated(uuid) =>
-      upp.create(uuid)
-      vtp.create(uuid)
+    case UserProviderEvents.UserCreated(user) =>
+      upp.create(user.uuid)
+      vtp.create(user.uuid)
     case UserProviderEvents.UserVerified(uuid) => vtp.deleteForUser(uuid)
     case UserProviderEvents.UserReset(uuid)    => rtp.deleteForUser(uuid)
   }

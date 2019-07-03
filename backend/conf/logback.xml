@@ -62,7 +62,7 @@
         <appender-ref ref="ACCESS_FILE"/>
     </logger>
 
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="FILE"/>
         <appender-ref ref="SECURITY_FILE"/>
         <appender-ref ref="ASYNCSTDOUT" />
