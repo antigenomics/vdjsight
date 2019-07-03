@@ -169,7 +169,7 @@ class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProvi
       up.get(users.verifiedUser.uuid).flatMap { verifiedUserInDBBeforeReset =>
         verifiedUserInDBBeforeReset should not be empty
         rtp.create(users.verifiedUser.uuid).flatMap { token =>
-          val request = FakeJsonRequest(Map("token" -> token.toString, "password1" -> "new-password-1234", "password2" -> "new-password-1234"))
+          val request = FakeJsonRequest(Map("token" -> token.token.toString, "password1" -> "new-password-1234", "password2" -> "new-password-1234"))
           Route(request) { result =>
             status(result) shouldEqual OK
             up.get(users.verifiedUser.uuid) map { verifiedUserInDbAfterReset =>
@@ -209,7 +209,7 @@ class AuthorizationControllerSpec extends ControllersTestSpec with DatabaseProvi
         notVerifiedUserInDBBeforeReset should not be empty
         notVerifiedUserInDBBeforeReset.get.verified shouldEqual false
         vtp.create(users.notVerifiedUser.uuid).flatMap { token =>
-          val request = FakeJsonRequest(Map("token" -> token.toString))
+          val request = FakeJsonRequest(Map("token" -> token.token.toString))
           Route(request) { result =>
             status(result) shouldEqual OK
             up.get(users.notVerifiedUser.uuid) map { notVerifiedUserInDbAfterReset =>

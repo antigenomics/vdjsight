@@ -14,10 +14,10 @@ object ResetTokenEffectsActor {
 
 class ResetTokenEffectsActor()(implicit ec: ExecutionContext) extends Actor {
   override def receive: Receive = {
-    case ResetTokenProviderEvents.TokenCreated(token, userID, configuration) =>
+    case ResetTokenProviderEvents.TokenCreated(token, configuration) =>
       configuration.method match {
         case ResetMethod.EMAIL   => throw new NotImplementedError("Email reset method not implemented")
-        case ResetMethod.CONSOLE => println(s"[ResetToken] For user $userID: $token")
+        case ResetMethod.CONSOLE => println(s"[ResetToken] For user ${token.userID}: ${token.token}")
         case ResetMethod.NOOP    =>
       }
   }

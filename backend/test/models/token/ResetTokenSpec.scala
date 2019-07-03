@@ -89,14 +89,14 @@ class ResetTokenSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
     "be able to find proper token associated user" taggedAs ModelsTestTag in {
       for {
         token <- rtp.create(users.notVerifiedUser.uuid)
-        uwt   <- rtp.getWithUser(token)
+        uwt   <- rtp.getWithUser(token.token)
         found <- rtp.findForUser(uwt.get._2.uuid)
         _     <- uwt should not be empty
-        _     <- uwt.get._1.token shouldEqual token
+        _     <- uwt.get._1.token shouldEqual token.token
         _     <- uwt.get._2.uuid shouldEqual users.notVerifiedUser.uuid
         _     <- uwt.get._2.login shouldEqual users.notVerifiedUser.credentials.login
         _     <- uwt.get._2.email shouldEqual users.notVerifiedUser.credentials.email
-        check <- found.map(_.token) shouldEqual Set(token)
+        check <- found.map(_.token) shouldEqual Set(token.token)
       } yield check
     }
 
@@ -104,8 +104,8 @@ class ResetTokenSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
       val probe = events.probe[ResetTokenProviderEvent]
       for {
         createdToken <- rtp.create(users.notVerifiedUser.uuid)
-        _            <- rtp.delete(createdToken)
-        deletedToken <- rtp.get(createdToken)
+        _            <- rtp.delete(createdToken.token)
+        deletedToken <- rtp.get(createdToken.token)
         _            <- Future(probe.expectMsgType[ResetTokenProviderEvents.TokenDeleted])
       } yield deletedToken should be(empty)
     }

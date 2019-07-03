@@ -46,8 +46,6 @@ class SampleFileLinkProvider @Inject()(@NamedDatabase("default") protected val d
   pp: ProjectProvider
 ) extends HasDatabaseConfigProvider[JdbcProfile] {
 
-  private final val logger = LoggerFactory.getLogger(this.getClass)
-
   import dbConfig.profile.api._
 
   private final val links = TableQuery[SampleFileLinkTable]

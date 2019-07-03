@@ -205,8 +205,8 @@ class ProjectLinkProvider @Inject()(
                     deleteOn              = None
                   )
                   (links += link) flatMap {
-                    case 1 => DBIO.successful(link)
-                    case _ => DBIO.failed(new Exception("Cannot create ProjectLink instance in database: Unknown error"))
+                    case 0 => DBIO.failed(new Exception("Cannot create ProjectLink instance in database: Unknown error"))
+                    case _ => DBIO.successful(link)
                   }
               }
             case None => DBIO.failed(new Exception("Cannot create ProjectLink instance in database: Project does not exist"))

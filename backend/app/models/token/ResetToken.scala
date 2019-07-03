@@ -11,15 +11,13 @@ import effects.{AbstractEffectEvent, EffectsEventsStream}
 import models.token
 import models.token.ResetMethod.ResetMethod
 import models.user.{User, UserProvider, UserTable}
-import org.slf4j.LoggerFactory
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.inject.ApplicationLifecycle
-import play.api.{ConfigLoader, Configuration}
+import play.api.{ConfigLoader, Configuration, Logging}
 import play.db.NamedDatabase
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
-import utils.FutureUtils._
 import utils.TimeUtils
 
 import scala.concurrent.duration._
@@ -89,8 +87,8 @@ object ResetTokenTable {
 trait ResetTokenProviderEvent extends AbstractEffectEvent
 
 object ResetTokenProviderEvents {
-  case class TokenCreated(token: UUID, userID: UUID, configuration: ResetTokenConfiguration) extends ResetTokenProviderEvent
-  case class TokenDeleted(token: UUID, userID: UUID, configuration: ResetTokenConfiguration) extends ResetTokenProviderEvent
+  case class TokenCreated(token: ResetToken, configuration: ResetTokenConfiguration) extends ResetTokenProviderEvent
+  case class TokenDeleted(token: ResetToken, configuration: ResetTokenConfiguration) extends ResetTokenProviderEvent
 }
 
 @Singleton
@@ -103,9 +101,9 @@ class ResetTokenProvider @Inject()(
 )(
   implicit ec: ExecutionContext,
   up: UserProvider
-) extends HasDatabaseConfigProvider[JdbcProfile] {
+) extends HasDatabaseConfigProvider[JdbcProfile]
+    with Logging {
 
-  final private val logger        = LoggerFactory.getLogger(this.getClass)
   final private val configuration = conf.get[ResetTokenConfiguration]("application.auth.reset")
 
   import dbConfig.profile.api._
@@ -136,37 +134,49 @@ class ResetTokenProvider @Inject()(
 
   def getWithUser(token: UUID): Future[Option[(ResetToken, User)]] = db.run(tokens.withUser.filter(_._1.token === token).result.headOption)
 
-  def create(userID: UUID): Future[UUID] = {
-    val checkUserExist  = up.table.filter(_.uuid === userID).result.headOption
-    val checkTokenExist = tokens.filter(_.userID === userID).result.headOption
+  def create(userID: UUID): Future[ResetToken] = {
+    val actions = up.table.filter(_.uuid === userID).result.headOption flatMap {
+        case Some(_) =>
+          tokens.filter(_.userID === userID).result.headOption flatMap {
+            case Some(token) => DBIO.successful(token)
+            case None =>
+              val uuid = UUID.randomUUID()
+              val token = ResetToken(
+                token     = uuid,
+                userID    = userID,
+                expiredAt = TimeUtils.getExpiredAt(configuration.keep)
+              )
+              (tokens += token) flatMap {
+                case 0 => DBIO.failed(new Exception("Cannot create VerificationToken instance in database: Unknown error"))
+                case _ =>
+                  events.publish(ResetTokenProviderEvents.TokenCreated(token, configuration))
+                  DBIO.successful(token)
+              }
+          }
+        case None => DBIO.failed(new Exception("Cannot create VerificationToken instance in database: User does not exist"))
+      }
 
-    db.run((checkUserExist zip checkTokenExist).transactionally) flatMap {
-      case (Some(_), Some(token)) => Future.successful(token.token)
-      case (Some(_), None) =>
-        val token = UUID.randomUUID()
-        db.run(tokens += ResetToken(token, userID, TimeUtils.getExpiredAt(configuration.keep))) map {
-          case 1 => token
-          case _ => throw new RuntimeException("Cannot create ResetToken instance in database: Internal error")
-        } onSuccessSideEffect { token =>
-          events.publish(ResetTokenProviderEvents.TokenCreated(token, userID, configuration))
-        }
-      case (None, _) => throw new RuntimeException("Cannot create ResetToken instance in database: User does not exist")
-    }
+    db.run(actions.transactionally)
   }
 
-  def delete(token: UUID): Future[Int] = {
-    val userIDAction = tokens.filter(_.token === token).map(_.userID).result.headOption
-    val deleteAction = tokens.filter(_.token === token).delete
+  def delete(token: UUID): Future[Boolean] = {
+    val actions = tokens.filter(_.token === token).result.headOption flatMap {
+        case Some(t) =>
+          tokens.filter(_.token === token).delete flatMap {
+            case 0 => DBIO.failed(new Exception("Cannot delete ResetToken instance in database: Unknown error"))
+            case _ =>
+              events.publish(ResetTokenProviderEvents.TokenDeleted(t, configuration))
+              DBIO.successful(true)
+          }
+        case None => DBIO.failed(new Exception("Cannot delete ResetToken instance in database: Token does not exist"))
+      }
 
-    db.run((userIDAction zip deleteAction).transactionally) onSuccessSideEffect {
-      case (Some(userID), 1) => events.publish(ResetTokenProviderEvents.TokenDeleted(token, userID, configuration))
-      case _                 => logger.warn(s"Cannot delete reset token: $token")
-    } map (_._2)
+    db.run(actions.transactionally)
   }
 
-  def delete(tokenSet: Set[UUID]): Future[Int] = Future.sequence(tokenSet.map(delete)).map(_.sum)
+  def delete(tokenSet: Set[UUID]): Future[Boolean] = Future.sequence(tokenSet.map(delete)).map(_.forall(_ == true))
 
-  def deleteForUser(userID: UUID): Future[Int] = findForUser(userID).map(_.map(_.token)).flatMap(delete)
+  def deleteForUser(userID: UUID): Future[Boolean] = findForUser(userID).map(_.map(_.token)).flatMap(delete)
 
   def expired(date: Timestamp = TimeUtils.getCurrentTimestamp): Future[Set[ResetToken]] = db.run(tokens.filter(_.expiredAt < date).result).map(_.toSet)
 }

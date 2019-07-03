@@ -106,9 +106,9 @@ trait DatabaseUsers extends Matchers with OptionValues with DatabaseProviders wi
     val foundToken   = Await.result(vtp.findForUser(user.uuid), Duration.Inf)
 
     foundToken should not be empty
-    foundToken.map(_.token) shouldEqual Set(createdToken)
+    foundToken.map(_.token) shouldEqual Set(createdToken.token)
 
-    val verified = Await.result(up.verify(createdToken), Duration.Inf)
+    val verified = Await.result(up.verify(createdToken.token), Duration.Inf)
 
     verified should be(true)
 

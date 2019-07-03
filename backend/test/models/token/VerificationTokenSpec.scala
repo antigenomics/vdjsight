@@ -79,14 +79,14 @@ class VerificationTokenSpec extends BaseTestSpecWithDatabaseAndApplication with 
     "be able to find proper token associated user" taggedAs ModelsTestTag in {
       for {
         token <- vtp.create(users.notVerifiedUser.uuid)
-        uwt   <- vtp.getWithUser(token)
+        uwt   <- vtp.getWithUser(token.token)
         found <- vtp.findForUser(uwt.get._2.uuid)
         _     <- uwt should not be empty
-        _     <- uwt.get._1.token shouldEqual token
+        _     <- uwt.get._1.token shouldEqual token.token
         _     <- uwt.get._2.uuid shouldEqual users.notVerifiedUser.uuid
         _     <- uwt.get._2.login shouldEqual users.notVerifiedUser.credentials.login
         _     <- uwt.get._2.email shouldEqual users.notVerifiedUser.credentials.email
-        check <- found.map(_.token) shouldEqual Set(token)
+        check <- found.map(_.token) shouldEqual Set(token.token)
       } yield check
     }
 
@@ -94,8 +94,8 @@ class VerificationTokenSpec extends BaseTestSpecWithDatabaseAndApplication with 
       val probe = events.probe[VerificationTokenProviderEvent]
       for {
         createdToken <- vtp.create(users.notVerifiedUser.uuid)
-        _            <- vtp.delete(createdToken)
-        deletedToken <- vtp.get(createdToken)
+        _            <- vtp.delete(createdToken.token)
+        deletedToken <- vtp.get(createdToken.token)
         _            <- Future(probe.expectMsgType[VerificationTokenProviderEvents.TokenDeleted])
       } yield deletedToken should be(empty)
     }

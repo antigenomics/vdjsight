@@ -15,15 +15,15 @@ object VerificationTokenEffectsActor {
 
 class VerificationTokenEffectsActor(up: UserProvider, vtp: VerificationTokenProvider)(implicit ec: ExecutionContext) extends Actor {
   override def receive: Receive = {
-    case VerificationTokenProviderEvents.TokenCreated(token, userID, configuration) =>
+    case VerificationTokenProviderEvents.TokenCreated(token, configuration) =>
       configuration.method match {
         case VerificationMethod.EMAIL   => throw new NotImplementedError("Email verification method not implemented")
-        case VerificationMethod.CONSOLE => println(s"[VerificationToken] For user $userID: $token")
-        case VerificationMethod.AUTO    => up.verify(token)(vtp)
+        case VerificationMethod.CONSOLE => println(s"[VerificationToken] For user ${token.userID}: ${token.token}")
+        case VerificationMethod.AUTO    => up.verify(token.token)(vtp)
         case VerificationMethod.NOOP    =>
       }
-    case VerificationTokenProviderEvents.TokenDeleted(_, userID, _) =>
-      up.get(userID) onComplete {
+    case VerificationTokenProviderEvents.TokenDeleted(token, _) =>
+      up.get(token.userID) onComplete {
         case Success(Some(user)) => if (!user.verified) up.delete(user.uuid)
         case _                   =>
       }

@@ -79,7 +79,7 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
       val u = users.notVerifiedUser
       for {
         verificationToken <- vtp.create(u.uuid)
-        verified          <- up.verify(verificationToken)
+        verified          <- up.verify(verificationToken.token)
         _                 <- Future(p.expectMsgType[UserProviderEvents.UserVerified])
         _                 <- verified should be(true)
         verifiedUser      <- up.get(u.uuid)
@@ -95,7 +95,7 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
         for {
           resetTokenForTestUser <- rtp.create(user.uuid)
           testInDBBeforeReset   <- up.get(user.uuid)
-          reset                 <- up.reset(resetTokenForTestUser, user.credentials.password + "_")
+          reset                 <- up.reset(resetTokenForTestUser.token, user.credentials.password + "_")
           _                     <- Future(p.expectMsgType[UserProviderEvents.UserReset])
           _                     <- reset should be(true)
           resetTestUser         <- up.get(user.uuid)

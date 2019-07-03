@@ -129,8 +129,8 @@ class ProjectProvider @Inject()(
             isDangling      = false
           )
           (projects += project) flatMap {
-            case 1 => DBIO.successful(project)
-            case _ => DBIO.failed(new Exception("Cannot create Project instance in database: Unknown error"))
+            case 0 => DBIO.failed(new Exception("Cannot create Project instance in database: Unknown error"))
+            case _ => DBIO.successful(project)
           }
         case None => DBIO.failed(new Exception("Cannot create Project instance in database: User does not exist"))
       }
@@ -144,8 +144,8 @@ class ProjectProvider @Inject()(
     val actions = projects.filter(_.uuid === projectID).result.headOption flatMap {
         case Some(project) =>
           projects.filter(_.uuid === projectID).map(p => (p.name, p.description)).update((name, description)) flatMap {
-            case 1 => DBIO.successful(project)
-            case _ => DBIO.failed(new Exception("Cannot update Project instance in database: Unknown error"))
+            case 0 => DBIO.failed(new Exception("Cannot update Project instance in database: Unknown error"))
+            case _ => DBIO.successful(project)
           }
         case None => DBIO.failed(new Exception("Cannot update Project instance in database: Project does not exist"))
       }
@@ -159,8 +159,8 @@ class ProjectProvider @Inject()(
     val actions = projects.filter(_.uuid === uuid).result.headOption flatMap {
         case Some(project) =>
           projects.filter(_.uuid === uuid).delete flatMap {
-            case 1 => DBIO.successful(project)
             case 0 => DBIO.failed(new Exception("Cannot create Project instance in database: Unknown error"))
+            case _ => DBIO.successful(project)
           }
         case None => DBIO.failed(new Exception("Cannot delete Project instance in database: Project does not exist"))
       }

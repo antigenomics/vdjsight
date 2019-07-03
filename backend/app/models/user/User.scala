@@ -98,8 +98,8 @@ class UserProvider @Inject()(
             password = SecureHash.createHash(password)
           )
           (users += user) flatMap {
-            case 1 => DBIO.successful(user)
-            case _ => DBIO.failed(new Exception("Cannot create User instance in database: Unknown error"))
+            case 0 => DBIO.failed(new Exception("Cannot create User instance in database: Unknown error"))
+            case _ => DBIO.successful(user)
           }
       }
 
@@ -112,10 +112,10 @@ class UserProvider @Inject()(
     val actions = vtp.table.filter(_.token === tokenID).result.headOption flatMap {
         case Some(token) =>
           users.filter(_.uuid === token.userID).map(_.verified).update(true) map {
-            case 1 =>
+            case 0 => false
+            case _ =>
               events.publish(UserProviderEvents.UserVerified(token.userID))
               true
-            case _ => false
           }
         case None => DBIO.successful(false)
       }
@@ -127,10 +127,10 @@ class UserProvider @Inject()(
     val actions = rtp.table.filter(_.token === tokenID).result.headOption flatMap {
         case Some(token) =>
           users.filter(_.uuid === token.userID).map(u => (u.password, u.verified)).update((SecureHash.createHash(password), true)) map {
-            case 1 =>
+            case 0 => false
+            case _ =>
               events.publish(UserProviderEvents.UserReset(token.userID))
               true
-            case _ => false
           }
         case None => DBIO.successful(false)
       }
@@ -142,10 +142,10 @@ class UserProvider @Inject()(
     val actions = users.filter(_.uuid === uuid).result.headOption flatMap {
         case Some(user) =>
           users.filter(_.uuid === uuid).delete map {
-            case 1 =>
+            case 0 => false
+            case _ =>
               events.publish(UserProviderEvents.UserDeleted(user))
               true
-            case _ => false
           }
         case None => DBIO.failed(new Exception("Cannot delete User instance in database: User does not exist"))
       }
