@@ -13,6 +13,7 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.inject.ApplicationLifecycle
 import play.api.{ConfigLoader, Configuration, Logging}
 import play.db.NamedDatabase
+import server.{BadRequestException, InternalServerErrorException}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
@@ -206,15 +207,15 @@ class ProjectLinkProvider @Inject()(
                     deleteOn              = None
                   )
                   (links += link) flatMap {
-                    case 0 => DBIO.failed(new Exception("Cannot create ProjectLink instance in database: Unknown error"))
+                    case 0 => DBIO.failed(InternalServerErrorException("Cannot create ProjectLink instance in database: Database error"))
                     case _ =>
                       events.publish(ProjectLinkProviderEvents.ProjectLinkCreated(link))
                       DBIO.successful(link)
                   }
               }
-            case None => DBIO.failed(new Exception("Cannot create ProjectLink instance in database: Project does not exist"))
+            case None => DBIO.failed(BadRequestException("Cannot create ProjectLink instance in database: Project does not exist"))
           }
-        case None => DBIO.failed(new Exception("Cannot create ProjectLink instance in database: User does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot create ProjectLink instance in database: User does not exist"))
       }
 
     db.run(actions.transactionally)
@@ -229,7 +230,7 @@ class ProjectLinkProvider @Inject()(
               case _           => DBIO.successful(u)
             }
           }
-        case None => DBIO.failed(new Exception("Cannot schedule ProjectLink instance delete: Link does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot schedule ProjectLink instance delete: Link does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { _ =>
@@ -249,7 +250,7 @@ class ProjectLinkProvider @Inject()(
               case _           => DBIO.successful(u)
             }
           }
-        case None => DBIO.failed(new Exception("Cannot cancel scheduled ProjectLink instance deletion: Link does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot cancel scheduled ProjectLink instance deletion: Link does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { _ =>
@@ -263,7 +264,7 @@ class ProjectLinkProvider @Inject()(
   def delete(uuid: UUID): Future[Boolean] = {
     val actions = links.filter(_.uuid === uuid).result.headOption flatMap {
         case Some(link) => links.filter(_.uuid === uuid).delete map (_ => link)
-        case None       => DBIO.failed(new Exception("Cannot delete ProjectLink instance: Link does not exist"))
+        case None       => DBIO.failed(BadRequestException("Cannot delete ProjectLink instance: Link does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { link =>

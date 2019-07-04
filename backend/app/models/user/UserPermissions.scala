@@ -8,6 +8,7 @@ import effects.{AbstractEffectEvent, EffectsEventsStream}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.{ConfigLoader, Configuration, Logging}
 import play.db.NamedDatabase
+import server.{BadRequestException, InternalServerErrorException}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
@@ -142,10 +143,10 @@ class UserPermissionsProvider @Inject()(
                 case 1 =>
                   events.publish(UserPermissionsProviderEvents.UserPermissionsCreated(permission))
                   DBIO.successful(permission)
-                case _ => DBIO.failed(new Exception("Cannot create UserPermissions instance in database: Unknown error"))
+                case _ => DBIO.failed(InternalServerErrorException("Cannot create UserPermissions instance in database: Database error"))
               }
           }
-        case None => DBIO.failed(new Exception("Cannot create UserPermissions instance in database: User does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot create UserPermissions instance in database: User does not exist"))
       }
 
     db.run(actions.transactionally)

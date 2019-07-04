@@ -15,6 +15,7 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.inject.ApplicationLifecycle
 import play.api.{ConfigLoader, Configuration, Logging}
 import play.db.NamedDatabase
+import server.{BadRequestException, InternalServerErrorException}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
@@ -148,13 +149,13 @@ class VerificationTokenProvider @Inject()(
                 expiredAt = TimeUtils.getExpiredAt(configuration.keep)
               )
               (tokens += token) flatMap {
-                case 0 => DBIO.failed(new Exception("Cannot create VerificationToken instance in database: Unknown error"))
+                case 0 => DBIO.failed(InternalServerErrorException("Cannot create VerificationToken instance in database: Database error"))
                 case _ =>
                   events.publish(VerificationTokenProviderEvents.TokenCreated(token, configuration))
                   DBIO.successful(token)
               }
           }
-        case None => DBIO.failed(new Exception("Cannot create VerificationToken instance in database: User does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot create VerificationToken instance in database: User does not exist"))
       }
 
     db.run(actions.transactionally)
@@ -164,12 +165,12 @@ class VerificationTokenProvider @Inject()(
     val actions = tokens.filter(_.token === token).result.headOption flatMap {
         case Some(t) =>
           tokens.filter(_.token === token).delete flatMap {
-            case 0 => DBIO.failed(new Exception("Cannot delete VerificationToken instance in database: Unknown error"))
+            case 0 => DBIO.failed(InternalServerErrorException("Cannot delete VerificationToken instance in database: Database error"))
             case _ =>
               events.publish(VerificationTokenProviderEvents.TokenDeleted(t, configuration))
               DBIO.successful(true)
           }
-        case None => DBIO.failed(new Exception("Cannot delete VerificationToken instance in database: Token does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot delete VerificationToken instance in database: Token does not exist"))
       }
 
     db.run(actions.transactionally)

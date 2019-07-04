@@ -9,6 +9,7 @@ import models.token.{ResetTokenProvider, VerificationTokenProvider}
 import play.api.Logging
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.db.NamedDatabase
+import server.{BadRequestException, InternalServerErrorException}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
@@ -87,7 +88,7 @@ class UserProvider @Inject()(
 
   def create(login: String, email: String, password: String): Future[User] = {
     val actions = users.filter(u => u.login === login || u.email === email).result.headOption flatMap {
-        case Some(_) => DBIO.failed(new Exception("Cannot create User instance in database: User already exist"))
+        case Some(_) => DBIO.failed(BadRequestException("Cannot create User instance in database: User already exist"))
         case None =>
           val uuid = UUID.randomUUID()
           val user = User(
@@ -98,7 +99,7 @@ class UserProvider @Inject()(
             password = SecureHash.createHash(password)
           )
           (users += user) flatMap {
-            case 0 => DBIO.failed(new Exception("Cannot create User instance in database: Unknown error"))
+            case 0 => DBIO.failed(InternalServerErrorException("Cannot create User instance in database: Database error"))
             case _ => DBIO.successful(user)
           }
       }
@@ -147,7 +148,7 @@ class UserProvider @Inject()(
               events.publish(UserProviderEvents.UserDeleted(user))
               true
           }
-        case None => DBIO.failed(new Exception("Cannot delete User instance in database: User does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot delete User instance in database: User does not exist"))
       }
     db.run(actions.transactionally)
   }

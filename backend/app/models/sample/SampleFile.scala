@@ -9,6 +9,7 @@ import models.user.{User, UserPermissionsProvider, UserProvider, UserTable}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.{ConfigLoader, Configuration, Logging}
 import play.db.NamedDatabase
+import server.{BadRequestException, InternalServerErrorException}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
@@ -110,10 +111,10 @@ class SampleFileProvider @Inject()(
             isDangling = false
           )
           (samples += sample) flatMap {
-            case 0 => DBIO.failed(new Exception("Cannot create SampleFile instance in database: Unknown error"))
+            case 0 => DBIO.failed(InternalServerErrorException("Cannot create SampleFile instance in database: Database error"))
             case _ => DBIO.successful(sample)
           }
-        case None => DBIO.failed(new Exception("Cannot create SampleFile instance in database: User does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot create SampleFile instance in database: User does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { sample =>
@@ -123,11 +124,11 @@ class SampleFileProvider @Inject()(
 
   def update(sampleID: UUID, name: String, software: String): Future[SampleFile] = {
     val actions = samples.filter(_.uuid === sampleID).map(s => (s.name, s.software)).update((name, software)) flatMap {
-        case 0 => DBIO.failed(new Exception("Cannot update SampleFile instance in database: Project does not exist"))
+        case 0 => DBIO.failed(BadRequestException("Cannot update SampleFile instance in database: Project does not exist"))
         case _ =>
           samples.filter(_.uuid === sampleID).result.headOption flatMap {
             case Some(sample) => DBIO.successful(sample)
-            case None         => DBIO.failed(new Exception("Cannot update SampleFile instance in database: Unknown error"))
+            case None         => DBIO.failed(InternalServerErrorException("Cannot update SampleFile instance in database: Database error"))
           }
       }
 
@@ -140,10 +141,10 @@ class SampleFileProvider @Inject()(
     val actions = samples.filter(_.uuid === uuid).result.headOption flatMap {
         case Some(sample) =>
           samples.filter(_.uuid === uuid).delete flatMap {
-            case 0 => DBIO.failed(new Exception("Cannot delete SampleFile instance in database: Unknown error"))
+            case 0 => DBIO.failed(InternalServerErrorException("Cannot delete SampleFile instance in database: Database error"))
             case _ => DBIO.successful(sample)
           }
-        case None => DBIO.failed(new Exception("Cannot delete SampleFile instance in database: Project does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot delete SampleFile instance in database: Project does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { sample =>

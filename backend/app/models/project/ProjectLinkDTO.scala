@@ -21,7 +21,7 @@ object ProjectLinkDTO {
   implicit val timestampWriter: Writes[Option[Timestamp]] = (o: Option[Timestamp]) => Json.toJson(o.map(t => new Date(t.getTime)))
   implicit val projectDTOFormat: Writes[ProjectLinkDTO]   = Json.writes[ProjectLinkDTO]
 
-  def apply(link: ProjectLink, project: Project): ProjectLinkDTO = {
+  def from(link: ProjectLink, project: Project): ProjectLinkDTO = {
     ProjectLinkDTO(
       uuid                  = link.uuid,
       name                  = project.name,
@@ -35,8 +35,8 @@ object ProjectLinkDTO {
     )
   }
 
-  def apply(union: (ProjectLink, Project)): ProjectLinkDTO = {
-    ProjectLinkDTO(union._1, union._2)
-  }
+//  def apply(union: (ProjectLink, Project)): ProjectLinkDTO = {
+//    ProjectLinkDTO(union._1, union._2)
+//  }
 
 }

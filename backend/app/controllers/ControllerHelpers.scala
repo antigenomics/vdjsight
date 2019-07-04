@@ -5,7 +5,7 @@ import play.api.i18n.Messages
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Reads}
 import play.api.mvc.Results._
 import play.api.mvc.{Action, BodyParser, Request, Result}
-import server.ServerResponseError
+import server.{BadRequestException, ServerResponseError}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -14,9 +14,11 @@ case class WithRecoverAction[A](action: Action[A]) extends Action[A] with Loggin
   override def apply(request: Request[A]): Future[Result] = {
     implicit val ec: ExecutionContext = executionContext
     action(request).recover {
+      case b: BadRequestException =>
+        BadRequest(ServerResponseError(b.message))
       case e: Exception =>
         logger.error("Internal server error", e)
-        InternalServerError(ServerResponseError("InternalServerError"))
+        InternalServerError(ServerResponseError("Internal Server Error"))
     }
   }
 

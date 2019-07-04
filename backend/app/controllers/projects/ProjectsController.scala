@@ -5,7 +5,7 @@ import com.google.inject.{Inject, Singleton}
 import controllers.projects.dto._
 import controllers.{ControllerHelpers, WithRecoverAction}
 import models.project.{ProjectLinkDTO, ProjectLinkProvider, ProjectProvider}
-import models.user.UserProvider
+import models.user.{UserPermissionsProvider, UserProvider}
 import org.slf4j.{Logger, LoggerFactory}
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.libs.json.{JsValue, Reads}
@@ -18,6 +18,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ProjectsController @Inject()(cc: ControllerComponents, session: SessionRequestAction, messagesAPI: MessagesApi)(
   implicit ec: ExecutionContext,
   up: UserProvider,
+  upp: UserPermissionsProvider,
   pp: ProjectProvider,
   plp: ProjectLinkProvider
 ) extends AbstractController(cc) {
@@ -40,16 +41,25 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
 
   def list: Action[Unit] = projectsAction(parse.empty) { implicit request =>
     plp.findForUserWithProject(request.userID.get).map { projects =>
-      Ok(ServerResponse(ProjectsListResponse(projects.map(ProjectLinkDTO(_)))))
+      Ok(ServerResponse(ProjectsListResponse(projects.map(lwp => ProjectLinkDTO.from(lwp._1, lwp._2)))))
     }
   }
 
   def create: Action[JsValue] = projectsActionWithValidate[ProjectsCreateRequest]() { (request, create) =>
-    // TODO check projects count
-    pp.create(request.userID.get, create.name, create.description) flatMap { project =>
-      plp.create(request.userID.get, project.uuid).map { link =>
-        Ok(ServerResponse(ProjectsCreateResponse(ProjectLinkDTO(link, project))))
-      }
+    upp.findForUser(request.userID.get) flatMap {
+      case Some(permissions) =>
+        pp.findForOwner(request.userID.get) flatMap { projects =>
+          if (projects.length >= permissions.maxProjectsCount) {
+            Future(BadRequest(ServerResponseError("Too many projects")))
+          } else {
+            pp.create(request.userID.get, create.name, create.description) flatMap { project =>
+              plp.create(request.userID.get, project.uuid).map { link =>
+                Ok(ServerResponse(ProjectsCreateResponse(ProjectLinkDTO.from(link, project))))
+              }
+            }
+          }
+        }
+      case None => Future(BadRequest(ServerResponseError("User does not exist")))
     }
   }
 
@@ -58,7 +68,7 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
       case Some(link) =>
         if (link.userID == request.userID.get && link.isModificationAllowed) {
           pp.update(link.projectID, update.name, update.description) map { project =>
-            Ok(ServerResponse(ProjectsUpdateResponse(ProjectLinkDTO(link, project))))
+            Ok(ServerResponse(ProjectsUpdateResponse(ProjectLinkDTO.from(link, project))))
           }
         } else {
           Future(Forbidden(ServerResponseError("You are not allowed to do this")))

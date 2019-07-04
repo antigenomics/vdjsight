@@ -4,10 +4,11 @@ import akka.stream.Materializer
 import org.scalatest.Assertion
 import play.api.http.Writeable
 import play.api.i18n.{Lang, Messages, MessagesApi}
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json._
 import play.api.mvc.{AnyContentAsEmpty, Result, Results}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import server.ServerResponse
 import specs.BaseTestSpecWithDatabaseAndApplication
 
 import scala.concurrent.Future
@@ -71,4 +72,12 @@ abstract class ControllersTestSpec extends BaseTestSpecWithDatabaseAndApplicatio
   def VerifyFutureInputRequest(method: String, expectedStatus: Int)(constraints: Future[Seq[(String, Map[String, String])]])(
     implicit url: SuiteTestURL
   ): Future[Assertion] = constraints.map(c => VerifyInputRequest(method, expectedStatus)(c))
+
+  def contentAsServerResponse[T](result: Future[Result])(implicit ctReads: Reads[T]): T = {
+    implicit val srr: Reads[ServerResponse[T]] = Json.reads[ServerResponse[T]]
+    contentAsJson(result).validate[ServerResponse[T]] match {
+      case JsSuccess(v, _) => v.data
+      case JsError(errors) => throw new RuntimeException(errors.head._2.head.message)
+    }
+  }
 }

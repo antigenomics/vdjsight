@@ -13,6 +13,7 @@ import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.inject.ApplicationLifecycle
 import play.api.{ConfigLoader, Configuration, Logging}
 import play.db.NamedDatabase
+import server.{BadRequestException, InternalServerErrorException}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
@@ -171,15 +172,15 @@ class SampleFileLinkProvider @Inject()(
                     deleteOn  = None
                   )
                   (links += link) flatMap {
-                    case 0 => DBIO.failed(new Exception("Cannot create SampleFileLink instance in database: Unknown error"))
+                    case 0 => DBIO.failed(InternalServerErrorException("Cannot create SampleFileLink instance in database: Database error"))
                     case _ =>
                       events.publish(SampleFileLinkProviderEvents.SampleFileLinkCreated(link))
                       DBIO.successful(link)
                   }
               }
-            case None => DBIO.failed(new Exception("Cannot create SampleFileLink instance in database: Project does not exist"))
+            case None => DBIO.failed(BadRequestException("Cannot create SampleFileLink instance in database: Project does not exist"))
           }
-        case None => DBIO.failed(new Exception("Cannot create SampleFileLink instance in database: SampleFile does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot create SampleFileLink instance in database: SampleFile does not exist"))
       }
 
     db.run(actions.transactionally)
@@ -196,7 +197,7 @@ class SampleFileLinkProvider @Inject()(
               }
             }
           }
-        case None => DBIO.failed(new Exception("Cannot schedule SampleFileLink instance delete: Link does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot schedule SampleFileLink instance delete: Link does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { _ =>
@@ -216,7 +217,7 @@ class SampleFileLinkProvider @Inject()(
               case false => DBIO.successful(u)
             }
           }
-        case None => DBIO.failed(new Exception("Cannot cancel scheduled SampleFileLink instance deletion: Link does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot cancel scheduled SampleFileLink instance deletion: Link does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { _ =>
@@ -230,7 +231,7 @@ class SampleFileLinkProvider @Inject()(
   def delete(uuid: UUID): Future[Boolean] = {
     val actions = links.filter(_.uuid === uuid).result.headOption flatMap {
         case Some(link) => links.filter(_.uuid === uuid).delete map (_ => link)
-        case None       => DBIO.failed(new Exception("Cannot delete SampleFileLink instance: Link does not exist"))
+        case None       => DBIO.failed(BadRequestException("Cannot delete SampleFileLink instance: Link does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { link =>

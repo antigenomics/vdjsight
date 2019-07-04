@@ -9,6 +9,7 @@ import models.user.{User, UserPermissionsProvider, UserProvider, UserTable}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import play.api.{ConfigLoader, Configuration, Logging}
 import play.db.NamedDatabase
+import server.{BadRequestException, InternalServerErrorException}
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
@@ -97,6 +98,8 @@ class ProjectProvider @Inject()(
 
   def findForOwner(userID: UUID): Future[Seq[Project]] = db.run(projects.filter(_.ownerID === userID).result)
 
+  def countForOwner(userID: UUID): Future[Int] = db.run(projects.filter(_.ownerID === userID).length.result)
+
   def getWithOwner(uuid: UUID): Future[Option[(Project, User)]] = db.run(projects.withOwner.filter(_._1.uuid === uuid).result.headOption)
 
   def create(
@@ -123,10 +126,10 @@ class ProjectProvider @Inject()(
             isDangling      = false
           )
           (projects += project) flatMap {
-            case 0 => DBIO.failed(new Exception("Cannot create Project instance in database: Unknown error"))
+            case 0 => DBIO.failed(InternalServerErrorException("Cannot create Project instance in database: Database error"))
             case _ => DBIO.successful(project)
           }
-        case None => DBIO.failed(new Exception("Cannot create Project instance in database: User does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot create Project instance in database: User does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { project =>
@@ -140,7 +143,7 @@ class ProjectProvider @Inject()(
         case _ =>
           projects.filter(_.uuid === projectID).result.headOption flatMap {
             case Some(project) => DBIO.successful(project)
-            case None          => DBIO.failed(new Exception("Cannot update Project instance in database: Unknown error"))
+            case None          => DBIO.failed(InternalServerErrorException("Cannot update Project instance in database: Database error"))
           }
       }
 
@@ -153,10 +156,10 @@ class ProjectProvider @Inject()(
     val actions = projects.filter(_.uuid === uuid).result.headOption flatMap {
         case Some(project) =>
           projects.filter(_.uuid === uuid).delete flatMap {
-            case 0 => DBIO.failed(new Exception("Cannot delete Project instance in database: Unknown error"))
+            case 0 => DBIO.failed(InternalServerErrorException("Cannot delete Project instance in database: Database error"))
             case _ => DBIO.successful(project)
           }
-        case None => DBIO.failed(new Exception("Cannot delete Project instance in database: Project does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot delete Project instance in database: Project does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { project =>
