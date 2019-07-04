@@ -15,6 +15,7 @@ object ProjectLinkEffectsActor {
 
 class ProjectLinkEffectsActor(pp: ProjectProvider)(implicit ec: ExecutionContext) extends Actor with Logging {
   override def receive: Receive = {
+    case ProjectLinkProviderEvents.ProjectLinkProviderInitialized(_) =>
     case ProjectLinkProviderEvents.ProjectLinkCreated(_) =>
     case ProjectLinkProviderEvents.ProjectLinkDeleted(link) =>
       pp.get(link.projectID) onComplete {

@@ -99,7 +99,8 @@ class ResetTokenProvider @Inject()(
   actorSystem: ActorSystem,
   events: EffectsEventsStream
 )(
-  implicit ec: ExecutionContext,
+  implicit
+  ec: ExecutionContext,
   up: UserProvider
 ) extends HasDatabaseConfigProvider[JdbcProfile]
     with Logging {

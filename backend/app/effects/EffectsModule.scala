@@ -16,6 +16,7 @@ class EffectsModule extends AbstractModule {
     bind(classOf[ProjectEffects]).asEagerSingleton()
     bind(classOf[ProjectLinkEffects]).asEagerSingleton()
     bind(classOf[SampleFilesEffects]).asEagerSingleton()
+    bind(classOf[SampleFileLinkEffects]).asEagerSingleton()
   }
 }
 

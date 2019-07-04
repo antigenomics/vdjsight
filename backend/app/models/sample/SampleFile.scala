@@ -17,12 +17,12 @@ import utils.FutureUtils._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
-case class SamplesConfiguration(storagePath: String)
+case class SampleFilesConfiguration(storagePath: String)
 
-object SamplesConfiguration {
-  implicit val samplesConfigurationLoader: ConfigLoader[SamplesConfiguration] = (root: Config, path: String) => {
+object SampleFilesConfiguration {
+  implicit val samplesConfigurationLoader: ConfigLoader[SampleFilesConfiguration] = (root: Config, path: String) => {
     val config = root.getConfig(path)
-    SamplesConfiguration(
+    SampleFilesConfiguration(
       storagePath = config.getString("storagePath")
     )
   }
@@ -61,7 +61,7 @@ object SampleFileTable {
 trait SampleFileProviderEvent extends AbstractEffectEvent
 
 object SampleFileProviderEvents {
-  case class SampleFileProviderInitialized(configuration: SamplesConfiguration) extends SampleFileProviderEvent
+  case class SampleFileProviderInitialized(configuration: SampleFilesConfiguration) extends SampleFileProviderEvent
   case class SampleFileCreated(sample: SampleFile) extends SampleFileProviderEvent
   case class SampleFileUpdated(sample: SampleFile) extends SampleFileProviderEvent
   case class SampleFileDeleted(sample: SampleFile) extends SampleFileProviderEvent
@@ -73,13 +73,14 @@ class SampleFileProvider @Inject()(
   conf: Configuration,
   events: EffectsEventsStream
 )(
-  implicit ec: ExecutionContext,
+  implicit
+  ec: ExecutionContext,
   up: UserProvider,
   upp: UserPermissionsProvider
 ) extends HasDatabaseConfigProvider[JdbcProfile]
     with Logging {
 
-  final private val configuration = conf.get[SamplesConfiguration]("application.samples")
+  final private val configuration = conf.get[SampleFilesConfiguration]("application.samples")
 
   import dbConfig.profile.api._
 
@@ -95,7 +96,7 @@ class SampleFileProvider @Inject()(
 
   def getWithOwner(uuid: UUID): Future[Option[(SampleFile, User)]] = db.run(samples.withOwner.filter(_._1.uuid === uuid).result.headOption)
 
-  def create(userID: UUID, name: String, software: String, overrideConfiguration: Option[SamplesConfiguration] = None): Future[SampleFile] = {
+  def create(userID: UUID, name: String, software: String, overrideConfiguration: Option[SampleFilesConfiguration] = None): Future[SampleFile] = {
     val actions = up.table.filter(_.uuid === userID).result.headOption flatMap {
         case Some(_) =>
           val config   = overrideConfiguration.getOrElse(configuration)

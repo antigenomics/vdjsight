@@ -132,7 +132,8 @@ class ProjectLinkProvider @Inject()(
   actorSystem: ActorSystem,
   events: EffectsEventsStream
 )(
-  implicit ec: ExecutionContext,
+  implicit
+  ec: ExecutionContext,
   pp: ProjectProvider,
   up: UserProvider
 ) extends HasDatabaseConfigProvider[JdbcProfile]
@@ -206,7 +207,9 @@ class ProjectLinkProvider @Inject()(
                   )
                   (links += link) flatMap {
                     case 0 => DBIO.failed(new Exception("Cannot create ProjectLink instance in database: Unknown error"))
-                    case _ => DBIO.successful(link)
+                    case _ =>
+                      events.publish(ProjectLinkProviderEvents.ProjectLinkCreated(link))
+                      DBIO.successful(link)
                   }
               }
             case None => DBIO.failed(new Exception("Cannot create ProjectLink instance in database: Project does not exist"))
@@ -214,9 +217,7 @@ class ProjectLinkProvider @Inject()(
         case None => DBIO.failed(new Exception("Cannot create ProjectLink instance in database: User does not exist"))
       }
 
-    db.run(actions.transactionally) onSuccessSideEffect { link =>
-      events.publish(ProjectLinkProviderEvents.ProjectLinkCreated(link))
-    }
+    db.run(actions.transactionally)
   }
 
   def scheduleDelete(uuid: UUID): Future[Boolean] = {

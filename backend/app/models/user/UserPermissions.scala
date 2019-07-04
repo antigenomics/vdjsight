@@ -99,7 +99,8 @@ class UserPermissionsProvider @Inject()(
   conf: Configuration,
   events: EffectsEventsStream
 )(
-  implicit ec: ExecutionContext,
+  implicit
+  ec: ExecutionContext,
   up: UserProvider
 ) extends HasDatabaseConfigProvider[JdbcProfile]
     with Logging {

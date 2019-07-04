@@ -74,7 +74,8 @@ class ProjectProvider @Inject()(
   conf: Configuration,
   events: EffectsEventsStream
 )(
-  implicit ec: ExecutionContext,
+  implicit
+  ec: ExecutionContext,
   up: UserProvider,
   upp: UserPermissionsProvider
 ) extends HasDatabaseConfigProvider[JdbcProfile]

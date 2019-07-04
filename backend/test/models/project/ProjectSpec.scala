@@ -70,7 +70,8 @@ class ProjectSpec extends BaseTestSpecWithDatabaseAndApplication with DatabasePr
         _       <- created.name shouldEqual "name"
         _       <- created.description shouldEqual "description"
         _       <- created.folder should include("path")
-        check   <- created.maxSamplesCount shouldEqual 10
+        _       <- created.maxSamplesCount shouldEqual 10
+        check   <- created.isDangling should be(false)
       } yield check
     }
 
@@ -100,12 +101,32 @@ class ProjectSpec extends BaseTestSpecWithDatabaseAndApplication with DatabasePr
       val p = events.probe[ProjectProviderEvent]
       for {
         project <- pp.update(projects.existingProject(users.verifiedUser).uuid, "new-name", "new-description")
-        _         <- Future(p.expectMsgType[ProjectProviderEvents.ProjectUpdated])
-        _         <- project.uuid shouldEqual projects.existingProject(users.verifiedUser).uuid
-        updated   <- pp.get(projects.existingProject(users.verifiedUser).uuid)
-        _         <- updated should not be empty
-        _         <- updated.get.name shouldEqual "new-name"
-        check     <- updated.get.description shouldEqual "new-description"
+        _       <- Future(p.expectMsgType[ProjectProviderEvents.ProjectUpdated])
+        _       <- project.uuid shouldEqual projects.existingProject(users.verifiedUser).uuid
+        updated <- pp.get(projects.existingProject(users.verifiedUser).uuid)
+        _       <- updated should not be empty
+        _       <- updated.get.name shouldEqual "new-name"
+        check   <- updated.get.description shouldEqual "new-description"
+      } yield check
+    }
+
+    "not be able to delete not existing project" taggedAs ModelsTestTag in {
+      val p = events.probe[ProjectProviderEvent]
+      pp.delete(projects.notExistingProject(users.verifiedUser).uuid).map(_ => w.dismiss())
+      assertThrows[Exception] {
+        p.expectNoMessage(100 milliseconds)
+        w.await()
+      }
+    }
+
+    "be able to delete existing project" taggedAs ModelsTestTag in {
+      val p = events.probe[ProjectProviderEvent]
+      for {
+        deleted     <- pp.delete(projects.existingProject(users.verifiedUser).uuid)
+        _           <- Future(p.expectMsgType[ProjectProviderEvents.ProjectDeleted])
+        _           <- deleted.uuid shouldEqual projects.existingProject(users.verifiedUser).uuid
+        deletedInDB <- pp.get(projects.existingProject(users.verifiedUser).uuid)
+        check       <- deletedInDB should be(empty)
       } yield check
     }
 

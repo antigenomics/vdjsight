@@ -24,7 +24,7 @@ class ProjectLinkSpec
     "not be able to find not existing project link" taggedAs ModelsTestTag in {
       val user    = users.notExistingUser
       val project = projects.notExistingProject(user)
-      val link    = links.notExistingProjectLink(user, project)
+      val link    = projectLinks.notExistingProjectLink(user, project)
       for {
         notExisting <- plp.get(link.uuid)
       } yield notExisting should be(empty)
@@ -33,7 +33,7 @@ class ProjectLinkSpec
     "be able to create and find existing project link" taggedAs ModelsTestTag in {
       val user    = users.verifiedUser
       val project = projects.existingProject(user)
-      val link    = links.existingProjectLink(user, project)
+      val link    = projectLinks.existingProjectLink(user, project)
       for {
         existing <- plp.get(link.uuid)
         _        <- existing should not be empty
@@ -50,7 +50,7 @@ class ProjectLinkSpec
     "be able to create and find shared link" taggedAs ModelsTestTag in {
       val user    = users.notVerifiedUser
       val project = projects.existingProject(users.verifiedUser)
-      val link    = links.existingProjectLink(user, project)
+      val link    = projectLinks.existingProjectLink(user, project)
       for {
         existing <- plp.get(link.uuid)
         _        <- existing should not be empty
@@ -67,7 +67,7 @@ class ProjectLinkSpec
     "be able to find links for user" taggedAs ModelsTestTag in {
       val user    = users.verifiedUser
       val project = projects.existingProject(user)
-      val link    = links.existingProjectLink(user, project)
+      val link    = projectLinks.existingProjectLink(user, project)
       for {
         existing   <- plp.get(link.uuid)
         _          <- existing should not be empty
@@ -79,7 +79,7 @@ class ProjectLinkSpec
     "be able to find links for user with project" taggedAs ModelsTestTag in {
       val user    = users.verifiedUser
       val project = projects.existingProject(user)
-      val link    = links.existingProjectLink(user, project)
+      val link    = projectLinks.existingProjectLink(user, project)
       for {
         existing              <- plp.get(link.uuid)
         _                     <- existing should not be empty
@@ -91,7 +91,7 @@ class ProjectLinkSpec
     "be able to find links for project" taggedAs ModelsTestTag in {
       val user    = users.verifiedUser
       val project = projects.existingProject(user)
-      val link    = links.existingProjectLink(user, project)
+      val link    = projectLinks.existingProjectLink(user, project)
       for {
         existing     <- plp.get(link.uuid)
         _            <- existing should not be empty
@@ -103,7 +103,7 @@ class ProjectLinkSpec
     "be able to find links for project with user" taggedAs ModelsTestTag in {
       val user    = users.verifiedUser
       val project = projects.existingProject(user)
-      val link    = links.existingProjectLink(user, project)
+      val link    = projectLinks.existingProjectLink(user, project)
       for {
         existing             <- plp.get(link.uuid)
         _                    <- existing should not be empty
@@ -115,7 +115,7 @@ class ProjectLinkSpec
     "be able to return link with user" taggedAs ModelsTestTag in {
       val user    = users.verifiedUser
       val project = projects.existingProject(user)
-      val link    = links.existingProjectLink(user, project)
+      val link    = projectLinks.existingProjectLink(user, project)
       for {
         existing <- plp.get(link.uuid)
         _        <- existing should not be empty
@@ -130,15 +130,15 @@ class ProjectLinkSpec
     "be able to return link with project" taggedAs ModelsTestTag in {
       val user    = users.verifiedUser
       val project = projects.existingProject(user)
-      val link    = links.existingProjectLink(user, project)
+      val link    = projectLinks.existingProjectLink(user, project)
       for {
-        existing       <- plp.get(link.uuid)
-        _              <- existing should not be empty
-        getWithProject <- plp.getWithProject(existing.get.uuid)
-        _              <- getWithProject should not be empty
-        _              <- getWithProject.get._1.uuid shouldEqual existing.get.uuid
-        _              <- getWithProject.get._1.projectID shouldEqual getWithProject.get._2.uuid
-        check          <- getWithProject.get._2.uuid shouldEqual project.uuid
+        existing    <- plp.get(link.uuid)
+        _           <- existing should not be empty
+        withProject <- plp.getWithProject(existing.get.uuid)
+        _           <- withProject should not be empty
+        _           <- withProject.get._1.uuid shouldEqual existing.get.uuid
+        _           <- withProject.get._1.projectID shouldEqual withProject.get._2.uuid
+        check       <- withProject.get._2.uuid shouldEqual project.uuid
       } yield check
     }
 
@@ -163,7 +163,7 @@ class ProjectLinkSpec
     "not be able to schedule deletion of not existing link" taggedAs ModelsTestTag in {
       val user    = users.verifiedUser
       val project = projects.existingProject(user)
-      val link    = links.notExistingProjectLink(user, project)
+      val link    = projectLinks.notExistingProjectLink(user, project)
       plp.scheduleDelete(link.uuid).map(_ => w.dismiss())
       assertThrows[Exception] {
         w.await()
@@ -174,7 +174,7 @@ class ProjectLinkSpec
       val p       = events.probe[ProjectLinkProviderEvent]
       val user    = users.verifiedUser
       val project = projects.existingProject(user)
-      val link    = links.existingProjectLink(user, project)
+      val link    = projectLinks.existingProjectLink(user, project)
       for {
         scheduled            <- plp.scheduleDelete(link.uuid)
         _                    <- Future(p.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleteScheduled])
@@ -201,7 +201,7 @@ class ProjectLinkSpec
       val p       = events.probe[ProjectLinkProviderEvent]
       val user    = users.notVerifiedUser
       val project = projects.existingProject(users.verifiedUser)
-      val link    = links.existingProjectLink(user, project)
+      val link    = projectLinks.existingProjectLink(user, project)
       for {
         scheduled            <- plp.scheduleDelete(link.uuid)
         _                    <- Future(p.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleteScheduled])
@@ -224,10 +224,10 @@ class ProjectLinkSpec
       } yield check
     }
 
-    "not be able to delete not exsiting project link" taggedAs ModelsTestTag in {
+    "not be able to delete not existing project link" taggedAs ModelsTestTag in {
       val user    = users.verifiedUser
       val project = projects.existingProject(user)
-      val link    = links.notExistingProjectLink(user, project)
+      val link    = projectLinks.notExistingProjectLink(user, project)
       plp.delete(link.uuid).map(_ => w.dismiss())
       assertThrows[Exception] {
         w.await()
@@ -239,21 +239,25 @@ class ProjectLinkSpec
       val ep      = events.probe[ProjectProviderEvent]
       val user    = users.verifiedUser
       val project = projects.existingProject(user)
-      val link    = links.existingProjectLink(user, project)
+      val link    = projectLinks.existingProjectLink(user, project)
 
       for {
-        delete <- plp.delete(link.uuid)
-        _      <- Future(el.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleted])
-        _      <- Future(ep.expectMsgType[ProjectProviderEvents.ProjectDeleted])
-        check  <- delete should be(true)
+        delete                 <- plp.delete(link.uuid)
+        _                      <- Future(el.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleted])
+        _                      <- Future(ep.expectMsgType[ProjectProviderEvents.ProjectDeleted])
+        deletedLinkInDB        <- plp.get(link.uuid)
+        _                      <- deletedLinkInDB should be(empty)
+        deletedProjectFileInDB <- pp.get(link.project.uuid)
+        _                      <- deletedProjectFileInDB should be(empty)
+        check                  <- delete should be(true)
       } yield check
     }
 
     "automatically delete all links for project after its deleting" taggedAs ModelsTestTag in {
       val user    = users.notVerifiedUser
       val project = projects.existingProject(user)
-      val link    = links.existingProjectLink(user, project)
-      val shared  = links.existingProjectLink(users.verifiedUser, project)
+      val link    = projectLinks.existingProjectLink(user, project)
+      val shared  = projectLinks.existingProjectLink(users.verifiedUser, project)
 
       for {
         linkInDBBeforeDeletion   <- plp.get(link.uuid)

@@ -24,10 +24,7 @@ trait DatabaseProjectLinks extends Matchers with OptionValues with DatabaseProvi
     TestProjectLink(uuid, user, project)
   }
 
-  private def generateExistingProjectLink(
-    user: TestUser,
-    project: TestProject
-  ): TestProjectLink = {
+  private def generateExistingProjectLink(user: TestUser, project: TestProject): TestProjectLink = {
     val projectLinkEventProbe = events.probe[ProjectLinkProviderEvent]
 
     val link = Await.result(
@@ -51,7 +48,7 @@ trait DatabaseProjectLinks extends Matchers with OptionValues with DatabaseProvi
   private var _notExistingProjectLinks: TestProjectLinksMap = scala.collection.mutable.Map()
   private var _existingProjectLinks: TestProjectLinksMap    = scala.collection.mutable.Map()
 
-  final val links = new {
+  final val projectLinks = new {
 
     def notExistingProjectLink(user: TestUser, project: TestProject): TestProjectLink =
       _notExistingProjectLinks
