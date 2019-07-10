@@ -29,7 +29,17 @@ object SampleFilesConfiguration {
   }
 }
 
-case class SampleFile(uuid: UUID, ownerID: UUID, name: String, software: String, size: Long, hash: String, folder: String, isDangling: Boolean)
+case class SampleFile(
+  uuid: UUID,
+  ownerID: UUID,
+  name: String,
+  software: String,
+  size: Long,
+  hash: String,
+  folder: String,
+  isUploaded: Boolean,
+  isDangling: Boolean
+)
 
 class SampleFileTable(tag: Tag)(implicit userProvider: UserProvider) extends Table[SampleFile](tag, SampleFileTable.TABLE_NAME) {
   def uuid       = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
@@ -39,9 +49,10 @@ class SampleFileTable(tag: Tag)(implicit userProvider: UserProvider) extends Tab
   def size       = column[Long]("size")
   def hash       = column[String]("hash")
   def folder     = column[String]("folder", O.Unique)
+  def isUploaded = column[Boolean]("is_uploaded")
   def isDangling = column[Boolean]("is_dangling")
 
-  def * = (uuid, ownerID, name, software, size, hash, folder, isDangling) <> (SampleFile.tupled, SampleFile.unapply)
+  def * = (uuid, ownerID, name, software, size, hash, folder, isUploaded, isDangling) <> (SampleFile.tupled, SampleFile.unapply)
 
   def owner = foreignKey("sample_file_table_owner_fk", ownerID, userProvider.table)(
     _.uuid,
@@ -128,6 +139,7 @@ class SampleFileProvider @Inject()(
                 size       = size,
                 hash       = hash,
                 folder     = s"${config.storagePath}/$sampleID",
+                isUploaded = false,
                 isDangling = false
               )
               (samples += sample) flatMap {

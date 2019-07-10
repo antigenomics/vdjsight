@@ -13,6 +13,7 @@ create table "sample_file"
     size        bigint       not null,
     hash        text         not null,
     folder      text         not null,
+    is_uploaded boolean      not null,
     is_dangling boolean      not null,
     foreign key (owner_id) references "user" (uuid) on update cascade on delete restrict
 );

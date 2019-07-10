@@ -1,9 +1,12 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
+import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
+import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
 import { ContentAnimation, SidebarAnimation } from 'pages/dashboard/pages/project/project.animations';
-import { mergeMap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 
 @Component({
   selector:        'vs-project-page',
@@ -12,11 +15,34 @@ import { mergeMap } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations:      [ SidebarAnimation, ContentAnimation ]
 })
-export class ProjectComponent {
+export class ProjectComponent implements OnInit, OnDestroy {
+  private currentProjectUpdateSubscription$: Subscription;
+
+  public readonly isCurrentProjectLoading$    = this.store.pipe(select(fromDashboardProject.isCurrentProjectLoading));
+  public readonly isCurrentProjectLoaded$     = this.store.pipe(select(fromDashboardProject.isCurrentProjectLoaded));
+  public readonly isCurrentProjectLoadFailed$ = this.store.pipe(select(fromDashboardProject.isCurrentProjectLoadFailed));
+
   public readonly project$ = this.route.params.pipe(
     mergeMap((p) => this.store.pipe(select(fromDashboard.getProjectByLinkUUID, { linkUUID: p.uuid })))
   );
 
   constructor(private readonly route: ActivatedRoute, private readonly store: Store<DashboardModuleState>) {}
+
+  public ngOnInit(): void {
+    this.currentProjectUpdateSubscription$ = this.route.params.pipe(map((p) => p.uuid)).subscribe((uuid) => {
+      this.store.dispatch(CurrentProjectActions.select({ projectLinkUUID: uuid }));
+    });
+  }
+
+  public reload(): void {
+    this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID)).subscribe((uuid) => {
+      this.store.dispatch(CurrentProjectActions.load({ projectLinkUUID: uuid }));
+    });
+  }
+
+  public ngOnDestroy(): void {
+    this.currentProjectUpdateSubscription$.unsubscribe();
+    this.store.dispatch(CurrentProjectActions.deselect());
+  }
 
 }

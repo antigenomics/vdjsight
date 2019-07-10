@@ -1,5 +1,7 @@
 package controllers.projects
 
+import java.util.UUID
+
 import actions.{SessionRequest, SessionRequestAction}
 import com.google.inject.{Inject, Singleton}
 import controllers.projects.dto._
@@ -36,6 +38,18 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
   )(block: (SessionRequest[JsValue], J) => Future[Result])(implicit reads: Reads[J]) = projectsAction(parse.json) { implicit request =>
     ControllerHelpers.validateRequest[J](error) { value =>
       block(request, value)
+    }
+  }
+
+  def info(projectLinkUUID: UUID): Action[Unit] = projectsAction(parse.empty) { implicit request =>
+    projectsLinkProvider.getWithProject(projectLinkUUID) map {
+      case Some(lwp) =>
+        if (lwp._1.userID == request.userID.get) {
+          Ok(ServerResponse(ProjectLinkDTO.from(lwp)))
+        } else {
+          Forbidden(ServerResponseError("You are not allowed to do this"))
+        }
+      case None => BadRequest(ServerResponseError("Invalid request"))
     }
   }
 

@@ -1,12 +1,41 @@
 <div class="project container">
     <div class="ui grid">
-        <div class="three wide sidebar column" @sidebar>
-            <vs-project-sidebar [project]="project$ | async"></vs-project-sidebar>
-        </div>
-        <div class="thirteen wide main column" @content>
-            <div class="content container">
-                <router-outlet></router-outlet>
+        <ng-container *ngIf="isCurrentProjectLoaded$ | async; else notLoaded">
+            <div class="three wide sidebar column" @sidebar>
+                <vs-project-sidebar [project]="project$ | async"></vs-project-sidebar>
             </div>
-        </div>
+            <div class="thirteen wide main column" @content>
+                <div class="content container">
+                    <router-outlet></router-outlet>
+                </div>
+            </div>
+        </ng-container>
+        <ng-template #notLoaded>
+            <div class="five wide column"></div>
+            <div class="six wide column">
+                <div class="ui raised placeholder top pushed segment" style="min-height: 300px"
+                     [ngClass]="{ 'red': isCurrentProjectLoadFailed$ | async }" @content>
+                    <ng-container *ngIf="isCurrentProjectLoading$ | async; else loadFailed">
+                        <h2 class="ui icon header">
+                            <i class="notched circle loading icon"></i>
+                            <div class="content">
+                                Loading current project info
+                            </div>
+                        </h2>
+                    </ng-container>
+                    <ng-template #loadFailed>
+                        <h2 class="ui icon header">
+                            <i class="exclamation triangle icon"></i>
+                            <div class="content">
+                                Load failed
+                                <div class="sub header">An error occurred while fetching info for the selected project</div>
+                            </div>
+                        </h2>
+                        <div class="ui basic button" (click)="reload()">Reload</div>
+                    </ng-template>
+                </div>
+            </div>
+            <div class="five wide column"></div>
+        </ng-template>
     </div>
 </div>

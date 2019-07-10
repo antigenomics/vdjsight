@@ -18,5 +18,11 @@ export const ContentAnimation = trigger('content', [
       animate('1.00s ease-in-out', style({ transform: 'translateY(0)' })),
       animate('1.00s ease-in-out', style({ opacity: 1.0 }))
     ])
+  ]),
+  transition(':leave', [
+    group([
+      animate('1.00s ease-in-out', style({ transform: 'translateY(25px)' })),
+      animate('1.00s ease-in-out', style({ opacity: 0.0 }))
+    ])
   ])
 ]);

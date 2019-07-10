@@ -12,6 +12,7 @@ case class SampleFileLinkDTO(
   software: String,
   size: Long,
   hash: String,
+  uploaded: Boolean,
   projectLinkUUID: UUID,
   deleteOn: Option[Timestamp]
 )
@@ -27,6 +28,7 @@ object SampleFileLinkDTO {
       software        = sample.software,
       size            = sample.size,
       hash            = sample.hash,
+      uploaded        = sample.isUploaded,
       projectLinkUUID = projectLink.uuid,
       deleteOn        = link.deleteOn
     )

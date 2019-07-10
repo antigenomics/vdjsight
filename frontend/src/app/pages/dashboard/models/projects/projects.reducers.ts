@@ -89,7 +89,7 @@ const projectsReducer = createReducer(
     }, state);
   }),
 
-  /** Highlight actions */
+  /** Select actions */
   on(ProjectsActions.selectProject, (state, { entityId }) => produce(state, (draft) => {
     draft.selectedID = entityId;
   })),
@@ -103,4 +103,5 @@ export namespace __fromProjectsReducers {
   export function reducer(state: __ProjectsState | undefined, action: Action) {
     return projectsReducer(state, action);
   }
+
 }
