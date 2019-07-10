@@ -95,7 +95,17 @@ const projectsReducer = createReducer(
   })),
   on(ProjectsActions.clearProjectSelection, (state) => produce(state, (draft) => {
     draft.selectedID = undefined;
-  }))
+  })),
+
+  /** Clear action */
+  on(ProjectsActions.clear, (state) => {
+    return ProjectsStateAdapter.removeAll(produce(state, (draft) => {
+      draft.selectedID = undefined;
+      draft.loading    = false;
+      draft.loaded     = false;
+      draft.loadFailed = false;
+    }));
+  })
 );
 
 export namespace __fromProjectsReducers {

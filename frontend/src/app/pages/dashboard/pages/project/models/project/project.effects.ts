@@ -20,10 +20,9 @@ export class ProjectEffects {
   public load$ = createEffect(() => this.actions$.pipe(
     ofType(CurrentProjectActions.load),
     withLatestFrom(
-      this.store.pipe(select(fromDashboardProject.isCurrentProjectLoaded)),
       this.store.pipe(select(fromDashboardProject.isCurrentProjectLoading))
     ),
-    filter(([ action, isLoaded, isLoading ]) => action.projectLinkUUID !== '' && !isLoaded && !isLoading),
+    filter(([ action, isLoading ]) => action.projectLinkUUID !== '' && !isLoading),
     map(([ { projectLinkUUID } ]) => CurrentProjectActions.loadStart({ projectLinkUUID }))
   ));
 

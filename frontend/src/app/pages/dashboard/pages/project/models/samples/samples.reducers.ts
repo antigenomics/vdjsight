@@ -95,7 +95,17 @@ const sampleFilesReducer = createReducer(
   })),
   on(SampleFilesActions.clearSampleSelection, (state) => produce(state, (draft) => {
     draft.selectedID = undefined;
-  }))
+  })),
+
+  /** Clear actions */
+  on(SampleFilesActions.clear, (state) => {
+    return SampleFilesStateAdapter.removeAll(produce(state, (draft) => {
+      draft.selectedID = undefined;
+      draft.loading    = false;
+      draft.loaded     = false;
+      draft.loadFailed = false;
+    }));
+  })
 );
 
 export namespace __fromSampleFilesReducers {

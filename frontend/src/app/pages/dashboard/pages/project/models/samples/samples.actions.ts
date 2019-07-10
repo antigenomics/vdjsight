@@ -7,7 +7,7 @@ export namespace SampleFilesActions {
 
   export const load        = createAction('[SampleFiles] Load');
   export const loadStart   = createAction('[SampleFiles] Load Start', props<{ projectLinkUUID: string }>());
-  export const loadSuccess = createAction('[SampleFiles] Load Success', props<{ projectLinkUUID: string, samples: SampleFileLink[] }>());
+  export const loadSuccess = createAction('[SampleFiles] Load Success', props<{ samples: SampleFileLink[] }>());
   export const loadFailed  = createAction('[SampleFiles] Load Failed', props<{ error: BackendErrorResponse }>());
 
   export const create        = createAction('[SampleFiles] Create', props<{ entity: SampleFileEntity, request: SampleFilesAPI.CreateRequest }>());
@@ -24,4 +24,6 @@ export namespace SampleFilesActions {
 
   export const selectSample         = createAction('[SampleFiles] Select Sample', props<{ entityId: number }>());
   export const clearSampleSelection = createAction('[SampleFiles] Clear Sample Selection');
+
+  export const clear = createAction('[SampleFiles] Clear');
 }

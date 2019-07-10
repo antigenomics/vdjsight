@@ -14,7 +14,7 @@ export class ProjectsService {
   private static readonly ProjectsListUpdateEndpoint = '/projects/list/update';
   private static readonly ProjectsListDeleteEndpoint = '/projects/list/delete';
 
-  constructor(private backend: BackendService) {}
+  constructor(private readonly backend: BackendService) {}
 
   public info(uuid: string): Observable<ProjectLink> {
     return this.backend.get(ProjectsService.ProjectsInfoEndpoint + uuid);

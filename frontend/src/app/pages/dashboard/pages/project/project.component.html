@@ -2,7 +2,7 @@
     <div class="ui grid">
         <ng-container *ngIf="isCurrentProjectLoaded$ | async; else notLoaded">
             <div class="three wide sidebar column" @sidebar>
-                <vs-project-sidebar [project]="project$ | async"></vs-project-sidebar>
+                <vs-project-sidebar></vs-project-sidebar>
             </div>
             <div class="thirteen wide main column" @content>
                 <div class="content container">
@@ -14,14 +14,11 @@
             <div class="five wide column"></div>
             <div class="six wide column">
                 <div class="ui raised placeholder top pushed segment" style="min-height: 300px"
-                     [ngClass]="{ 'red': isCurrentProjectLoadFailed$ | async }" @content>
+                     [ngClass]="{ 'red': isCurrentProjectLoadFailed$ | async }" @extra>
                     <ng-container *ngIf="isCurrentProjectLoading$ | async; else loadFailed">
-                        <h2 class="ui icon header">
-                            <i class="notched circle loading icon"></i>
-                            <div class="content">
-                                Loading current project info
-                            </div>
-                        </h2>
+                        <div class="ui active inverted dimmer">
+                            <div class="ui text blue loader">Loading current project info</div>
+                        </div>
                     </ng-container>
                     <ng-template #loadFailed>
                         <h2 class="ui icon header">

@@ -1,5 +1,37 @@
 <div class="sidebar">
-    <a class="upload item" routerLink="upload" routerLinkActive="active">
-        Upload new samples
-    </a>
+    <ng-container *ngIf="isSamplesLoaded$ | async; else notLoaded">
+        <a class="upload item" routerLink="upload" routerLinkActive="active">
+            Upload new samples
+        </a>
+        <div class="item">
+            <h4 class="ui top pushed header">Samples</h4>
+        </div>
+        <ng-container *ngIf="samples$ | async as samples">
+            <ng-container *ngIf="samples.length !== 0; else emptyList">
+                
+            </ng-container>
+            <ng-template #emptyList>
+                <div class="item">
+                    You don't have any samples yet
+                </div>
+            </ng-template>
+        </ng-container>
+    </ng-container>
+    <ng-template #notLoaded>
+        <ng-container *ngIf="isSamplesLoading$ | async;">
+            <div class="item top bottom very pushed" @loading>
+                <div class="ui active centered inline blue loader"></div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="isSamplesLoadFailed$ | async">
+            <div class="item error" @load-failed>
+                <div class="ui negative message">
+                    <div class="header">
+                        An error occurred while loading the sample files list
+                    </div>
+                    <p>Internal Server Error</p>
+                </div>
+            </div>
+        </ng-container>
+    </ng-template>
 </div>

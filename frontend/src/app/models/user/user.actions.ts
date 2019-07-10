@@ -9,5 +9,5 @@ export namespace UserActions {
   export const initializeFailed   = createAction('[User] Initialize failed');
   export const login              = createAction('[User] Login', props<{ user: UserDTO }>());
   export const logout             = createAction('[User] Logout');
-  export const logoutWithRedirect = createAction('[User] Logout With Redurect', props<{ redirectTo: string }>());
+  export const logoutWithRedirect = createAction('[User] Logout With Redirect', props<{ redirectTo: string }>());
 }

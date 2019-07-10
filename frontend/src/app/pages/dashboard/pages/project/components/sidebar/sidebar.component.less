@@ -6,6 +6,10 @@
   user-select: none;
 }
 
+.sidebar > .item.loading {
+  min-height: 100px;
+}
+
 .sidebar > .item {
   padding: 1em;
   border-bottom: 1px solid #d4d4d5;
@@ -45,4 +49,9 @@
     border-left: 0.5em solid @teal;
     background: rgb(243, 244, 245, .5);
   }
+}
+
+.sidebar > .item.error {
+  border-left: 0.5em solid @red;
+  overflow: hidden;
 }

@@ -24,4 +24,6 @@ export namespace ProjectsActions {
 
   export const selectProject         = createAction('[Projects] Select Project', props<{ entityId: number }>());
   export const clearProjectSelection = createAction('[Projects] Clear Project Selection');
+
+  export const clear = createAction('[Projects] Clear');
 }

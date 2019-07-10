@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Actions, createEffect, ofType, OnInitEffects } from '@ngrx/effects';
-import { Action, select, Store } from '@ngrx/store';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { select, Store } from '@ngrx/store';
+import { UserActions } from 'models/user/user.actions';
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
 import { ProjectsService } from 'pages/dashboard/services/projects.service';
@@ -10,7 +11,7 @@ import { NotificationsService } from 'services/notifications/notifications.servi
 import { withNotification } from 'utils/effects/effects-helper';
 
 @Injectable()
-export class ProjectsEffects implements OnInitEffects {
+export class ProjectsEffects {
 
   public load$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectsActions.load),
@@ -29,7 +30,7 @@ export class ProjectsEffects implements OnInitEffects {
       catchError((error) => of(ProjectsActions.loadFailed({ error })))
     )),
     withNotification('Projects', {
-      error: { action: ProjectsActions.loadFailed, message: 'An error occurred while loading the projects', options: { timeout: 5000 } }
+      error: { action: ProjectsActions.loadFailed, message: 'An error occurred while loading projects', options: { timeout: 5000 } }
     }, this.notifications)
   ));
 
@@ -80,11 +81,12 @@ export class ProjectsEffects implements OnInitEffects {
     map(() => ProjectsActions.clearProjectSelection())
   ));
 
+  public logout$ = createEffect(() => this.actions$.pipe(
+    ofType(UserActions.logout),
+    map(() => ProjectsActions.clear())
+  ));
+
   constructor(private readonly actions$: Actions, private readonly store: Store<DashboardModuleState>,
               private readonly projects: ProjectsService, private readonly notifications: NotificationsService) {}
-
-  public ngrxOnInitEffects(): Action {
-    return ProjectsActions.load();
-  }
 
 }

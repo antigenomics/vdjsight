@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { SmoothHeightAnimation } from 'directives/smooth_height/smooth-height.animation';
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
@@ -13,7 +13,7 @@ import { ProjectsFooterAnimation } from 'pages/dashboard/pages/projects/projects
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations:      [ SmoothHeightAnimation, ProjectsFooterAnimation ]
 })
-export class ProjectsComponent {
+export class ProjectsComponent implements OnInit {
 
   public readonly isLoading    = this.store.pipe(select(fromDashboard.isProjectsLoading));
   public readonly isLoaded     = this.store.pipe(select(fromDashboard.isProjectsLoaded));
@@ -22,6 +22,10 @@ export class ProjectsComponent {
   public readonly selected$    = this.store.pipe(select(fromDashboard.getSelectedProjectOption));
 
   constructor(private readonly store: Store<DashboardModuleState>) {}
+
+  public ngOnInit(): void {
+    this.store.dispatch(ProjectsActions.load());
+  }
 
   public create(): void {
     this.store.dispatch(ProjectsActions.create({

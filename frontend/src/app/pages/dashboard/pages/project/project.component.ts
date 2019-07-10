@@ -1,19 +1,19 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { select, Store } from '@ngrx/store';
-import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
+import { DashboardModuleState } from 'pages/dashboard/models/dashboard.state';
 import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
-import { ContentAnimation, SidebarAnimation } from 'pages/dashboard/pages/project/project.animations';
+import { ContentAnimation, ExtraAnimation, SidebarAnimation } from 'pages/dashboard/pages/project/project.animations';
 import { Subscription } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector:        'vs-project-page',
   templateUrl:     './project.component.html',
   styleUrls:       [ './project.component.less' ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations:      [ SidebarAnimation, ContentAnimation ]
+  animations:      [ SidebarAnimation, ContentAnimation, ExtraAnimation ]
 })
 export class ProjectComponent implements OnInit, OnDestroy {
   private currentProjectUpdateSubscription$: Subscription;
@@ -21,10 +21,6 @@ export class ProjectComponent implements OnInit, OnDestroy {
   public readonly isCurrentProjectLoading$    = this.store.pipe(select(fromDashboardProject.isCurrentProjectLoading));
   public readonly isCurrentProjectLoaded$     = this.store.pipe(select(fromDashboardProject.isCurrentProjectLoaded));
   public readonly isCurrentProjectLoadFailed$ = this.store.pipe(select(fromDashboardProject.isCurrentProjectLoadFailed));
-
-  public readonly project$ = this.route.params.pipe(
-    mergeMap((p) => this.store.pipe(select(fromDashboard.getProjectByLinkUUID, { linkUUID: p.uuid })))
-  );
 
   constructor(private readonly route: ActivatedRoute, private readonly store: Store<DashboardModuleState>) {}
 
