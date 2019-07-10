@@ -29,19 +29,21 @@ object SampleFilesConfiguration {
   }
 }
 
-case class SampleFile(uuid: UUID, ownerID: UUID, name: String, software: String, folder: String, isDangling: Boolean)
+case class SampleFile(uuid: UUID, ownerID: UUID, name: String, software: String, size: Long, hash: String, folder: String, isDangling: Boolean)
 
-class SampleFileTable(tag: Tag)(implicit up: UserProvider) extends Table[SampleFile](tag, SampleFileTable.TABLE_NAME) {
+class SampleFileTable(tag: Tag)(implicit userProvider: UserProvider) extends Table[SampleFile](tag, SampleFileTable.TABLE_NAME) {
   def uuid       = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
   def ownerID    = column[UUID]("owner_id", O.SqlType("uuid"))
   def name       = column[String]("name", O.Length(255))
   def software   = column[String]("software", O.Length(64))
+  def size       = column[Long]("size")
+  def hash       = column[String]("hash")
   def folder     = column[String]("folder", O.Unique)
   def isDangling = column[Boolean]("is_dangling")
 
-  def * = (uuid, ownerID, name, software, folder, isDangling) <> (SampleFile.tupled, SampleFile.unapply)
+  def * = (uuid, ownerID, name, software, size, hash, folder, isDangling) <> (SampleFile.tupled, SampleFile.unapply)
 
-  def owner = foreignKey("sample_file_table_owner_fk", ownerID, up.table)(
+  def owner = foreignKey("sample_file_table_owner_fk", ownerID, userProvider.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Restrict
@@ -54,7 +56,10 @@ object SampleFileTable {
   final val TABLE_NAME = "sample_file"
 
   implicit class SampleFileTableExtensions[C[_]](q: Query[SampleFileTable, SampleFile, C]) {
-    def withOwner(implicit up: UserProvider): Query[(SampleFileTable, UserTable), (SampleFile, User), C] = q.join(up.table).on(_.ownerID === _.uuid)
+
+    def withOwner(implicit userProvider: UserProvider): Query[(SampleFileTable, UserTable), (SampleFile, User), C] = {
+      q.join(userProvider.table).on(_.ownerID === _.uuid)
+    }
   }
 
 }
@@ -76,8 +81,8 @@ class SampleFileProvider @Inject()(
 )(
   implicit
   ec: ExecutionContext,
-  up: UserProvider,
-  upp: UserPermissionsProvider
+  userProvider: UserProvider,
+  userPermissionsProvider: UserPermissionsProvider
 ) extends HasDatabaseConfigProvider[JdbcProfile]
     with Logging {
 
@@ -97,24 +102,41 @@ class SampleFileProvider @Inject()(
 
   def getWithOwner(uuid: UUID): Future[Option[(SampleFile, User)]] = db.run(samples.withOwner.filter(_._1.uuid === uuid).result.headOption)
 
-  def create(userID: UUID, name: String, software: String, overrideConfiguration: Option[SampleFilesConfiguration] = None): Future[SampleFile] = {
-    val actions = up.table.filter(_.uuid === userID).result.headOption flatMap {
-        case Some(_) =>
-          val config   = overrideConfiguration.getOrElse(configuration)
-          val sampleID = UUID.randomUUID()
-          val sample = SampleFile(
-            uuid       = sampleID,
-            ownerID    = userID,
-            name       = name,
-            software   = software,
-            folder     = s"${config.storagePath}/$sampleID",
-            isDangling = false
-          )
-          (samples += sample) flatMap {
-            case 0 => DBIO.failed(InternalServerErrorException("Cannot create SampleFile instance in database: Database error"))
-            case _ => DBIO.successful(sample)
+  def create(
+    userID: UUID,
+    name: String,
+    software: String,
+    size: Long,
+    hash: String,
+    overrideConfiguration: Option[SampleFilesConfiguration] = None
+  ): Future[SampleFile] = {
+    val actions = userPermissionsProvider.table.filter(_.uuid === userID).result.headOption flatMap {
+        case Some(permissions) =>
+          samples.filter(_.ownerID === userID).length.result flatMap { usersSamplesCount =>
+            if (usersSamplesCount >= permissions.maxSamplesCount) {
+              DBIO.failed(BadRequestException("Cannot create SampleFile instance in database", "Too many samples"))
+            } else if (size >= permissions.maxSampleSize) {
+              DBIO.failed(BadRequestException("Cannot create SampleFile instance in database", "Sample size is too big"))
+            } else {
+              val config   = overrideConfiguration.getOrElse(configuration)
+              val sampleID = UUID.randomUUID()
+              val sample = SampleFile(
+                uuid       = sampleID,
+                ownerID    = userID,
+                name       = name,
+                software   = software,
+                size       = size,
+                hash       = hash,
+                folder     = s"${config.storagePath}/$sampleID",
+                isDangling = false
+              )
+              (samples += sample) flatMap {
+                case 0 => DBIO.failed(InternalServerErrorException("Cannot create SampleFile instance in database", "Database error"))
+                case _ => DBIO.successful(sample)
+              }
+            }
           }
-        case None => DBIO.failed(BadRequestException("Cannot create SampleFile instance in database: User does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot create SampleFile instance in database", "User does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { sample =>
@@ -124,11 +146,11 @@ class SampleFileProvider @Inject()(
 
   def update(sampleID: UUID, name: String, software: String): Future[SampleFile] = {
     val actions = samples.filter(_.uuid === sampleID).map(s => (s.name, s.software)).update((name, software)) flatMap {
-        case 0 => DBIO.failed(BadRequestException("Cannot update SampleFile instance in database: Project does not exist"))
+        case 0 => DBIO.failed(BadRequestException("Cannot update SampleFile instance in database", "Project does not exist"))
         case _ =>
           samples.filter(_.uuid === sampleID).result.headOption flatMap {
             case Some(sample) => DBIO.successful(sample)
-            case None         => DBIO.failed(InternalServerErrorException("Cannot update SampleFile instance in database: Database error"))
+            case None         => DBIO.failed(InternalServerErrorException("Cannot update SampleFile instance in database", "Database error"))
           }
       }
 
@@ -141,10 +163,10 @@ class SampleFileProvider @Inject()(
     val actions = samples.filter(_.uuid === uuid).result.headOption flatMap {
         case Some(sample) =>
           samples.filter(_.uuid === uuid).delete flatMap {
-            case 0 => DBIO.failed(InternalServerErrorException("Cannot delete SampleFile instance in database: Database error"))
+            case 0 => DBIO.failed(InternalServerErrorException("Cannot delete SampleFile instance in database", "Database error"))
             case _ => DBIO.successful(sample)
           }
-        case None => DBIO.failed(BadRequestException("Cannot delete SampleFile instance in database: Project does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot delete SampleFile instance in database", "Project does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { sample =>

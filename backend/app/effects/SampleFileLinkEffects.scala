@@ -10,18 +10,24 @@ import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
 
 object SampleFileLinkEffectsActor {
-  def props(sfp: SampleFileProvider, sflp: SampleFileLinkProvider)(implicit ec: ExecutionContext): Props = Props(new SampleFileLinkEffectsActor(sfp, sflp))
+
+  def props(sampleFileProvider: SampleFileProvider, sampleFileLinkProvider: SampleFileLinkProvider)(implicit ec: ExecutionContext): Props = {
+    Props(new SampleFileLinkEffectsActor(sampleFileProvider, sampleFileLinkProvider))
+  }
 }
 
-class SampleFileLinkEffectsActor(sfp: SampleFileProvider, sflp: SampleFileLinkProvider)(implicit ec: ExecutionContext) extends Actor with Logging {
+class SampleFileLinkEffectsActor(sampleFileProvider: SampleFileProvider, sampleFileLinkProvider: SampleFileLinkProvider)(
+  implicit ec: ExecutionContext
+) extends Actor
+    with Logging {
   override def receive: Receive = {
     case SampleFileLinkProviderEvents.SampleFileLinkProviderInitialized(_) =>
     case SampleFileLinkProviderEvents.SampleFileLinkCreated(_)             =>
     case SampleFileLinkProviderEvents.SampleFileLinkDeleted(link) =>
-      sflp.findForSample(link.sampleID) onComplete {
+      sampleFileLinkProvider.findForSample(link.sampleID) onComplete {
         case Success(links) =>
           if (links.isEmpty) {
-            sfp.delete(link.sampleID)
+            sampleFileProvider.delete(link.sampleID)
           }
         case Failure(exception) =>
           logger.error("Failed to apply SampleFileLinkDeleted effect from SampleFileLinkEffectsActor", exception)
@@ -33,11 +39,12 @@ class SampleFileLinkEffectsActor(sfp: SampleFileProvider, sflp: SampleFileLinkPr
 class SampleFileLinkEffects @Inject()(
   lifecycle: ApplicationLifecycle,
   events: EffectsEventsStream,
-  sfp: SampleFileProvider,
-  sflp: SampleFileLinkProvider
+  sampleFileProvider: SampleFileProvider,
+  sampleFileLinkProvider: SampleFileLinkProvider
 )(
   implicit ec: ExecutionContext
 ) extends AbstractEffects[SampleFileLinkProviderEvent](lifecycle, events) {
 
-  final override lazy val effects = events.actorSystem.actorOf(SampleFileLinkEffectsActor.props(sfp, sflp), "sample-file-link-effects-actor")
+  final override lazy val effects =
+    events.actorSystem.actorOf(SampleFileLinkEffectsActor.props(sampleFileProvider, sampleFileLinkProvider), "sample-file-link-effects-actor")
 }

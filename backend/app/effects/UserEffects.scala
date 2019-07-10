@@ -7,16 +7,25 @@ import models.user.{UserPermissionsProvider, UserProviderEvent, UserProviderEven
 import play.api.inject.ApplicationLifecycle
 
 object UserEffectsActor {
-  def props(upp: UserPermissionsProvider, vtp: VerificationTokenProvider, rtp: ResetTokenProvider): Props = Props(new UserEffectsActor(upp, vtp, rtp))
+
+  def props(
+    userPermissionsProvider: UserPermissionsProvider,
+    verificationTokenProvider: VerificationTokenProvider,
+    resetTokenProvider: ResetTokenProvider
+  ): Props = Props(new UserEffectsActor(userPermissionsProvider, verificationTokenProvider, resetTokenProvider))
 }
 
-class UserEffectsActor(upp: UserPermissionsProvider, vtp: VerificationTokenProvider, rtp: ResetTokenProvider) extends Actor {
+class UserEffectsActor(
+  userPermissionsProvider: UserPermissionsProvider,
+  verificationTokenProvider: VerificationTokenProvider,
+  resetTokenProvider: ResetTokenProvider
+) extends Actor {
   override def receive: Receive = {
     case UserProviderEvents.UserCreated(user) =>
-      upp.create(user.uuid)
-      vtp.create(user.uuid)
-    case UserProviderEvents.UserVerified(uuid) => vtp.deleteForUser(uuid)
-    case UserProviderEvents.UserReset(uuid)    => rtp.deleteForUser(uuid)
+      userPermissionsProvider.create(user.uuid)
+      verificationTokenProvider.create(user.uuid)
+    case UserProviderEvents.UserVerified(uuid) => verificationTokenProvider.deleteForUser(uuid)
+    case UserProviderEvents.UserReset(uuid)    => resetTokenProvider.deleteForUser(uuid)
   }
 }
 
@@ -24,10 +33,11 @@ class UserEffectsActor(upp: UserPermissionsProvider, vtp: VerificationTokenProvi
 class UserEffects @Inject()(
   lifecycle: ApplicationLifecycle,
   events: EffectsEventsStream,
-  upp: UserPermissionsProvider,
-  vtp: VerificationTokenProvider,
-  rtp: ResetTokenProvider
+  userPermissionsProvider: UserPermissionsProvider,
+  verificationTokenProvider: VerificationTokenProvider,
+  resetTokenProvider: ResetTokenProvider
 ) extends AbstractEffects[UserProviderEvent](lifecycle, events) {
 
-  final override lazy val effects = events.actorSystem.actorOf(UserEffectsActor.props(upp, vtp, rtp), "user-effects-actor")
+  final override lazy val effects =
+    events.actorSystem.actorOf(UserEffectsActor.props(userPermissionsProvider, verificationTokenProvider, resetTokenProvider), "user-effects-actor")
 }

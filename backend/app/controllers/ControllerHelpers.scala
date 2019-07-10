@@ -15,7 +15,7 @@ case class WithRecoverAction[A](action: Action[A]) extends Action[A] with Loggin
     implicit val ec: ExecutionContext = executionContext
     action(request).recover {
       case b: BadRequestException =>
-        BadRequest(ServerResponseError(b.message))
+        BadRequest(ServerResponseError(b.message, Some(Seq(b.action))))
       case e: Exception =>
         logger.error("Internal server error", e)
         InternalServerError(ServerResponseError("Internal Server Error"))

@@ -47,7 +47,7 @@ case class UserPermissions(
   maxDanglingSampleLinks: Long
 )
 
-class UserPermissionsTable(tag: Tag)(implicit up: UserProvider) extends Table[UserPermissions](tag, UserPermissionsTable.TABLE_NAME) {
+class UserPermissionsTable(tag: Tag)(implicit userProvider: UserProvider) extends Table[UserPermissions](tag, UserPermissionsTable.TABLE_NAME) {
   def uuid                    = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
   def userID                  = column[UUID]("user_id", O.Unique, O.SqlType("uuid"))
   def maxProjectsCount        = column[Long]("max_projects_count")
@@ -67,7 +67,7 @@ class UserPermissionsTable(tag: Tag)(implicit up: UserProvider) extends Table[Us
       maxDanglingSampleLinks
     ) <> (UserPermissions.tupled, UserPermissions.unapply)
 
-  def user = foreignKey("user_permissions_table_user_fk", userID, up.table)(
+  def user = foreignKey("user_permissions_table_user_fk", userID, userProvider.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Cascade
@@ -81,8 +81,8 @@ object UserPermissionsTable {
 
   implicit class UserPermissionsTableExtension[C[_]](q: Query[UserPermissionsTable, UserPermissions, C]) {
 
-    def withUser(implicit up: UserProvider): Query[(UserPermissionsTable, UserTable), (UserPermissions, User), C] = {
-      q.join(up.table).on(_.userID === _.uuid)
+    def withUser(implicit userProvider: UserProvider): Query[(UserPermissionsTable, UserTable), (UserPermissions, User), C] = {
+      q.join(userProvider.table).on(_.userID === _.uuid)
     }
 
   }
@@ -102,7 +102,7 @@ class UserPermissionsProvider @Inject()(
 )(
   implicit
   ec: ExecutionContext,
-  up: UserProvider
+  userProvider: UserProvider
 ) extends HasDatabaseConfigProvider[JdbcProfile]
     with Logging {
 
@@ -123,7 +123,7 @@ class UserPermissionsProvider @Inject()(
   def getWithUser(uuid: UUID): Future[Option[(UserPermissions, User)]] = db.run(permissions.withUser.filter(_._1.uuid === uuid).result.headOption)
 
   def create(userID: UUID, overrideConfiguration: Option[UserPermissionsConfiguration] = None): Future[UserPermissions] = {
-    val actions = up.table.filter(_.uuid === userID).result.headOption flatMap {
+    val actions = userProvider.table.filter(_.uuid === userID).result.headOption flatMap {
         case Some(_) =>
           permissions.filter(_.userID === userID).result.headOption flatMap {
             case Some(permission) => DBIO.successful(permission)
@@ -143,10 +143,10 @@ class UserPermissionsProvider @Inject()(
                 case 1 =>
                   events.publish(UserPermissionsProviderEvents.UserPermissionsCreated(permission))
                   DBIO.successful(permission)
-                case _ => DBIO.failed(InternalServerErrorException("Cannot create UserPermissions instance in database: Database error"))
+                case _ => DBIO.failed(InternalServerErrorException("Cannot create UserPermissions instance in database", "Database error"))
               }
           }
-        case None => DBIO.failed(BadRequestException("Cannot create UserPermissions instance in database: User does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot create UserPermissions instance in database", "User does not exist"))
       }
 
     db.run(actions.transactionally)

@@ -5,7 +5,6 @@ export interface ProjectLink {
   readonly uuid: string;
   readonly name: string;
   readonly description: string;
-  readonly maxSamplesCount: number;
   readonly isShared: boolean;
   readonly isUploadAllowed: boolean;
   readonly isDeleteAllowed: boolean;

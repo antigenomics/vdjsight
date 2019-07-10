@@ -50,7 +50,11 @@ object SampleFileLinksConfiguration {
 
 case class SampleFileLink(uuid: UUID, sampleID: UUID, projectID: UUID, deleteOn: Option[Timestamp])
 
-class SampleFileLinkTable(tag: Tag)(implicit sfp: SampleFileProvider, pp: ProjectProvider) extends Table[SampleFileLink](tag, SampleFileLinkTable.TABLE_NAME) {
+class SampleFileLinkTable(tag: Tag)(
+  implicit
+  sampleFileProvider: SampleFileProvider,
+  projectProvider: ProjectProvider
+) extends Table[SampleFileLink](tag, SampleFileLinkTable.TABLE_NAME) {
   def uuid      = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
   def sampleID  = column[UUID]("sample_id", O.SqlType("uuid"))
   def projectID = column[UUID]("project_id", O.SqlType("uuid"))
@@ -58,13 +62,13 @@ class SampleFileLinkTable(tag: Tag)(implicit sfp: SampleFileProvider, pp: Projec
 
   def * = (uuid, sampleID, projectID, deleteOn) <> (SampleFileLink.tupled, SampleFileLink.unapply)
 
-  def sample = foreignKey("sample_file_link_table_sample_fk", sampleID, sfp.table)(
+  def sample = foreignKey("sample_file_link_table_sample_fk", sampleID, sampleFileProvider.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Restrict
   )
 
-  def project_link = foreignKey("sample_file_link_table_project_fk", projectID, pp.table)(
+  def project_link = foreignKey("sample_file_link_table_project_fk", projectID, projectProvider.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Restrict
@@ -80,12 +84,12 @@ object SampleFileLinkTable {
 
   implicit class SampleFileLinkTableExtension[C[_]](q: Query[SampleFileLinkTable, SampleFileLink, C]) {
 
-    def withSample(implicit sfp: SampleFileProvider): Query[(SampleFileLinkTable, SampleFileTable), (SampleFileLink, SampleFile), C] = {
-      q.join(sfp.table).on(_.sampleID === _.uuid)
+    def withSample(implicit sampleFileProvider: SampleFileProvider): Query[(SampleFileLinkTable, SampleFileTable), (SampleFileLink, SampleFile), C] = {
+      q.join(sampleFileProvider.table).on(_.sampleID === _.uuid)
     }
 
-    def withProject(implicit pp: ProjectProvider): Query[(SampleFileLinkTable, ProjectTable), (SampleFileLink, Project), C] = {
-      q.join(pp.table).on(_.projectID === _.uuid)
+    def withProject(implicit projectProvider: ProjectProvider): Query[(SampleFileLinkTable, ProjectTable), (SampleFileLink, Project), C] = {
+      q.join(projectProvider.table).on(_.projectID === _.uuid)
     }
   }
 }
@@ -110,8 +114,8 @@ class SampleFileLinkProvider @Inject()(
 )(
   implicit
   ec: ExecutionContext,
-  sfp: SampleFileProvider,
-  pp: ProjectProvider
+  sampleFileProvider: SampleFileProvider,
+  projectProvider: ProjectProvider
 ) extends HasDatabaseConfigProvider[JdbcProfile]
     with Logging {
 
@@ -157,9 +161,9 @@ class SampleFileLinkProvider @Inject()(
   def getWithProject(uuid: UUID): Future[Option[(SampleFileLink, Project)]] = db.run(links.withProject.filter(_._1.uuid === uuid).result.headOption)
 
   def create(sampleID: UUID, projectID: UUID): Future[SampleFileLink] = {
-    val actions = sfp.table.filter(_.uuid === sampleID).result.headOption flatMap {
+    val actions = sampleFileProvider.table.filter(_.uuid === sampleID).result.headOption flatMap {
         case Some(_) =>
-          pp.table.filter(_.uuid === projectID).result.headOption flatMap {
+          projectProvider.table.filter(_.uuid === projectID).result.headOption flatMap {
             case Some(_) =>
               links.filter(link => link.sampleID === sampleID && link.projectID === projectID).result.headOption flatMap {
                 case Some(link) => DBIO.successful(link)
@@ -172,15 +176,15 @@ class SampleFileLinkProvider @Inject()(
                     deleteOn  = None
                   )
                   (links += link) flatMap {
-                    case 0 => DBIO.failed(InternalServerErrorException("Cannot create SampleFileLink instance in database: Database error"))
+                    case 0 => DBIO.failed(InternalServerErrorException("Cannot create SampleFileLink instance in database", "Database error"))
                     case _ =>
                       events.publish(SampleFileLinkProviderEvents.SampleFileLinkCreated(link))
                       DBIO.successful(link)
                   }
               }
-            case None => DBIO.failed(BadRequestException("Cannot create SampleFileLink instance in database: Project does not exist"))
+            case None => DBIO.failed(BadRequestException("Cannot create SampleFileLink instance in database", "Project does not exist"))
           }
-        case None => DBIO.failed(BadRequestException("Cannot create SampleFileLink instance in database: SampleFile does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot create SampleFileLink instance in database", "SampleFile does not exist"))
       }
 
     db.run(actions.transactionally)
@@ -192,12 +196,12 @@ class SampleFileLinkProvider @Inject()(
           links.filter(_.uuid === link.uuid).map(_.deleteOn).update(Some(TimeUtils.getExpiredAt(configuration.delete.keep))) flatMap { u =>
             links.filter(_.sampleID === sample.uuid).result flatMap { ls =>
               ls.forall(_.deleteOn.nonEmpty) match {
-                case true  => sfp.table.filter(_.uuid === link.sampleID).map(_.isDangling).update(true).map(_ + u)
+                case true  => sampleFileProvider.table.filter(_.uuid === link.sampleID).map(_.isDangling).update(true).map(_ + u)
                 case false => DBIO.successful(u)
               }
             }
           }
-        case None => DBIO.failed(BadRequestException("Cannot schedule SampleFileLink instance delete: Link does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot schedule SampleFileLink instance delete", "Link does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { _ =>
@@ -213,11 +217,11 @@ class SampleFileLinkProvider @Inject()(
         case Some((link, sample)) =>
           links.filter(_.uuid === link.uuid).map(_.deleteOn).update(None) flatMap { u =>
             sample.isDangling match {
-              case true  => sfp.table.filter(_.uuid === link.sampleID).map(_.isDangling).update(false).map(_ + u)
+              case true  => sampleFileProvider.table.filter(_.uuid === link.sampleID).map(_.isDangling).update(false).map(_ + u)
               case false => DBIO.successful(u)
             }
           }
-        case None => DBIO.failed(BadRequestException("Cannot cancel scheduled SampleFileLink instance deletion: Link does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot cancel scheduled SampleFileLink instance deletion", "Link does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { _ =>
@@ -231,7 +235,7 @@ class SampleFileLinkProvider @Inject()(
   def delete(uuid: UUID): Future[Boolean] = {
     val actions = links.filter(_.uuid === uuid).result.headOption flatMap {
         case Some(link) => links.filter(_.uuid === uuid).delete map (_ => link)
-        case None       => DBIO.failed(BadRequestException("Cannot delete SampleFileLink instance: Link does not exist"))
+        case None       => DBIO.failed(BadRequestException("Cannot delete SampleFileLink instance", "Link does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { link =>

@@ -34,9 +34,9 @@ object AuthorizationControllerConfiguration {
 @Singleton
 class AuthorizationController @Inject()(cc: ControllerComponents, session: SessionRequestAction, messagesAPI: MessagesApi, conf: Configuration)(
   implicit ec: ExecutionContext,
-  up: UserProvider,
-  vtp: VerificationTokenProvider,
-  rtp: ResetTokenProvider
+  userProvider: UserProvider,
+  verificationTokenProvider: VerificationTokenProvider,
+  resetTokenProvider: ResetTokenProvider
 ) extends AbstractController(cc) {
 
   implicit final private val logger: Logger                                      = LoggerFactory.getLogger(this.getClass)
@@ -57,7 +57,7 @@ class AuthorizationController @Inject()(cc: ControllerComponents, session: Sessi
     }
 
   def login: Action[JsValue] = authorizationAction[AuthorizationLoginRequest](AuthorizationLoginRequest.failedValidationMessage) { (_, login) =>
-    up.getByEmailAndPassword(login.email, login.password).map {
+    userProvider.getByEmailAndPassword(login.email, login.password).map {
       case None => BadRequest(ServerResponseError(messages("authorization.login.failed.email")))
       case Some(user) =>
         if (user.verified) {
@@ -69,14 +69,14 @@ class AuthorizationController @Inject()(cc: ControllerComponents, session: Sessi
   }
 
   def signup: Action[JsValue] = authorizationAction[AuthorizationSignupRequest](AuthorizationSignupRequest.failedValidationMessage) { (_, signup) =>
-    up.isUserWithEmailOrLoginExist(signup.email, signup.login).flatMap {
+    userProvider.isUserWithEmailOrLoginExist(signup.email, signup.login).flatMap {
       case (isExistWithEmail, isExistWithLogin) =>
         if (isExistWithEmail) {
           Future(BadRequest(ServerResponseError(messages("authorization.signup.validation.email.exist"))))
         } else if (isExistWithLogin) {
           Future(BadRequest(ServerResponseError(messages("authorization.signup.validation.login.exist"))))
         } else {
-          up.create(signup.login, signup.email, signup.password1) map { _ =>
+          userProvider.create(signup.login, signup.email, signup.password1) map { _ =>
             Ok(ServerResponse.MESSAGE(messages("authorization.signup.success")))
           }
         }
@@ -84,21 +84,21 @@ class AuthorizationController @Inject()(cc: ControllerComponents, session: Sessi
   }
 
   def reset: Action[JsValue] = authorizationAction[AuthorizationResetRequest](AuthorizationResetRequest.failedValidationMessage) { (_, reset) =>
-    up.getByEmail(reset.email).map { user =>
-      user.foreach(u => rtp.create(u.uuid))
+    userProvider.getByEmail(reset.email).map { user =>
+      user.foreach(u => resetTokenProvider.create(u.uuid))
       Ok(ServerResponse.MESSAGE(messages("authorization.reset.success")))
     }
   }
 
   def change: Action[JsValue] = authorizationAction[AuthorizationChangeRequest](AuthorizationChangeRequest.failedValidationMessage) { (_, reset) =>
-    up.reset(reset.token, reset.password1) map {
+    userProvider.reset(reset.token, reset.password1) map {
       case true  => Ok(ServerResponse.MESSAGE(messages("authorization.change.success")))
       case false => BadRequest(ServerResponseError("Invalid reset token provided"))
     }
   }
 
   def verify: Action[JsValue] = authorizationAction[AuthorizationVerifyRequest]() { (_, verify) =>
-    up.verify(verify.token) map {
+    userProvider.verify(verify.token) map {
       case true  => Ok(ServerResponse.MESSAGE(messages("authorization.verify.success")))
       case false => BadRequest(ServerResponseError("Invalid verification token provided"))
     }

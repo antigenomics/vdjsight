@@ -60,14 +60,14 @@ object ResetTokenConfiguration {
 
 case class ResetToken(token: UUID, userID: UUID, expiredAt: Timestamp)
 
-class ResetTokenTable(tag: Tag)(implicit up: UserProvider) extends Table[ResetToken](tag, ResetTokenTable.TABLE_NAME) {
+class ResetTokenTable(tag: Tag)(implicit userProvider: UserProvider) extends Table[ResetToken](tag, ResetTokenTable.TABLE_NAME) {
   def token     = column[UUID]("token", O.PrimaryKey, O.SqlType("uuid"))
   def userID    = column[UUID]("user_id", O.SqlType("uuid"))
   def expiredAt = column[Timestamp]("expired_at")
 
   def * = (token, userID, expiredAt) <> (ResetToken.tupled, ResetToken.unapply)
 
-  def user = foreignKey("reset_token_table_user_fk", userID, up.table)(
+  def user = foreignKey("reset_token_table_user_fk", userID, userProvider.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Cascade
@@ -79,8 +79,8 @@ object ResetTokenTable {
 
   implicit class ResetTokenExtension[C[_]](q: Query[ResetTokenTable, ResetToken, C]) {
 
-    def withUser(implicit up: UserProvider): Query[(ResetTokenTable, UserTable), (ResetToken, User), C] = {
-      q.join(up.table).on(_.userID === _.uuid)
+    def withUser(implicit userProvider: UserProvider): Query[(ResetTokenTable, UserTable), (ResetToken, User), C] = {
+      q.join(userProvider.table).on(_.userID === _.uuid)
     }
   }
 }
@@ -102,7 +102,7 @@ class ResetTokenProvider @Inject()(
 )(
   implicit
   ec: ExecutionContext,
-  up: UserProvider
+  userProvider: UserProvider
 ) extends HasDatabaseConfigProvider[JdbcProfile]
     with Logging {
 
@@ -137,7 +137,7 @@ class ResetTokenProvider @Inject()(
   def getWithUser(token: UUID): Future[Option[(ResetToken, User)]] = db.run(tokens.withUser.filter(_._1.token === token).result.headOption)
 
   def create(userID: UUID): Future[ResetToken] = {
-    val actions = up.table.filter(_.uuid === userID).result.headOption flatMap {
+    val actions = userProvider.table.filter(_.uuid === userID).result.headOption flatMap {
         case Some(_) =>
           tokens.filter(_.userID === userID).result.headOption flatMap {
             case Some(token) => DBIO.successful(token)
@@ -149,13 +149,13 @@ class ResetTokenProvider @Inject()(
                 expiredAt = TimeUtils.getExpiredAt(configuration.keep)
               )
               (tokens += token) flatMap {
-                case 0 => DBIO.failed(InternalServerErrorException("Cannot create VerificationToken instance in database: Database error"))
+                case 0 => DBIO.failed(InternalServerErrorException("Cannot create VerificationToken instance in database", "Database error"))
                 case _ =>
                   events.publish(ResetTokenProviderEvents.TokenCreated(token, configuration))
                   DBIO.successful(token)
               }
           }
-        case None => DBIO.failed(BadRequestException("Cannot create VerificationToken instance in database: User does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot create VerificationToken instance in database", "User does not exist"))
       }
 
     db.run(actions.transactionally)
@@ -165,12 +165,12 @@ class ResetTokenProvider @Inject()(
     val actions = tokens.filter(_.token === token).result.headOption flatMap {
         case Some(t) =>
           tokens.filter(_.token === token).delete flatMap {
-            case 0 => DBIO.failed(InternalServerErrorException("Cannot delete ResetToken instance in database: Database error"))
+            case 0 => DBIO.failed(InternalServerErrorException("Cannot delete ResetToken instance in database", "Database error"))
             case _ =>
               events.publish(ResetTokenProviderEvents.TokenDeleted(t, configuration))
               DBIO.successful(true)
           }
-        case None => DBIO.failed(BadRequestException("Cannot delete ResetToken instance in database: Token does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot delete ResetToken instance in database", "Token does not exist"))
       }
 
     db.run(actions.transactionally)

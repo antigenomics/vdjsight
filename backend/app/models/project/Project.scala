@@ -18,30 +18,28 @@ import utils.FutureUtils._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
-case class ProjectsConfiguration(storagePath: String, maxSamplesCount: Long)
+case class ProjectsConfiguration(storagePath: String)
 
 object ProjectsConfiguration {
   implicit val projectPermissionsDefaultConfigurationLoader: ConfigLoader[ProjectsConfiguration] = (root: Config, path: String) => {
     val config = root.getConfig(path)
     ProjectsConfiguration(
-      storagePath     = config.getString("storagePath"),
-      maxSamplesCount = config.getLong("maxSamplesCount")
+      storagePath = config.getString("storagePath")
     )
   }
 }
 
-case class Project(uuid: UUID, name: String, description: String, ownerID: UUID, folder: String, maxSamplesCount: Long, isDangling: Boolean)
+case class Project(uuid: UUID, name: String, description: String, ownerID: UUID, folder: String, isDangling: Boolean)
 
 class ProjectTable(tag: Tag)(implicit up: UserProvider) extends Table[Project](tag, ProjectTable.TABLE_NAME) {
-  def uuid            = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
-  def name            = column[String]("name", O.Length(255))
-  def description     = column[String]("description")
-  def ownerID         = column[UUID]("owner_id", O.SqlType("uuid"))
-  def folder          = column[String]("folder", O.Unique)
-  def maxSamplesCount = column[Long]("max_samples_count")
-  def isDangling      = column[Boolean]("is_dangling")
+  def uuid        = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
+  def name        = column[String]("name", O.Length(255))
+  def description = column[String]("description")
+  def ownerID     = column[UUID]("owner_id", O.SqlType("uuid"))
+  def folder      = column[String]("folder", O.Unique)
+  def isDangling  = column[Boolean]("is_dangling")
 
-  def * = (uuid, name, description, ownerID, folder, maxSamplesCount, isDangling) <> (Project.tupled, Project.unapply)
+  def * = (uuid, name, description, ownerID, folder, isDangling) <> (Project.tupled, Project.unapply)
 
   def owner = foreignKey("project_table_owner_fk", ownerID, up.table)(
     _.uuid,
@@ -77,8 +75,8 @@ class ProjectProvider @Inject()(
 )(
   implicit
   ec: ExecutionContext,
-  up: UserProvider,
-  upp: UserPermissionsProvider
+  userProvider: UserProvider,
+  userPermissionsProvider: UserPermissionsProvider
 ) extends HasDatabaseConfigProvider[JdbcProfile]
     with Logging {
 
@@ -108,28 +106,29 @@ class ProjectProvider @Inject()(
     description: String                                  = "",
     overrideConfiguration: Option[ProjectsConfiguration] = None
   ): Future[Project] = {
-    val actions = upp.table.filter(_.userID === userID).result.headOption flatMap {
+    val actions = userPermissionsProvider.table.filter(_.userID === userID).result.headOption flatMap {
         case Some(permissions) =>
-          val config    = overrideConfiguration.getOrElse(configuration)
-          val projectID = UUID.randomUUID()
-          val maxSamplesCount = config.maxSamplesCount match {
-            case 0 => permissions.maxSamplesCount
-            case _ => config.maxSamplesCount
+          projects.filter(_.ownerID === userID).length.result flatMap { usersProjectsCount =>
+            if (usersProjectsCount < permissions.maxProjectsCount) {
+              val config    = overrideConfiguration.getOrElse(configuration)
+              val projectID = UUID.randomUUID()
+              val project = Project(
+                uuid        = projectID,
+                name        = name,
+                description = description,
+                ownerID     = userID,
+                folder      = s"${config.storagePath}/$projectID",
+                isDangling  = false
+              )
+              (projects += project) flatMap {
+                case 0 => DBIO.failed(InternalServerErrorException("Cannot create Project instance in database", "Database error"))
+                case _ => DBIO.successful(project)
+              }
+            } else {
+              DBIO.failed(BadRequestException("Cannot create Project instance in database", "Too many projects"))
+            }
           }
-          val project = Project(
-            uuid            = projectID,
-            name            = name,
-            description     = description,
-            ownerID         = userID,
-            folder          = s"${config.storagePath}/$projectID",
-            maxSamplesCount = maxSamplesCount,
-            isDangling      = false
-          )
-          (projects += project) flatMap {
-            case 0 => DBIO.failed(InternalServerErrorException("Cannot create Project instance in database: Database error"))
-            case _ => DBIO.successful(project)
-          }
-        case None => DBIO.failed(BadRequestException("Cannot create Project instance in database: User does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot create Project instance in database", "User does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { project =>
@@ -143,7 +142,7 @@ class ProjectProvider @Inject()(
         case _ =>
           projects.filter(_.uuid === projectID).result.headOption flatMap {
             case Some(project) => DBIO.successful(project)
-            case None          => DBIO.failed(InternalServerErrorException("Cannot update Project instance in database: Database error"))
+            case None          => DBIO.failed(InternalServerErrorException("Cannot update Project instance in database", "Database error"))
           }
       }
 
@@ -156,10 +155,10 @@ class ProjectProvider @Inject()(
     val actions = projects.filter(_.uuid === uuid).result.headOption flatMap {
         case Some(project) =>
           projects.filter(_.uuid === uuid).delete flatMap {
-            case 0 => DBIO.failed(InternalServerErrorException("Cannot delete Project instance in database: Database error"))
+            case 0 => DBIO.failed(InternalServerErrorException("Cannot delete Project instance in database", "Database error"))
             case _ => DBIO.successful(project)
           }
-        case None => DBIO.failed(BadRequestException("Cannot delete Project instance in database: Project does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot delete Project instance in database", "Project does not exist"))
       }
 
     db.run(actions.transactionally) onSuccessSideEffect { project =>

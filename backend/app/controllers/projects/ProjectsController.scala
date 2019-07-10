@@ -6,7 +6,7 @@ import controllers.projects.dto._
 import controllers.{ControllerHelpers, WithRecoverAction}
 import models.project.{ProjectLinkDTO, ProjectLinkProvider, ProjectProvider}
 import models.user.{UserPermissionsProvider, UserProvider}
-import org.slf4j.{Logger, LoggerFactory}
+import play.api.Logging
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.libs.json.{JsValue, Reads}
 import play.api.mvc._
@@ -17,13 +17,13 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ProjectsController @Inject()(cc: ControllerComponents, session: SessionRequestAction, messagesAPI: MessagesApi)(
   implicit ec: ExecutionContext,
-  up: UserProvider,
-  upp: UserPermissionsProvider,
-  pp: ProjectProvider,
-  plp: ProjectLinkProvider
-) extends AbstractController(cc) {
+  userProvider: UserProvider,
+  userPermissionsProvider: UserPermissionsProvider,
+  projectsProvider: ProjectProvider,
+  projectsLinkProvider: ProjectLinkProvider
+) extends AbstractController(cc)
+    with Logging {
 
-  implicit final private val logger: Logger     = LoggerFactory.getLogger(this.getClass)
   implicit final private val messages: Messages = messagesAPI.preferred(Seq(Lang.defaultLang))
 
   private def projectsAction[A](bodyParser: BodyParser[A])(block: SessionRequest[A] => Future[Result]) =
@@ -40,34 +40,24 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
   }
 
   def list: Action[Unit] = projectsAction(parse.empty) { implicit request =>
-    plp.findForUserWithProject(request.userID.get).map { projects =>
-      Ok(ServerResponse(ProjectsListResponse(projects.map(lwp => ProjectLinkDTO.from(lwp._1, lwp._2)))))
+    projectsLinkProvider.findForUserWithProject(request.userID.get).map { projects =>
+      Ok(ServerResponse(ProjectsListResponse(projects.map(lwp => ProjectLinkDTO.from(lwp)))))
     }
   }
 
   def create: Action[JsValue] = projectsActionWithValidate[ProjectsCreateRequest]() { (request, create) =>
-    upp.findForUser(request.userID.get) flatMap {
-      case Some(permissions) =>
-        pp.findForOwner(request.userID.get) flatMap { projects =>
-          if (projects.length >= permissions.maxProjectsCount) {
-            Future(BadRequest(ServerResponseError("Too many projects")))
-          } else {
-            pp.create(request.userID.get, create.name, create.description) flatMap { project =>
-              plp.create(request.userID.get, project.uuid).map { link =>
-                Ok(ServerResponse(ProjectsCreateResponse(ProjectLinkDTO.from(link, project))))
-              }
-            }
-          }
-        }
-      case None => Future(BadRequest(ServerResponseError("User does not exist")))
+    projectsProvider.create(request.userID.get, create.name, create.description) flatMap { project =>
+      projectsLinkProvider.create(request.userID.get, project.uuid).map { link =>
+        Ok(ServerResponse(ProjectsCreateResponse(ProjectLinkDTO.from(link, project))))
+      }
     }
   }
 
   def update: Action[JsValue] = projectsActionWithValidate[ProjectsUpdateRequest]() { (request, update) =>
-    plp.get(update.uuid) flatMap {
+    projectsLinkProvider.get(update.uuid) flatMap {
       case Some(link) =>
         if (link.userID == request.userID.get && link.isModificationAllowed) {
-          pp.update(link.projectID, update.name, update.description) map { project =>
+          projectsProvider.update(link.projectID, update.name, update.description) map { project =>
             Ok(ServerResponse(ProjectsUpdateResponse(ProjectLinkDTO.from(link, project))))
           }
         } else {
@@ -78,11 +68,11 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
   }
 
   def delete: Action[JsValue] = projectsActionWithValidate[ProjectsDeleteRequest]() { (request, delete) =>
-    plp.get(delete.uuid).flatMap {
+    projectsLinkProvider.get(delete.uuid).flatMap {
       case Some(link) =>
         if (link.userID == request.userID.get) {
           if (delete.force) {
-            plp.delete(link.uuid)
+            projectsLinkProvider.delete(link.uuid)
             Future(Ok(ServerResponse.EMPTY))
           } else {
             Future(NotImplemented(ServerResponseError("Scheduled delete not implemented yet")))

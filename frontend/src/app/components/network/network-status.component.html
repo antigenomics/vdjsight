@@ -1,6 +1,6 @@
 <ng-container *ngIf="(isOffline$ | async)">
     <div class="network-status-container" [@status]>
-        <div class="ui negative icon compact message">
+        <div class="ui negative icon message">
             <i class="wifi icon"></i>
             <div class="content">
                 <div class="header">
@@ -16,7 +16,7 @@
 <ng-container *ngIf="(guardInfo$ | async) as guard">
     <ng-container *ngIf="guard.active">
         <div class="network-guard-container" [@guard]>
-            <div class="ui info icon compact message">
+            <div class="ui info icon message">
                 <i class="notched circle loading icon"></i>
                 <div class="content">
                     <div class="header">

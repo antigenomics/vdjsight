@@ -1,5 +1,5 @@
 package server
 
-case class BadRequestException(message: String) extends Exception(message)
+case class BadRequestException(action: String, message: String) extends Throwable
 
-case class InternalServerErrorException(message: String) extends Exception(message)
+case class InternalServerErrorException(action: String, message: String) extends Throwable

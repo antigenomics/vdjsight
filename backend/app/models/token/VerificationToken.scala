@@ -60,14 +60,14 @@ object VerificationTokenConfiguration {
 
 case class VerificationToken(token: UUID, userID: UUID, expiredAt: Timestamp)
 
-class VerificationTokenTable(tag: Tag)(implicit up: UserProvider) extends Table[VerificationToken](tag, VerificationTokenTable.TABLE_NAME) {
+class VerificationTokenTable(tag: Tag)(implicit userProvider: UserProvider) extends Table[VerificationToken](tag, VerificationTokenTable.TABLE_NAME) {
   def token     = column[UUID]("token", O.PrimaryKey, O.SqlType("uuid"))
   def userID    = column[UUID]("user_id", O.SqlType("uuid"))
   def expiredAt = column[Timestamp]("expired_at")
 
   def * = (token, userID, expiredAt) <> (VerificationToken.tupled, VerificationToken.unapply)
 
-  def user = foreignKey("verification_token_table_user_fk", userID, up.table)(
+  def user = foreignKey("verification_token_table_user_fk", userID, userProvider.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Cascade
@@ -79,8 +79,8 @@ object VerificationTokenTable {
 
   implicit class VerificationTokenExtension[C[_]](q: Query[VerificationTokenTable, VerificationToken, C]) {
 
-    def withUser(implicit up: UserProvider): Query[(VerificationTokenTable, UserTable), (VerificationToken, User), C] = {
-      q.join(up.table).on(_.userID === _.uuid)
+    def withUser(implicit userProvider: UserProvider): Query[(VerificationTokenTable, UserTable), (VerificationToken, User), C] = {
+      q.join(userProvider.table).on(_.userID === _.uuid)
     }
   }
 }
@@ -102,7 +102,7 @@ class VerificationTokenProvider @Inject()(
 )(
   implicit
   ec: ExecutionContext,
-  up: UserProvider
+  userProvider: UserProvider
 ) extends HasDatabaseConfigProvider[JdbcProfile]
     with Logging {
 
@@ -137,7 +137,7 @@ class VerificationTokenProvider @Inject()(
   def getWithUser(token: UUID): Future[Option[(VerificationToken, User)]] = db.run(tokens.withUser.filter(_._1.token === token).result.headOption)
 
   def create(userID: UUID): Future[VerificationToken] = {
-    val actions = up.table.filter(_.uuid === userID).result.headOption flatMap {
+    val actions = userProvider.table.filter(_.uuid === userID).result.headOption flatMap {
         case Some(_) =>
           tokens.filter(_.userID === userID).result.headOption flatMap {
             case Some(token) => DBIO.successful(token)
@@ -149,13 +149,13 @@ class VerificationTokenProvider @Inject()(
                 expiredAt = TimeUtils.getExpiredAt(configuration.keep)
               )
               (tokens += token) flatMap {
-                case 0 => DBIO.failed(InternalServerErrorException("Cannot create VerificationToken instance in database: Database error"))
+                case 0 => DBIO.failed(InternalServerErrorException("Cannot create VerificationToken instance in database", "Database error"))
                 case _ =>
                   events.publish(VerificationTokenProviderEvents.TokenCreated(token, configuration))
                   DBIO.successful(token)
               }
           }
-        case None => DBIO.failed(BadRequestException("Cannot create VerificationToken instance in database: User does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot create VerificationToken instance in database", "User does not exist"))
       }
 
     db.run(actions.transactionally)
@@ -165,12 +165,12 @@ class VerificationTokenProvider @Inject()(
     val actions = tokens.filter(_.token === token).result.headOption flatMap {
         case Some(t) =>
           tokens.filter(_.token === token).delete flatMap {
-            case 0 => DBIO.failed(InternalServerErrorException("Cannot delete VerificationToken instance in database: Database error"))
+            case 0 => DBIO.failed(InternalServerErrorException("Cannot delete VerificationToken instance in database", "Database error"))
             case _ =>
               events.publish(VerificationTokenProviderEvents.TokenDeleted(t, configuration))
               DBIO.successful(true)
           }
-        case None => DBIO.failed(BadRequestException("Cannot delete VerificationToken instance in database: Token does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot delete VerificationToken instance in database", "Token does not exist"))
       }
 
     db.run(actions.transactionally)

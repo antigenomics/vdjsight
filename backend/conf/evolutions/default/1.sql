@@ -34,7 +34,6 @@ create table "project"
     description       text         not null,
     owner_id          uuid         not null,
     folder            text         not null,
-    max_samples_count bigint       not null,
     is_dangling       boolean      not null,
     foreign key (owner_id) references "user" (uuid) on update cascade on delete restrict
 );

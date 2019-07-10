@@ -9,7 +9,6 @@ case class ProjectLinkDTO(
   uuid: UUID,
   name: String,
   description: String,
-  maxSamplesCount: Long,
   isShared: Boolean,
   isUploadAllowed: Boolean,
   isDeleteAllowed: Boolean,
@@ -26,7 +25,6 @@ object ProjectLinkDTO {
       uuid                  = link.uuid,
       name                  = project.name,
       description           = project.description,
-      maxSamplesCount       = project.maxSamplesCount,
       isShared              = link.isShared,
       isUploadAllowed       = link.isUploadAllowed,
       isDeleteAllowed       = link.isDeleteAllowed,
@@ -35,8 +33,8 @@ object ProjectLinkDTO {
     )
   }
 
-//  def apply(union: (ProjectLink, Project)): ProjectLinkDTO = {
-//    ProjectLinkDTO(union._1, union._2)
-//  }
+  def from(union: (ProjectLink, Project)): ProjectLinkDTO = {
+    ProjectLinkDTO.from(union._1, union._2)
+  }
 
 }

@@ -88,7 +88,7 @@ class UserProvider @Inject()(
 
   def create(login: String, email: String, password: String): Future[User] = {
     val actions = users.filter(u => u.login === login || u.email === email).result.headOption flatMap {
-        case Some(_) => DBIO.failed(BadRequestException("Cannot create User instance in database: User already exist"))
+        case Some(_) => DBIO.failed(BadRequestException("Cannot create User instance in database", "User already exist"))
         case None =>
           val uuid = UUID.randomUUID()
           val user = User(
@@ -99,7 +99,7 @@ class UserProvider @Inject()(
             password = SecureHash.createHash(password)
           )
           (users += user) flatMap {
-            case 0 => DBIO.failed(InternalServerErrorException("Cannot create User instance in database: Database error"))
+            case 0 => DBIO.failed(InternalServerErrorException("Cannot create User instance in database", "Database error"))
             case _ => DBIO.successful(user)
           }
       }
@@ -109,8 +109,8 @@ class UserProvider @Inject()(
     }
   }
 
-  def verify(tokenID: UUID)(implicit vtp: VerificationTokenProvider): Future[Boolean] = {
-    val actions = vtp.table.filter(_.token === tokenID).result.headOption flatMap {
+  def verify(tokenID: UUID)(implicit verificationTokenProvider: VerificationTokenProvider): Future[Boolean] = {
+    val actions = verificationTokenProvider.table.filter(_.token === tokenID).result.headOption flatMap {
         case Some(token) =>
           users.filter(_.uuid === token.userID).map(_.verified).update(true) map {
             case 0 => false
@@ -124,8 +124,8 @@ class UserProvider @Inject()(
     db.run(actions.transactionally)
   }
 
-  def reset(tokenID: UUID, password: String)(implicit rtp: ResetTokenProvider): Future[Boolean] = {
-    val actions = rtp.table.filter(_.token === tokenID).result.headOption flatMap {
+  def reset(tokenID: UUID, password: String)(implicit resetTokenProvider: ResetTokenProvider): Future[Boolean] = {
+    val actions = resetTokenProvider.table.filter(_.token === tokenID).result.headOption flatMap {
         case Some(token) =>
           users.filter(_.uuid === token.userID).map(u => (u.password, u.verified)).update((SecureHash.createHash(password), true)) map {
             case 0 => false
@@ -148,7 +148,7 @@ class UserProvider @Inject()(
               events.publish(UserProviderEvents.UserDeleted(user))
               true
           }
-        case None => DBIO.failed(BadRequestException("Cannot delete User instance in database: User does not exist"))
+        case None => DBIO.failed(BadRequestException("Cannot delete User instance in database", "User does not exist"))
       }
     db.run(actions.transactionally)
   }

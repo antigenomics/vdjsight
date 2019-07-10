@@ -64,27 +64,13 @@ class ProjectSpec extends BaseTestSpecWithDatabaseAndApplication with DatabasePr
     "be able to create new project" taggedAs ModelsTestTag in {
       val p = events.probe[ProjectProviderEvent]
       for {
-        created <- pp.create(users.verifiedUser.uuid, "name", "description", overrideConfiguration = Some(ProjectsConfiguration("path", 10)))
+        created <- pp.create(users.verifiedUser.uuid, "name", "description", overrideConfiguration = Some(ProjectsConfiguration("path")))
         _       <- Future(p.expectMsgType[ProjectProviderEvents.ProjectCreated])
         _       <- created.ownerID shouldEqual users.verifiedUser.uuid
         _       <- created.name shouldEqual "name"
         _       <- created.description shouldEqual "description"
         _       <- created.folder should include("path")
-        _       <- created.maxSamplesCount shouldEqual 10
         check   <- created.isDangling should be(false)
-      } yield check
-    }
-
-    "be able to create project with user permission by default" taggedAs ModelsTestTag in {
-      val p = events.probe[ProjectProviderEvent]
-      for {
-        created     <- pp.create(users.verifiedUser.uuid, overrideConfiguration = Some(ProjectsConfiguration("path", 0)))
-        _           <- Future(p.expectMsgType[ProjectProviderEvents.ProjectCreated])
-        _           <- created.ownerID shouldEqual users.verifiedUser.uuid
-        _           <- created.folder should include("path")
-        permissions <- upp.findForUser(users.verifiedUser.uuid)
-        _           <- permissions should not be empty
-        check       <- created.maxSamplesCount shouldEqual permissions.get.maxSamplesCount
       } yield check
     }
 
