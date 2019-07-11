@@ -7,6 +7,9 @@ const uploadsReducer = createReducer(
   __fromDashboardProjectUploadsState.initial,
   on(ProjectUploadsActions.add, (state, { projectLinkUUID }) => {
     return UploadsStateAdapter.addOne(CreateEmptyUploadEntity(projectLinkUUID), state);
+  }),
+  on(ProjectUploadsActions.remove, (state, { entity }) => {
+    return UploadsStateAdapter.removeOne(entity.id, state);
   })
 );
 

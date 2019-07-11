@@ -12,13 +12,8 @@
         <div class="ui tiny teal button" (click)="add()">Add file(s)</div>
     </div>
     <ng-container *ngIf="currentProjectUploads$ | async as uploads">
-        <div class="ui uploads segment" *ngIf="uploads.length !== 0; else emptyUploads">
-            <div class="upload item" *ngFor="let upload of uploads; trackBy: uploadEntityTrackBy; let isLast = last" [ngClass]="{ 'last': isLast }">
-                <vs-upload [upload]="upload"></vs-upload>
-            </div>
-        </div>
-        <ng-template #emptyUploads>
-            <div class="ui placeholder segment">
+        <ng-container *ngIf="uploads.length === 0">
+            <div class="ui placeholder empty segment" @empty>
                 <div class="ui icon header">
                     <i class="file alternate outline icon"></i>
                     <div class="content">
@@ -27,6 +22,13 @@
                     </div>
                 </div>
             </div>
-        </ng-template>
+        </ng-container>
+        <ng-container *ngIf="uploads.length !== 0">
+            <div class="ui uploads segment" [@uploads]="uploads.length">
+                <div class="upload item" *ngFor="let upload of uploads; trackBy: uploadEntityTrackBy; let isLast = last" [ngClass]="{ 'last': isLast }">
+                    <vs-upload [upload]="upload" (onRemove)="remove(upload)"></vs-upload>
+                </div>
+            </div>
+        </ng-container>
     </ng-container>
 </div>

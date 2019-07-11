@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 
 @Component({
@@ -10,4 +10,7 @@ import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models
 export class UploadComponent {
   @Input()
   public upload: UploadEntity;
+
+  @Output()
+  public onRemove = new EventEmitter();
 }
