@@ -1,5 +1,5 @@
 import { EntityStatus } from 'utils/enitity/entity';
-import { IncrementalGlobalUUID } from 'utils/uuid/incremental-global-uuid';
+import { IncrementalUUIDGenerator } from 'utils/uuid/incremental-uuid-generator';
 
 export interface ProjectLink {
   readonly uuid: string;
@@ -19,9 +19,11 @@ export interface ProjectEntity {
   readonly link?: ProjectLink;
 }
 
+const ProjectListEntitiesLocalUUIDGenerator = new IncrementalUUIDGenerator();
+
 export function CreateEmptyProjectEntity(): ProjectEntity {
   return {
-    id:       IncrementalGlobalUUID.next(),
+    id:       ProjectListEntitiesLocalUUIDGenerator.next(),
     updating: { active: false },
     deleting: { active: false },
     creating: { active: true }
@@ -30,7 +32,7 @@ export function CreateEmptyProjectEntity(): ProjectEntity {
 
 export function CreateProjectEntityFromLink(link: ProjectLink): ProjectEntity {
   return {
-    id:       IncrementalGlobalUUID.next(),
+    id:       ProjectListEntitiesLocalUUIDGenerator.next(),
     updating: { active: false },
     deleting: { active: false },
     creating: { active: false },

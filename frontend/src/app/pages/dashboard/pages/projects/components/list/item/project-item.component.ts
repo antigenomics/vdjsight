@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnChanges, Output } from '@angular/core';
 import { FlickerAnimation } from 'animations/flicker.animation';
-import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
+import { ProjectEntity } from 'pages/dashboard/pages/projects/models/projects/projects';
 import { ContentAnimation, ProjectAnimation, ProjectSmoothHeightAnimation } from 'pages/dashboard/pages/projects/components/list/item/project-item.animation';
 
 type ProjectItemState = 'nothing' | 'highlight' | 'selected' | 'deleting' | 'updating';

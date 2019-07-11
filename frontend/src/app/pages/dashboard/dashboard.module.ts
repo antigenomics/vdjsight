@@ -1,20 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { EffectsModule } from '@ngrx/effects';
-import { StoreModule } from '@ngrx/store';
 import { DashboardPageComponent } from 'pages/dashboard/dashboard.component';
-import { DashboardModuleReducers } from 'pages/dashboard/models/dashboard.state';
-import { ProjectsEffects } from 'pages/dashboard/models/projects/projects.effects';
-import { ProjectsComponent } from 'pages/dashboard/pages/projects/projects.component';
-import { ProjectsModule } from 'pages/dashboard/pages/projects/projects.module';
-import { ProjectsService } from 'pages/dashboard/services/projects.service';
+import { ProjectsService } from 'pages/dashboard/services/projects/projects.service';
+import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
 
-const ProjectsRouting = RouterModule.forChild([
+const DashboardRouting = RouterModule.forChild([
   {
     path:     '', component: DashboardPageComponent,
     children: [
-      { path: 'projects', component: ProjectsComponent },
+      { path: 'projects', loadChildren: () => import('./pages/projects/projects.module').then((m) => m.ProjectsModule) },
       { path: 'p', loadChildren: () => import('./pages/project/project.module').then((m) => m.ProjectModule) },
       { path: '', redirectTo: 'projects', pathMatch: 'full' }
     ]
@@ -22,13 +17,8 @@ const ProjectsRouting = RouterModule.forChild([
 ]);
 
 @NgModule({
-  imports:      [
-    CommonModule, ProjectsRouting,
-    StoreModule.forFeature('dashboard', DashboardModuleReducers),
-    EffectsModule.forFeature([ ProjectsEffects ]),
-    ProjectsModule
-  ],
+  imports:      [ CommonModule, DashboardRouting ],
   declarations: [ DashboardPageComponent ],
-  providers:    [ ProjectsService ]
+  providers:    [ ProjectsService, SampleFilesService ]
 })
 export class DashboardModule {}

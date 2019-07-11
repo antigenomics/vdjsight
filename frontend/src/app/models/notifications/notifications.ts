@@ -1,4 +1,4 @@
-import { IncrementalGlobalUUID } from 'utils/uuid/incremental-global-uuid';
+import { IncrementalUUIDGenerator } from 'utils/uuid/incremental-uuid-generator';
 
 export const enum NotificationType {
   INFO    = 'info',
@@ -25,6 +25,8 @@ export interface NotificationEntity {
   scheduledId?: number;
 }
 
+const NotificationsLocalUUIDGenerator = new IncrementalUUIDGenerator();
+
 export function CreateNotificationEntity(title: string,
                                          content: string,
                                          opts?: Partial<NotificationEntityOptions>) {
@@ -36,7 +38,7 @@ export function CreateNotificationEntity(title: string,
   };
 
   return {
-    id:        IncrementalGlobalUUID.next(),
+    id:        NotificationsLocalUUIDGenerator.next(),
     title:     title,
     content:   content,
     options:   options,

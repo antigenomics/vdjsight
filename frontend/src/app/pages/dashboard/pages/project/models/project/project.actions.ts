@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ProjectLink } from 'pages/dashboard/models/projects/projects';
+import { ProjectLink } from 'pages/dashboard/pages/projects/models/projects/projects';
 import { BackendErrorResponse } from 'services/backend/backend-response';
 
 export namespace CurrentProjectActions {

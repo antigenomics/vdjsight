@@ -1,0 +1,22 @@
+<div class="ui raised segments">
+    <div class="ui segment" *ngIf="projectInfo$ | async as projectInfo">
+        <h4 class="ui header">
+            <i class="project diagram icon"></i>
+            <div class="content">
+                {{ projectInfo.name }}
+                <div class="sub header">{{ projectInfo.description }}</div>
+            </div>
+        </h4>
+    </div>
+    <div class="ui blue segment">
+        <p>
+            Click Upload new samples button to import files.
+            Once uploaded, files will appear at the sidebar and you can proceed with browsing and analysis.
+        </p>
+        <p>
+            You can then click on each file to browse clonotype table, sample clonality,
+            spectratype and Variable/Joining segment usage. Analysis modes available
+            for multiple samples are shown at the sidebar.
+        </p>
+    </div>
+</div>

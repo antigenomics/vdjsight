@@ -8,7 +8,9 @@
         </div>
         <ng-container *ngIf="samples$ | async as samples">
             <ng-container *ngIf="samples.length !== 0; else emptyList">
-                
+                <div class="item" *ngFor="let sample of samples; trackBy: sampleFileTrackBy">
+                    {{ sample | json }}
+                </div>
             </ng-container>
             <ng-template #emptyList>
                 <div class="item">

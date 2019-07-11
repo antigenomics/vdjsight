@@ -4,8 +4,8 @@ import { select, Store } from '@ngrx/store';
 import { ApplicationActions } from 'models/application/application.actions';
 import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
-import { ProjectsService } from 'pages/dashboard/services/projects.service';
-import { catchError, filter, map, mergeMap, withLatestFrom } from 'rxjs/operators';
+import { ProjectsService } from 'pages/dashboard/services/projects/projects.service';
+import { catchError, filter, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
 import { withNotification } from 'utils/effects/effects-helper';
 
@@ -14,8 +14,10 @@ export class ProjectEffects {
 
   public select$ = createEffect(() => this.actions$.pipe(
     ofType(CurrentProjectActions.select),
-    map(({ projectLinkUUID }) => CurrentProjectActions.load({ projectLinkUUID }))
-  ));
+    tap(({ projectLinkUUID }) => {
+      this.store.dispatch(CurrentProjectActions.load({ projectLinkUUID }));
+    })
+  ), { dispatch: false });
 
   public load$ = createEffect(() => this.actions$.pipe(
     ofType(CurrentProjectActions.load),
@@ -29,9 +31,8 @@ export class ProjectEffects {
   public loadStart = createEffect(() => this.actions$.pipe(
     ofType(CurrentProjectActions.loadStart),
     mergeMap(({ projectLinkUUID }) => this.projects.info(projectLinkUUID).pipe(
-      mergeMap((link) => this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID)).pipe(
-        map((currentProjectUUID) => projectLinkUUID === currentProjectUUID ? CurrentProjectActions.loadSuccess({ link }) : ApplicationActions.noop())
-      )),
+      withLatestFrom(this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID))),
+      map(([ link, currentProjectUUID ]) => currentProjectUUID === projectLinkUUID ? CurrentProjectActions.loadSuccess({ link }) : ApplicationActions.noop()),
       catchError((error) => this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID)).pipe(
         map((currentProjectUUID) => projectLinkUUID === currentProjectUUID ? CurrentProjectActions.loadFailed(error) : ApplicationActions.noop())
       ))

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ProjectLink } from 'pages/dashboard/models/projects/projects';
-import { ProjectsAPI } from 'pages/dashboard/services/projects-api';
+import { ProjectLink } from 'pages/dashboard/pages/projects/models/projects/projects';
+import { ProjectsAPI } from 'pages/dashboard/services/projects/projects-api';
 import { Observable } from 'rxjs';
 import { BackendMessageResponse } from 'services/backend/backend-response';
 import { BackendService } from 'services/backend/backend.service';

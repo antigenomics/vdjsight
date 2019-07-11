@@ -6,7 +6,7 @@ import { UserActions } from 'models/user/user.actions';
 import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
 import { SampleFilesActions } from 'pages/dashboard/pages/project/models/samples/samples.actions';
-import { SampleFilesService } from 'pages/dashboard/pages/project/services/sample-files.service';
+import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
 import { catchError, filter, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
 import { withNotification } from 'utils/effects/effects-helper';
@@ -27,10 +27,10 @@ export class SampleFilesEffects {
   public loadStart$ = createEffect(() => this.actions$.pipe(
     ofType(SampleFilesActions.loadStart),
     mergeMap(({ projectLinkUUID }) => this.samples.list(projectLinkUUID).pipe(
-      mergeMap((response) => this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID)).pipe(
-        map((currentProjectUUID) =>
-          projectLinkUUID === currentProjectUUID ? SampleFilesActions.loadSuccess({ samples: response.samples }) : ApplicationActions.noop())
-      )),
+      withLatestFrom(this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID))),
+      map(([ { samples }, currentProjectUUID ]) =>
+        currentProjectUUID === projectLinkUUID ? SampleFilesActions.loadSuccess({ samples }) : ApplicationActions.noop()
+      ),
       catchError((error) => this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID)).pipe(
         map((currentProjectUUID) => projectLinkUUID === currentProjectUUID ? SampleFilesActions.loadFailed(error) : ApplicationActions.noop())
       ))

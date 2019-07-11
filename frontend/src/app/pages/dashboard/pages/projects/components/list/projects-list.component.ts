@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
+import { ProjectEntity } from 'pages/dashboard/pages/projects/models/projects/projects';
 import { ProjectsListAnimation } from 'pages/dashboard/pages/projects/components/list/projects-list.animations';
 import { FadeInAnimation } from 'animations/fade-in.animation';
 

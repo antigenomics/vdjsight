@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { UserActions } from 'models/user/user.actions';
-import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
-import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
-import { ProjectsService } from 'pages/dashboard/services/projects.service';
+import { DashboardProjectsModuleState, fromDashboardProjects } from 'pages/dashboard/pages/projects/models/dashboard-projects.state';
+import { ProjectsActions } from 'pages/dashboard/pages/projects/models/projects/projects.actions';
+import { ProjectsService } from 'pages/dashboard/services/projects/projects.service';
 import { of } from 'rxjs';
 import { catchError, filter, map, mergeMap, withLatestFrom } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
@@ -16,8 +16,8 @@ export class ProjectsEffects {
   public load$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectsActions.load),
     withLatestFrom(
-      this.store.pipe(select(fromDashboard.isProjectsLoaded)),
-      this.store.pipe(select(fromDashboard.isProjectsLoading))
+      this.store.pipe(select(fromDashboardProjects.isProjectsLoaded)),
+      this.store.pipe(select(fromDashboardProjects.isProjectsLoading))
     ),
     filter(([ _, isLoaded, isLoading ]) => !isLoaded && !isLoading),
     map(() => ProjectsActions.loadStart())
@@ -75,7 +75,7 @@ export class ProjectsEffects {
   public deleteSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectsActions.forceDeleteSuccess),
     withLatestFrom(
-      this.store.pipe(select(fromDashboard.getSelectedProjectOption))
+      this.store.pipe(select(fromDashboardProjects.getSelectedProjectOption))
     ),
     filter(([ action, selected ]) => selected.isDefined && action.entityId === selected.get.id),
     map(() => ProjectsActions.clearProjectSelection())
@@ -86,7 +86,7 @@ export class ProjectsEffects {
     map(() => ProjectsActions.clear())
   ));
 
-  constructor(private readonly actions$: Actions, private readonly store: Store<DashboardModuleState>,
+  constructor(private readonly actions$: Actions, private readonly store: Store<DashboardProjectsModuleState>,
               private readonly projects: ProjectsService, private readonly notifications: NotificationsService) {}
 
 }

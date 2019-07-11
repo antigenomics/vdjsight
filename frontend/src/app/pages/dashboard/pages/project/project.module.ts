@@ -7,19 +7,19 @@ import { SidebarModule } from 'pages/dashboard/pages/project/components/sidebar/
 import { DashboardProjectModuleReducers } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { ProjectEffects } from 'pages/dashboard/pages/project/models/project/project.effects';
 import { SampleFilesEffects } from 'pages/dashboard/pages/project/models/samples/samples.effects';
-import { ProjectResultsComponent } from 'pages/dashboard/pages/project/pages/results/results.component';
-import { ProjectResultsModule } from 'pages/dashboard/pages/project/pages/results/results.module';
-import { ProjectUploadComponent } from 'pages/dashboard/pages/project/pages/upload/upload.component';
-import { ProjectUploadModule } from 'pages/dashboard/pages/project/pages/upload/upload.module';
+import { ProjectHomeComponent } from 'pages/dashboard/pages/project/pages/home/home.component';
+import { ProjectHomeModule } from 'pages/dashboard/pages/project/pages/home/home.module';
 import { ProjectComponent } from 'pages/dashboard/pages/project/project.component';
-import { SampleFilesService } from 'pages/dashboard/pages/project/services/sample-files.service';
 
 const ProjectRouting = RouterModule.forChild([
   {
     path:     ':uuid', component: ProjectComponent,
     children: [
-      { path: '', component: ProjectResultsComponent },
-      { path: 'upload', component: ProjectUploadComponent }
+      { path: '', component: ProjectHomeComponent },
+      {
+        path:         'upload',
+        loadChildren: () => import('pages/dashboard/pages/project/pages/uploads/uploads.module').then((m) => m.ProjectUploadsModule)
+      }
     ]
   }
 ]);
@@ -29,10 +29,9 @@ const ProjectRouting = RouterModule.forChild([
     CommonModule, ProjectRouting,
     StoreModule.forFeature('project', DashboardProjectModuleReducers),
     EffectsModule.forFeature([ ProjectEffects, SampleFilesEffects ]),
-    SidebarModule, ProjectResultsModule, ProjectUploadModule
+    SidebarModule, ProjectHomeModule
   ],
   declarations: [ ProjectComponent ],
-  exports:      [ ProjectComponent ],
-  providers:    [ SampleFilesService ]
+  exports:      [ ProjectComponent ]
 })
 export class ProjectModule {}

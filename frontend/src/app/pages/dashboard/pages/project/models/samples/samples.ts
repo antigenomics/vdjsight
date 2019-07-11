@@ -1,5 +1,5 @@
 import { EntityStatus } from 'utils/enitity/entity';
-import { IncrementalGlobalUUID } from 'utils/uuid/incremental-global-uuid';
+import { IncrementalUUIDGenerator } from 'utils/uuid/incremental-uuid-generator';
 
 export interface SampleFileLink {
   readonly uuid: string;
@@ -19,9 +19,11 @@ export interface SampleFileEntity {
   readonly link?: SampleFileLink;
 }
 
+const SampleFileEntitiesLocalUUIDGenerator = new IncrementalUUIDGenerator();
+
 export function CreateEmptySampleFileEntity(): SampleFileEntity {
   return {
-    id:       IncrementalGlobalUUID.next(),
+    id:       SampleFileEntitiesLocalUUIDGenerator.next(),
     updating: { active: false },
     deleting: { active: false },
     creating: { active: true }
@@ -30,7 +32,7 @@ export function CreateEmptySampleFileEntity(): SampleFileEntity {
 
 export function CreateSampleFileEntityFromLink(link: SampleFileLink) {
   return {
-    id:       IncrementalGlobalUUID.next(),
+    id:       SampleFileEntitiesLocalUUIDGenerator.next(),
     updating: { active: false },
     deleting: { active: false },
     creating: { active: false },

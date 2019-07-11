@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { DashboardModuleState } from 'pages/dashboard/models/dashboard.state';
+import { RootModuleState } from 'models/root';
 import { __fromCurrentProjectReducers } from 'pages/dashboard/pages/project/models/project/project.reducers';
 import { __DashboardCurrentProjectState, __fromDashboardCurrentProjectState } from 'pages/dashboard/pages/project/models/project/project.state';
 import { __fromSampleFilesReducers } from 'pages/dashboard/pages/project/models/samples/samples.reducers';
@@ -15,7 +15,7 @@ export const DashboardProjectModuleReducers = {
   samples: __fromSampleFilesReducers.reducer
 };
 
-export interface DashboardProjectModuleState extends DashboardModuleState {
+export interface DashboardProjectModuleState extends RootModuleState {
   project: __DashboardProjectState;
 }
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SampleFilesAPI } from 'pages/dashboard/pages/project/services/sample-files-api';
+import { SampleFilesAPI } from 'pages/dashboard/services/sample_files/sample-files-api';
 import { Observable } from 'rxjs';
 import { BackendService } from 'services/backend/backend.service';
 

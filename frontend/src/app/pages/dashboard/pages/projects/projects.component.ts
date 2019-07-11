@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { SmoothHeightAnimation } from 'directives/smooth_height/smooth-height.animation';
-import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
-import { CreateEmptyProjectEntity, ProjectEntity } from 'pages/dashboard/models/projects/projects';
-import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
+import { DashboardProjectsModuleState, fromDashboardProjects } from 'pages/dashboard/pages/projects/models/dashboard-projects.state';
+import { CreateEmptyProjectEntity, ProjectEntity } from 'pages/dashboard/pages/projects/models/projects/projects';
+import { ProjectsActions } from 'pages/dashboard/pages/projects/models/projects/projects.actions';
 import { ProjectsFooterAnimation } from 'pages/dashboard/pages/projects/projects.animations';
 
 @Component({
@@ -15,13 +15,13 @@ import { ProjectsFooterAnimation } from 'pages/dashboard/pages/projects/projects
 })
 export class ProjectsComponent implements OnInit {
 
-  public readonly isLoading    = this.store.pipe(select(fromDashboard.isProjectsLoading));
-  public readonly isLoaded     = this.store.pipe(select(fromDashboard.isProjectsLoaded));
-  public readonly isLoadFailed = this.store.pipe(select(fromDashboard.isProjectsLoadFailed));
-  public readonly projects$    = this.store.pipe(select(fromDashboard.getAllProjects));
-  public readonly selected$    = this.store.pipe(select(fromDashboard.getSelectedProjectOption));
+  public readonly isLoading    = this.store.pipe(select(fromDashboardProjects.isProjectsLoading));
+  public readonly isLoaded     = this.store.pipe(select(fromDashboardProjects.isProjectsLoaded));
+  public readonly isLoadFailed = this.store.pipe(select(fromDashboardProjects.isProjectsLoadFailed));
+  public readonly projects$    = this.store.pipe(select(fromDashboardProjects.getAllProjects));
+  public readonly selected$    = this.store.pipe(select(fromDashboardProjects.getSelectedProjectOption));
 
-  constructor(private readonly store: Store<DashboardModuleState>) {}
+  constructor(private readonly store: Store<DashboardProjectsModuleState>) {}
 
   public ngOnInit(): void {
     this.store.dispatch(ProjectsActions.load());
