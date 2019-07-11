@@ -121,7 +121,7 @@ class SampleFileProvider @Inject()(
     hash: String,
     overrideConfiguration: Option[SampleFilesConfiguration] = None
   ): Future[SampleFile] = {
-    val actions = userPermissionsProvider.table.filter(_.uuid === userID).result.headOption flatMap {
+    val actions = userPermissionsProvider.table.filter(_.userID === userID).result.headOption flatMap {
         case Some(permissions) =>
           samples.filter(_.ownerID === userID).length.result flatMap { usersSamplesCount =>
             if (usersSamplesCount >= permissions.maxSamplesCount) {

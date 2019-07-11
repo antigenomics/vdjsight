@@ -27,7 +27,7 @@ trait DatabaseSampleFiles extends Matchers with OptionValues with DatabaseProvid
     val sampleEventProbe = events.probe[SampleFileProviderEvent]
     val name             = "existing-sample-file"
     val software         = "vdjtools"
-    val sample           = Await.result(sfp.create(user.uuid, name, software), Duration.Inf)
+    val sample           = Await.result(sfp.create(user.uuid, name, software, 1, "h"), Duration.Inf)
 
     sampleEventProbe.expectMsgType[SampleFileProviderEvents.SampleFileCreated]
 
