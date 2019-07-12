@@ -43,7 +43,7 @@ const lengthReducer = (prev, file, key) => {
     return prev > length ? prev : length;
 };
 
-const rowDelimeterLengths = {
+const rowDelimiterLengths = {
     name: bundleFiles.reduce((prev, file) => lengthReducer(prev, file, 'name'), 0),
     size: bundleFiles.reduce((prev, file) => lengthReducer(prev, file, 'size'), 0),
     compressed: bundleFiles.reduce((prev, file) => lengthReducer(prev, file, 'compressed'), 0),
@@ -51,10 +51,10 @@ const rowDelimeterLengths = {
 };
 
 const createFillerRow = (delimiter) => ({
-    Name: ''.padStart(rowDelimeterLengths.name, delimiter),
-    Size: ''.padStart(rowDelimeterLengths.size, delimiter),
-    Compressed: ''.padStart(rowDelimeterLengths.compressed, delimiter),
-    Type: ''.padStart(rowDelimeterLengths.type, delimiter)
+    Name: ''.padStart(rowDelimiterLengths.name, delimiter),
+    Size: ''.padStart(rowDelimiterLengths.size, delimiter),
+    Compressed: ''.padStart(rowDelimiterLengths.compressed, delimiter),
+    Type: ''.padStart(rowDelimiterLengths.type, delimiter)
 });
 
 const fillerRows = {
@@ -62,7 +62,7 @@ const fillerRows = {
     dashed: createFillerRow('-')
 };
 
-const memorySizePrettifier = (size, key) => size.toFixed(2).padStart(rowDelimeterLengths[key] - 3) + ' KB';
+const memorySizePrettified = (size, key) => size.toFixed(2).padStart(rowDelimiterLengths[key] - 3) + ' KB';
 
 const rows = [];
 types.forEach((type) => {
@@ -71,8 +71,8 @@ types.forEach((type) => {
         typeFilteredFiles.sort((a, b) => a.size < b.size).forEach((file) => {
             rows.push({
                 Name: file.name,
-                Size: memorySizePrettifier(file.size, 'size'),
-                Compressed: memorySizePrettifier(file.compressed, 'compressed'),
+                Size: memorySizePrettified(file.size, 'size'),
+                Compressed: memorySizePrettified(file.compressed, 'compressed'),
                 Type: file.type.name
             })
         });
@@ -89,8 +89,8 @@ function appendStatisticsRows(statistics) {
         const compressed = filtered.reduce((prev, file) => prev + file.compressed, 0);
         rows.push({
             'Name': statistic.name,
-            'Size': memorySizePrettifier(size, 'size'),
-            'Compressed': memorySizePrettifier(compressed, 'compressed')
+            'Size': memorySizePrettified(size, 'size'),
+            'Compressed': memorySizePrettified(compressed, 'compressed')
         })
     });
 }

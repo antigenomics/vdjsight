@@ -1,0 +1,4 @@
+<div class="ui fluid transparent left icon input" [ngClass]="{ 'error': name.length === 0 }">
+    <input type="text" placeholder="Enter sample file name here..." [ngModel]="name" debounced-input (debouncedValue)="onNameChange.emit($event)">
+    <i class="pen icon"></i>
+</div>

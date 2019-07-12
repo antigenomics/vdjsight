@@ -1,15 +1,11 @@
-import { IncrementalUUIDGenerator } from 'utils/uuid/incremental-uuid-generator';
-
 export interface UploadEntity {
   readonly id: number;
   readonly projectLinkUUID: string;
-}
-
-const UploadEntitiesLocalUUIDGenerator = new IncrementalUUIDGenerator();
-
-export function CreateEmptyUploadEntity(projectLinkUUID: string): UploadEntity {
-  return {
-    id:              UploadEntitiesLocalUUIDGenerator.next(),
-    projectLinkUUID: projectLinkUUID
-  };
+  readonly name: string;
+  readonly software: string;
+  readonly size: number;
+  readonly ready: boolean;
+  readonly uploading: boolean;
+  readonly uploaded: boolean;
+  readonly hash?: string;
 }

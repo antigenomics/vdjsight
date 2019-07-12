@@ -13,4 +13,7 @@ export class UploadComponent {
 
   @Output()
   public onRemove = new EventEmitter();
+
+  @Output()
+  public onNameChange = new EventEmitter<string>();
 }

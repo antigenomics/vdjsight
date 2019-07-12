@@ -4,8 +4,10 @@ import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashb
 import { DashboardProjectUploadModuleState, fromDashboardProjectUploads } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 import { ProjectUploadsActions } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.actions';
+import { FilesDialogService } from 'pages/dashboard/pages/project/pages/uploads/services/files-dialog.service';
+import { FilesUploaderService } from 'pages/dashboard/pages/project/pages/uploads/services/files-uploader.service';
 import { EmptyListNoteAnimation, UploadsListAnimation } from 'pages/dashboard/pages/project/pages/uploads/uploads.animations';
-import { mergeMap, take } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 
 @Component({
   selector:        'vs-uploads',
@@ -15,6 +17,7 @@ import { mergeMap, take } from 'rxjs/operators';
   animations:      [ UploadsListAnimation, EmptyListNoteAnimation ]
 })
 export class ProjectUploadsComponent {
+
   public readonly currentProjectUploads$ = this.store.pipe(
     select(fromDashboardProject.getCurrentProjectUUID),
     mergeMap((currentProjectUUID) => this.store.pipe(
@@ -22,17 +25,27 @@ export class ProjectUploadsComponent {
     )
   );
 
-
-  constructor(private readonly store: Store<DashboardProjectUploadModuleState>) {}
+  constructor(private readonly store: Store<DashboardProjectUploadModuleState>,
+              private readonly files: FilesDialogService, private readonly uploader: FilesUploaderService) {}
 
   public add(): void {
-    this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), take(1)).subscribe((currentProjectUUID) => {
-      this.store.dispatch(ProjectUploadsActions.add({ projectLinkUUID: currentProjectUUID }));
+    this.files.process((files) => {
+      this.handleFiles(files);
     });
   }
 
+  public changeName(entity: UploadEntity, name: string): void {
+    this.store.dispatch(ProjectUploadsActions.changeName({ entityId: entity.id, name }));
+  }
+
   public remove(entity: UploadEntity): void {
-    this.store.dispatch(ProjectUploadsActions.remove({ entity }));
+    this.store.dispatch(ProjectUploadsActions.remove({ entityId: entity.id }));
+  }
+
+  public handleFiles(files: File[]): void {
+    files.forEach((file) => {
+      this.uploader.add(file);
+    });
   }
 
   public uploadEntityTrackBy(_: number, entity: UploadEntity): number {

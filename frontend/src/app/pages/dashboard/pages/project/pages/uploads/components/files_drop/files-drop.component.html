@@ -1,0 +1,19 @@
+<div class="drop-area" draggable="false" [@area]="state | async"
+     (dragover)="onDragEnterListener($event)"
+     (dragenter)="onDragEnterListener($event)"
+     (dragleave)="onDragLeaveListener($event)"
+     (drop)="onDropListener($event)">
+    <div class="centered">
+        <ng-content></ng-content>
+    </div>
+    <div class="helper" draggable="false" [@helper]="state | async">
+        <div class="centered">
+            <h2 class="ui center aligned icon header" style="height: 100%;">
+                <i class="arrow alternate circle down outline icon"></i>
+                <div class="content">Drop your files here</div>
+            </h2>
+        </div>
+    </div>
+</div>
+
+

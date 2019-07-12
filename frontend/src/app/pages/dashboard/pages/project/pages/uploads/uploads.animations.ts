@@ -3,13 +3,18 @@ import { animate, group, query, stagger, style, transition, trigger } from '@ang
 export const UploadsListAnimation = trigger('uploads', [
   transition('* <=> *', [
     query(':enter', [
-      style({ height: '*', opacity: 0, transform: 'translateX(25px)' }),
-      stagger('50ms', animate('400ms ease-in-out', style({ height: '*', opacity: 1, transform: 'translateX(0)' })))
+      style({ height: 0, opacity: 0, transform: 'translateX(25px)' }),
+      stagger('50ms',
+        group([
+          animate('200ms ease-in-out', style({ height: '*' })),
+          animate('400ms 200ms ease-in-out', style({ opacity: 1, transform: 'translateX(0)' }))
+        ])
+      )
     ], { optional: true }),
     query(':leave', [
       style({ height: '*', opacity: 1.0 }),
-      animate('250ms ease-in-out', style({ opacity: 0, transform: 'translateX(25px)' })),
-      animate('125ms ease-in-out', style({ height: 0 }))
+      animate('400ms ease-in-out', style({ opacity: 0, transform: 'translateX(25px)' })),
+      animate('200ms ease-in-out', style({ height: 0 }))
     ], { optional: true })
   ])
 ]);

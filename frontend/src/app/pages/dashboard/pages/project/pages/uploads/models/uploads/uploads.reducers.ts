@@ -1,17 +1,41 @@
 import { Action, createReducer, on } from '@ngrx/store';
-import { CreateEmptyUploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 import { ProjectUploadsActions } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.actions';
 import { __fromDashboardProjectUploadsState, __UploadsState, UploadsStateAdapter } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.state';
 
 const uploadsReducer = createReducer(
   __fromDashboardProjectUploadsState.initial,
-  on(ProjectUploadsActions.add, (state, { projectLinkUUID }) => {
-    return UploadsStateAdapter.addOne(CreateEmptyUploadEntity(projectLinkUUID), state);
+  on(ProjectUploadsActions.add, (state, { entityId, projectLinkUUID, name, size }) => {
+    return UploadsStateAdapter.addOne({
+      id:              entityId,
+      projectLinkUUID: projectLinkUUID,
+      name:            name,
+      size:            size,
+      software:        'VDJtools',
+      ready:           false,
+      uploading:       false,
+      uploaded:        false
+    }, state);
   }),
-  on(ProjectUploadsActions.remove, (state, { entity }) => {
-    return UploadsStateAdapter.removeOne(entity.id, state);
+  on(ProjectUploadsActions.setHash, (state, { entityId, hash }) => {
+    return UploadsStateAdapter.updateOne({
+        id:      entityId,
+        changes: { hash, ready: true }
+      }, state
+    );
+  }),
+  on(ProjectUploadsActions.changeName, (state, { entityId, name }) => {
+    return UploadsStateAdapter.updateOne({
+      id:      entityId,
+      changes: {
+        name: name
+      }
+    }, state);
+  }),
+  on(ProjectUploadsActions.remove, (state, { entityId }) => {
+    return UploadsStateAdapter.removeOne(entityId, state);
   })
 );
+
 
 export namespace __fromDashboardProjectUploadsReducers {
 

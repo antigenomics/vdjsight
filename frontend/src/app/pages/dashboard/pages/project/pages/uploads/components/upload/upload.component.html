@@ -1,4 +1,37 @@
 <div class="content">
-    {{ upload | json }}
-    <button class="ui button" (click)="onRemove.emit()">Remove</button>
+    <div class="ui grid">
+        <div class="four wide column">
+            <div class="centered">
+                <vs-upload-name [name]="upload.name" (onNameChange)="onNameChange.emit($event)"></vs-upload-name>
+            </div>
+        </div>
+        <div class="one wide column">
+            <div class="centered">
+                {{ upload.software }}
+            </div>
+        </div>
+        <div class="one wide column">
+            <div class="centered">
+                {{ upload.size | vsHumanReadableSize }}
+            </div>
+        </div>
+        <div class="seven wide column">
+            <div class="ui small progress centered">
+                <div class="bar"></div>
+            </div>
+        </div>
+        <div class="one wide column">
+            <div class="centered">
+                <ng-container *ngIf="upload.ready; else notReady">
+                    <div class="ui blue tiny button" [ngClass]="{ 'disabled': upload.name === '' }">Upload</div>
+                </ng-container>
+                <ng-template #notReady>
+                    <div class="ui active centered inline tiny loader"></div>
+                </ng-template>
+            </div>
+        </div>
+        <div class="one wide column">
+            <div class="ui orange tiny button" (click)="onRemove.emit()">Remove</div>
+        </div>
+    </div>
 </div>

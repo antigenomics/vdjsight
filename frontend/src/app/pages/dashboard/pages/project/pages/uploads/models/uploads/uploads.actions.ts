@@ -1,9 +1,10 @@
 import { createAction, props } from '@ngrx/store';
-import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 
 export namespace ProjectUploadsActions {
 
-  export const add    = createAction('[ProjectUploads] Add', props<{ projectLinkUUID: string }>());
-  export const remove = createAction('[ProjectUploads] Remove', props<{ entity: UploadEntity }>());
+  export const add        = createAction('[ProjectUploads] Add', props<{ entityId: number, projectLinkUUID: string, name: string, size: number }>());
+  export const setHash    = createAction('[ProjectUploads] Set Hash', props<{ entityId: number, hash: string }>());
+  export const changeName = createAction('[ProjectsUploads] Change Name', props<{ entityId: number, name: string }>());
+  export const remove     = createAction('[ProjectUploads] Remove', props<{ entityId: number }>());
 
 }
