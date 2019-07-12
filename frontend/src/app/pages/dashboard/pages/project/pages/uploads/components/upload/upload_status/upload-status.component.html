@@ -1,0 +1,8 @@
+<div class="ui small progress centered" *ngIf="errors.errors.length === 0; else showErrors">
+    <div class="bar"></div>
+</div>
+<ng-template #showErrors>
+    <div class="centered">
+        <p>{{ errors.errors[0] }}</p>
+    </div>
+</ng-template>
