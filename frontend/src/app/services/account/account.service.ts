@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UserDTO } from 'models/user/user';
+import { UserInfo } from 'models/user/user';
 import { Observable } from 'rxjs';
 import { BackendService } from '../backend/backend.service';
 
@@ -11,8 +11,8 @@ export class AccountService {
 
   constructor(private readonly backend: BackendService) {}
 
-  public info(): Observable<{ user: UserDTO }> {
-    return this.backend.get<void, { user: UserDTO }>(AccountService.InfoEndpoint);
+  public info(): Observable<{ user: UserInfo }> {
+    return this.backend.get<void, { user: UserInfo }>(AccountService.InfoEndpoint);
   }
 
 }

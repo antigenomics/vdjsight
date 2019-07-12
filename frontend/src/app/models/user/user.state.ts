@@ -1,10 +1,10 @@
-import { UserDTO } from 'models/user/user';
+import { UserInfo } from 'models/user/user';
 
 export interface __UserState { // tslint:disable-line:class-name
   readonly initialized: boolean;
   readonly initializeFailed: boolean;
   readonly loggedIn: boolean;
-  readonly user?: UserDTO;
+  readonly info?: UserInfo;
 }
 
 export namespace __fromUserState {
@@ -23,6 +23,6 @@ export namespace __fromUserState {
   export const isInitialized      = (state: __UserState) => state.initialized;
   export const isInitializeFailed = (state: __UserState) => state.initializeFailed;
   export const isLoggedIn         = (state: __UserState) => state.loggedIn;
-  export const getUser            = (state: __UserState) => state.user;
+  export const getUserInfo        = (state: __UserState) => state.info;
 
 }

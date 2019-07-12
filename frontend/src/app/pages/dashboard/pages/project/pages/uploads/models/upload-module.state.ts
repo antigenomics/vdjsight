@@ -31,6 +31,7 @@ export namespace fromDashboardProjectUploads {
   export const getUploadEntities    = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectEntities);
   export const getAllUploads        = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectAll);
   export const getUploadsCount      = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectTotal);
+  export const getUploadByID        = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectByID);
   export const getUploadsForProject = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectForProject);
 
   /** Uploads list errors selectors */

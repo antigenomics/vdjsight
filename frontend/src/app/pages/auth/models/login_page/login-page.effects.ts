@@ -24,7 +24,7 @@ export class LoginPageEffects {
     ofType(LoginPageActions.loginSuccess),
     mergeMap(() => this.account.info().pipe(
       switchMap((response) => [
-        UserActions.login({ user: response.user }),
+        UserActions.login({ info: response.user }),
         ApplicationActions.restoreLastSavedURL({ fallbackURL: '/' })
       ]),
       catchError(() => of(LoginPageActions.loginFailed({ error: 'Internal Server Error' })))

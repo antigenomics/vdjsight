@@ -118,7 +118,7 @@ class UserPermissionsProvider @Inject()(
 
   def get(uuid: UUID): Future[Option[UserPermissions]] = db.run(permissions.filter(_.uuid === uuid).result.headOption)
 
-  def findForUser(userID: UUID): Future[Option[UserPermissions]] = db.run(permissions.filter(_.userID === userID).result.headOption)
+  def findForUser(userID: UUID): Future[Option[(UserPermissions, User)]] = db.run(permissions.withUser.filter(_._1.userID === userID).result.headOption)
 
   def getWithUser(uuid: UUID): Future[Option[(UserPermissions, User)]] = db.run(permissions.withUser.filter(_._1.uuid === uuid).result.headOption)
 

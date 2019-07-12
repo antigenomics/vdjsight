@@ -17,6 +17,9 @@ export namespace __fromDashboardProjectUploadsState {
 
   export const { selectIds, selectEntities, selectAll, selectTotal } = UploadsStateAdapter.getSelectors();
 
+  export const selectByID = (state: __UploadsState, props: { id: number }) =>
+    selectAll(state).find((u) => u.id === props.id);
+
   export const selectForProject = (state: __UploadsState, props: { projectLinkUUID: string }) =>
     selectAll(state).filter((u) => u.projectLinkUUID === props.projectLinkUUID);
 
