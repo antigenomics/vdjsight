@@ -41,6 +41,7 @@ export class FilesDropComponent implements OnInit {
 
   public onDropListener($event: DragEvent): void {
     $event.preventDefault();
+    this.events.next(DropAreaStates.Inactive);
     this.onDrop.emit(Array.from($event.dataTransfer.files));
   }
 

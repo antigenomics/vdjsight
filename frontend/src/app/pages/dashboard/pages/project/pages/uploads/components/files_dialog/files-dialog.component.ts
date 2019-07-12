@@ -11,7 +11,7 @@ export class FilesDialogComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
 
   @Input()
-  public extensions: string;
+  public extensions: string[];
 
   @ViewChild('FileDialogHandlerForm', { static: true })
   public FileDialogHandlerForm: ElementRef;

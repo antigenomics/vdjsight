@@ -17,7 +17,9 @@ import { mergeMap } from 'rxjs/operators';
   animations:      [ UploadsListAnimation, EmptyListNoteAnimation ]
 })
 export class ProjectUploadsComponent {
+  public readonly extensions = FilesUploaderService.AvailableExtensions;
 
+  public readonly currentProjectInfo$    = this.store.pipe(select(fromDashboardProject.getCurrentProjectInfo));
   public readonly currentProjectUploads$ = this.store.pipe(
     select(fromDashboardProject.getCurrentProjectUUID),
     mergeMap((currentProjectUUID) => this.store.pipe(
@@ -35,7 +37,7 @@ export class ProjectUploadsComponent {
   }
 
   public changeName(entity: UploadEntity, name: string): void {
-    this.store.dispatch(ProjectUploadsActions.changeName({ entityId: entity.id, name }));
+    this.store.dispatch(ProjectUploadsActions.update({ entityId: entity.id, changes: { name } }));
   }
 
   public remove(entity: UploadEntity): void {

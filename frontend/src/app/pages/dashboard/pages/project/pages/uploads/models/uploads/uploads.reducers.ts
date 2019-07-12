@@ -16,20 +16,12 @@ const uploadsReducer = createReducer(
       uploaded:        false
     }, state);
   }),
-  on(ProjectUploadsActions.setHash, (state, { entityId, hash }) => {
+  on(ProjectUploadsActions.update, (state, { entityId, changes }) => {
     return UploadsStateAdapter.updateOne({
         id:      entityId,
-        changes: { hash, ready: true }
+        changes: changes
       }, state
     );
-  }),
-  on(ProjectUploadsActions.changeName, (state, { entityId, name }) => {
-    return UploadsStateAdapter.updateOne({
-      id:      entityId,
-      changes: {
-        name: name
-      }
-    }, state);
   }),
   on(ProjectUploadsActions.remove, (state, { entityId }) => {
     return UploadsStateAdapter.removeOne(entityId, state);

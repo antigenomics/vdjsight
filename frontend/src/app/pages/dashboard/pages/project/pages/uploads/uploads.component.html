@@ -8,30 +8,42 @@
             </div>
         </h2>
     </div>
-    <div class="ui segment">
-        <div class="ui tiny teal button" (click)="add()">Add file(s)</div>
-    </div>
-    <ng-container *ngIf="currentProjectUploads$ | async as uploads">
-        <ng-container *ngIf="uploads.length === 0">
-            <div vs-files-drop (onDrop)="handleFiles($event)" class="ui empty segment" @empty>
-                <div class="ui icon header">
-                    <i class="file alternate outline icon"></i>
-                    <div class="content">
-                        You can drag and drop your files here
-                    </div>
-                    <div class="sub content">
-                        Supported extensions: txt, gz
+    <ng-container *ngIf="(currentProjectInfo$ | async).isUploadAllowed; else uploadNotAllowed">
+        <div class="ui segment">
+            <div class="ui tiny teal button" (click)="add()">Add file(s)</div>
+        </div>
+        <ng-container *ngIf="currentProjectUploads$ | async as uploads">
+            <ng-container *ngIf="uploads.length === 0">
+                <div vs-files-drop (onDrop)="handleFiles($event)" class="ui empty segment" @empty>
+                    <div class="ui icon header">
+                        <i class="file alternate outline icon"></i>
+                        <div class="content">
+                            You can drag and drop your files here
+                        </div>
+                        <div class="sub content">
+                            Supported extensions: txt, gz
+                        </div>
                     </div>
                 </div>
-            </div>
-        </ng-container>
-        <ng-container *ngIf="uploads.length !== 0">
-            <div class="ui uploads segment" [@uploads]="uploads.length">
-                <div class="upload item" *ngFor="let upload of uploads; trackBy: uploadEntityTrackBy; let isLast = last" [ngClass]="{ 'last': isLast }">
-                    <vs-upload [upload]="upload" (onNameChange)="changeName(upload, $event)" (onRemove)="remove(upload)"></vs-upload>
+            </ng-container>
+            <ng-container *ngIf="uploads.length !== 0">
+                <div class="ui uploads segment" [@uploads]="uploads.length">
+                    <div class="upload item" *ngFor="let upload of uploads; trackBy: uploadEntityTrackBy; let isLast = last" [ngClass]="{ 'last': isLast }">
+                        <vs-upload [upload]="upload" (onNameChange)="changeName(upload, $event)" (onRemove)="remove(upload)"></vs-upload>
+                    </div>
                 </div>
-            </div>
+            </ng-container>
         </ng-container>
     </ng-container>
+    <ng-template #uploadNotAllowed>
+        <div class="ui placeholder segment">
+            <div class="ui icon header">
+                <i class="file alternate outline icon"></i>
+                <div class="content">
+                    You are not allowed to upload files in this project
+                </div>
+            </div>
+        </div>
+    </ng-template>
 </div>
-<vs-files-dialog></vs-files-dialog>
+<vs-files-dialog [extensions]="extensions"></vs-files-dialog>
