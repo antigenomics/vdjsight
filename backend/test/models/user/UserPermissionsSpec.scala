@@ -50,13 +50,14 @@ class UserPermissionsSpec extends BaseTestSpecWithDatabaseAndApplication with Da
 
     "be automatically created with user" taggedAs ModelsTestTag in {
       val p = events.probe[UserPermissionsProviderEvent]
-      val c   = users.notExistingUser.credentials
+      val c = users.notExistingUser.credentials
       for {
         newUser     <- up.create(c.login, c.email, c.password)
         _           <- Future(p.expectMsgType[UserPermissionsProviderEvents.UserPermissionsCreated])
         permissions <- upp.findForUser(newUser.uuid)
         _           <- permissions should not be empty
-        check       <- permissions.get.userID shouldEqual newUser.uuid
+        _           <- permissions.get._1.userID shouldEqual newUser.uuid
+        check       <- permissions.get._2.uuid shouldEqual newUser.uuid
       } yield check
     }
 
