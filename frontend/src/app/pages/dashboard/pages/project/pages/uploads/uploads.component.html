@@ -12,6 +12,16 @@
         <div class="ui segment">
             <div class="ui tiny teal button" (click)="add()">Add file(s)</div>
         </div>
+        <ng-container *ngIf="(errors$ | async) as errors">
+            <div class="ui segment" *ngIf="errors.length !== 0" @errors>
+                <vs-files-errors [errors]="errors"></vs-files-errors>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="(warnings$ | async) as warnings">
+            <div class="ui segment" *ngIf="warnings.length !== 0" @warnings>
+                <vs-files-warnings [warnings]="warnings"></vs-files-warnings>
+            </div>
+        </ng-container>
         <ng-container *ngIf="currentProjectUploads$ | async as uploads">
             <ng-container *ngIf="uploads.length === 0">
                 <div vs-files-drop (onDrop)="handleFiles($event)" class="ui empty segment" @empty>

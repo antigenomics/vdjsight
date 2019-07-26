@@ -9,5 +9,5 @@ import { UploadErrorEntity } from 'pages/dashboard/pages/project/pages/uploads/m
 })
 export class UploadStatusComponent {
   @Input()
-  public errors: UploadErrorEntity;
+  public error: UploadErrorEntity;
 }

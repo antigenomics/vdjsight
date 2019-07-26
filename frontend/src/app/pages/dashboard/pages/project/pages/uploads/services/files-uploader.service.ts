@@ -29,6 +29,7 @@ export class FilesUploaderService {
           entityId:        entityId,
           projectLinkUUID: currentProjectUUID,
           name:            FileUtils.eraseExtensions(file.name, FilesUploaderService.AvailableExtensions),
+          extension:       FileUtils.getLastExtension(file.name),
           size:            file.size
         }));
         this.hashFileReactiveWorker.next({ file }).subscribe(({ hash }) => {

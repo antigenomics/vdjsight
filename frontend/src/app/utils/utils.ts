@@ -10,4 +10,21 @@ export namespace FileUtils {
     return erased;
   }
 
+  export function getLastExtension(fileName: string): string | undefined {
+    const splitted = fileName.split('.');
+    if (splitted.length === 1 || (splitted[ 0 ] === '' && splitted.length === 2)) {
+      return undefined;
+    } else {
+      return '.' + splitted.pop().toLocaleLowerCase();
+    }
+  }
+
+}
+
+export namespace StringUtils {
+
+  export function duplicatesExist(array: string[]): boolean {
+    return new Set(array).size !== array.length;
+  }
+
 }

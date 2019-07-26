@@ -14,6 +14,13 @@ export class UploadsEffects {
     map(({ entityId }) => ProjectUploadErrorsActions.add({ uploadId: entityId }))
   ));
 
+  public update$ = createEffect(() => this.actions$.pipe(
+    ofType(ProjectUploadsActions.update),
+    mergeMap(({ entityId }) => this.store.pipe(select(fromDashboardProjectUploads.getUploadByID, { id: entityId }), take(1))),
+    filter((upload) => !upload.uploading && !upload.uploaded),
+    map((upload) => ProjectUploadsActions.check({ entityId: upload.id }))
+  ));
+
   public remove$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectUploadsActions.remove),
     mergeMap(({ entityId }) =>

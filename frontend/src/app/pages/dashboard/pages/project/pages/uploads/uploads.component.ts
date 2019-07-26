@@ -6,7 +6,12 @@ import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models
 import { ProjectUploadsActions } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.actions';
 import { FilesDialogService } from 'pages/dashboard/pages/project/pages/uploads/services/files-dialog.service';
 import { FilesUploaderService } from 'pages/dashboard/pages/project/pages/uploads/services/files-uploader.service';
-import { EmptyListNoteAnimation, UploadsListAnimation } from 'pages/dashboard/pages/project/pages/uploads/uploads.animations';
+import {
+  EmptyListNoteAnimation,
+  UploadsErrorsAnimation,
+  UploadsListAnimation,
+  UploadsWarningsAnimation
+} from 'pages/dashboard/pages/project/pages/uploads/uploads.animations';
 import { mergeMap } from 'rxjs/operators';
 
 @Component({
@@ -14,7 +19,7 @@ import { mergeMap } from 'rxjs/operators';
   templateUrl:     './uploads.component.html',
   styleUrls:       [ './uploads.component.less' ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations:      [ UploadsListAnimation, EmptyListNoteAnimation ]
+  animations:      [ UploadsListAnimation, EmptyListNoteAnimation, UploadsErrorsAnimation, UploadsWarningsAnimation ]
 })
 export class ProjectUploadsComponent {
   public readonly extensions = FilesUploaderService.AvailableExtensions;
@@ -26,6 +31,9 @@ export class ProjectUploadsComponent {
       select(fromDashboardProjectUploads.getUploadsForProject, { projectLinkUUID: currentProjectUUID }))
     )
   );
+
+  public readonly errors$   = this.store.pipe(select(fromDashboardProjectUploads.getGlobalErrors));
+  public readonly warnings$ = this.store.pipe(select(fromDashboardProjectUploads.getGlobalWarnings));
 
   constructor(private readonly store: Store<DashboardProjectUploadModuleState>,
               private readonly files: FilesDialogService, private readonly uploader: FilesUploaderService) {}

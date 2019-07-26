@@ -21,7 +21,7 @@ export class UploadComponent {
   @Output()
   public onNameChange = new EventEmitter<string>();
 
-  public get errors(): Observable<UploadErrorEntity> {
+  public get error(): Observable<UploadErrorEntity> {
     return this.store.pipe(select(fromDashboardProjectUploads.getErrorsForUploadEntity, { uploadId: this.upload.id }));
   }
 

@@ -4,11 +4,12 @@ import { __fromDashboardProjectUploadsState, __UploadsState, UploadsStateAdapter
 
 const uploadsReducer = createReducer(
   __fromDashboardProjectUploadsState.initial,
-  on(ProjectUploadsActions.add, (state, { entityId, projectLinkUUID, name, size }) => {
+  on(ProjectUploadsActions.add, (state, { entityId, projectLinkUUID, name, extension, size }) => {
     return UploadsStateAdapter.addOne({
       id:              entityId,
       projectLinkUUID: projectLinkUUID,
       name:            name,
+      extension:       extension,
       size:            size,
       software:        'VDJtools',
       ready:           false,

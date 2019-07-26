@@ -5,6 +5,8 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { FilesDialogComponent } from 'pages/dashboard/pages/project/pages/uploads/components/files_dialog/files-dialog.component';
 import { FilesDropComponent } from 'pages/dashboard/pages/project/pages/uploads/components/files_drop/files-drop.component';
+import { FilesErrorsComponent } from 'pages/dashboard/pages/project/pages/uploads/components/files_errors/files-errors.component';
+import { FilesWarningsComponent } from 'pages/dashboard/pages/project/pages/uploads/components/files_warnings/files-warnings.component';
 import { UploadComponentModule } from 'pages/dashboard/pages/project/pages/uploads/components/upload/upload.module';
 import { ErrorsEffects } from 'pages/dashboard/pages/project/pages/uploads/models/errors/errors.effects';
 import { DashboardProjectUploadModuleReducers } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
@@ -24,7 +26,7 @@ const ProjectUploadRouting = RouterModule.forChild([
     EffectsModule.forFeature([ UploadsEffects, ErrorsEffects ]),
     UploadComponentModule
   ],
-  declarations: [ ProjectUploadsComponent, FilesDialogComponent, FilesDropComponent ],
+  declarations: [ ProjectUploadsComponent, FilesErrorsComponent, FilesWarningsComponent, FilesDialogComponent, FilesDropComponent ],
   exports:      [ ProjectUploadsComponent ],
   providers:    [ FilesDialogService, FilesUploaderService ]
 })

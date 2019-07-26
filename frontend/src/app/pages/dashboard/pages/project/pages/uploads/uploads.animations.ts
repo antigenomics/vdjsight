@@ -33,3 +33,23 @@ export const EmptyListNoteAnimation = trigger('empty', [
     ])
   ])
 ]);
+
+export const UploadsErrorsAnimation = trigger('errors', [
+  transition(':enter', [
+    style({ height: 0, 'padding-top': 0, 'padding-bottom': 0, opacity: 0 }),
+    animate('300ms 50ms', style({ height: '*', 'padding-top': '*', 'padding-bottom': '*', opacity: 1.0 }))
+  ]),
+  transition(':leave', [
+    animate('300ms 50ms', style({ height: 0, 'padding-top': 0, 'padding-bottom': 0, opacity: 0 }))
+  ])
+]);
+
+export const UploadsWarningsAnimation = trigger('warnings', [
+  transition(':enter', [
+    style({ height: 0, 'padding-top': 0, 'padding-bottom': 0, opacity: 0 }),
+    animate('300ms 50ms', style({ height: '*', 'padding-top': '*', 'padding-bottom': '*', opacity: 1.0 }))
+  ]),
+  transition(':leave', [
+    animate('300ms 50ms', style({ height: 0, 'padding-top': 0, 'padding-bottom': 0, opacity: 0 }))
+  ])
+]);

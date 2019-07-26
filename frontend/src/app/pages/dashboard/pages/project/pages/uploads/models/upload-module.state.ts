@@ -40,5 +40,7 @@ export namespace fromDashboardProjectUploads {
   export const getAllUploadErrors       = createSelector(selectDashboardProjectUploadsModuleErrorsState, __fromDashboardProjectUploadErrorsState.selectAll);
   export const getUploadErrorsCount     = createSelector(selectDashboardProjectUploadsModuleErrorsState, __fromDashboardProjectUploadErrorsState.selectTotal);
   export const getErrorsForUploadEntity = createSelector(selectDashboardProjectUploadsModuleErrorsState, __fromDashboardProjectUploadErrorsState.selectForUploadEntity);
+  export const getGlobalErrors          = createSelector(selectDashboardProjectUploadsModuleErrorsState, __fromDashboardProjectUploadErrorsState.getGlobalErrors);
+  export const getGlobalWarnings        = createSelector(selectDashboardProjectUploadsModuleErrorsState, __fromDashboardProjectUploadErrorsState.getGlobalWarnings);
 
 }

@@ -15,7 +15,7 @@
                 {{ upload.size | vsHumanReadableSize }}
             </div>
         </div>
-        <div vs-upload-status [errors]="errors | async" class="six wide column"></div>
+        <div vs-upload-status [error]="error | async" class="six wide column"></div>
         <div class="two wide column">
             <div class="centered">
                 <ng-container *ngIf="upload.ready; else notReady">

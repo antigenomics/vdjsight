@@ -32,6 +32,9 @@ export namespace __fromDashboardSampleFilesState {
   export const selectByLinkUUID = (state: __SampleFilesState, props: { linkUUID: string }) =>
     selectAll(state).find((p) => p.link !== undefined && p.link.uuid === props.linkUUID);
 
+  export const selectForProject = (state: __SampleFilesState, props: { projectLinkUUID: string }) =>
+    selectAll(state).filter((p) => p.link !== undefined && p.link.projectLinkUUID === props.projectLinkUUID);
+
   export const isSomeSampleSelected    = (state: __SampleFilesState) => state.selectedID !== undefined && state.entities[ state.selectedID ] !== undefined;
   export const getSelectedSample       = (state: __SampleFilesState) => state.selectedID !== undefined ? state.entities[ state.selectedID ] : undefined;
   export const getSelectedSampleOption = (state: __SampleFilesState) => {

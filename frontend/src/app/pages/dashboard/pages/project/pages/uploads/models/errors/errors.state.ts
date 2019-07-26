@@ -21,6 +21,9 @@ export namespace __fromDashboardProjectUploadErrorsState {
 
   export const { selectIds, selectEntities, selectAll, selectTotal } = UploadErrorsStateAdapter.getSelectors();
 
+  export const getGlobalErrors   = (state: __UploadErrorsState) => state.errors;
+  export const getGlobalWarnings = (state: __UploadErrorsState) => state.warnings;
+
   export const selectForUploadEntity = (state: __UploadErrorsState, props: { uploadId: number }) =>
     selectAll(state).find((u) => u.uploadId === props.uploadId);
 

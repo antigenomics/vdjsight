@@ -42,6 +42,7 @@ export namespace fromDashboardProject {
   export const getSampleByLinkUUID     = createSelector(selectDashboardProjectModuleSampleFilesState, __fromDashboardSampleFilesState.selectByLinkUUID);
   export const getSamplesIDs           = createSelector(selectDashboardProjectModuleSampleFilesState, __fromDashboardSampleFilesState.selectIds);
   export const getSampleEntities       = createSelector(selectDashboardProjectModuleSampleFilesState, __fromDashboardSampleFilesState.selectEntities);
+  export const getSamplesForProject    = createSelector(selectDashboardProjectModuleSampleFilesState, __fromDashboardSampleFilesState.selectForProject);
   export const getAllSamples           = createSelector(selectDashboardProjectModuleSampleFilesState, __fromDashboardSampleFilesState.selectAll);
   export const getSamplesCount         = createSelector(selectDashboardProjectModuleSampleFilesState, __fromDashboardSampleFilesState.selectTotal);
   export const isSomeSampleSelected    = createSelector(selectDashboardProjectModuleSampleFilesState, __fromDashboardSampleFilesState.isSomeSampleSelected);
