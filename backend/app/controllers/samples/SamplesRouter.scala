@@ -10,6 +10,7 @@ import scala.language.implicitConversions
 
 class SamplesRouter @Inject()(controller: SamplesController) extends SimpleRouter {
   override def routes: Routes = {
-    case GET(p"/$projectLinkUUID/list") => controller.list(projectLinkUUID)
+    case GET(p"/$projectLinkUUID/list")    => controller.list(projectLinkUUID)
+    case POST(p"/$projectLinkUUID/create") => controller.create(projectLinkUUID)
   }
 }

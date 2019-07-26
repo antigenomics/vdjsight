@@ -20,9 +20,9 @@ class AccountController @Inject()(cc: ControllerComponents, session: SessionRequ
 
   implicit final private val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
-  private def accountAction = session andThen session.authorizedOnly
+  private def action = session andThen session.authorizedOnly
 
-  def info: Action[Unit] = accountAction(parse.empty).async { implicit request =>
+  def info: Action[Unit] = action(parse.empty).async { implicit request =>
     userPermissionsProvider.findForUser(request.userID.get).map {
       case Some((permissions, user)) => Ok(ServerResponse(AccountInfoResponse(UserDTO.from(user, permissions))))
       case None                      => BadRequest(ServerResponseError("Invalid UUID")).withNewSession

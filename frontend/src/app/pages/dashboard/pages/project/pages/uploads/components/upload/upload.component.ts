@@ -15,6 +15,9 @@ export class UploadComponent {
   @Input()
   public upload: UploadEntity;
 
+  @Input()
+  public isUploadAllowed: boolean;
+
   @Output()
   public onRemove = new EventEmitter();
 

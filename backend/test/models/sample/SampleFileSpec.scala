@@ -63,7 +63,7 @@ class SampleFileSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
 
     "not be able to create new sample for not existing user" taggedAs ModelsTestTag in {
       val p = events.probe[SampleFileProviderEvent]
-      sfp.create(users.notExistingUser.uuid, "new-sample", "some-software", 1, "h").map(_ => w.dismiss())
+      sfp.create(users.notExistingUser.uuid, "new-sample", "some-software", 1, "txt", "h").map(_ => w.dismiss())
       assertThrows[Exception] {
         p.expectNoMessage(100 milliseconds)
         w.await()
@@ -73,7 +73,7 @@ class SampleFileSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
     "be able to create new sample" taggedAs ModelsTestTag in {
       val p = events.probe[SampleFileProviderEvent]
       for {
-        created <- sfp.create(users.verifiedUser.uuid, "name", "software", 1, "h", overrideConfiguration = Some(SampleFilesConfiguration("path")))
+        created <- sfp.create(users.verifiedUser.uuid, "name", "software", 1, "txt", "h", overrideConfiguration = Some(SampleFilesConfiguration("path")))
         _       <- Future(p.expectMsgType[SampleFileProviderEvents.SampleFileCreated])
         _       <- created.ownerID shouldEqual users.verifiedUser.uuid
         _       <- created.name shouldEqual "name"

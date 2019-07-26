@@ -18,13 +18,14 @@ import utils.FutureUtils._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
 
-case class SampleFilesConfiguration(storagePath: String)
+case class SampleFilesConfiguration(storagePath: String, maxSampleSize: Long)
 
 object SampleFilesConfiguration {
   implicit val samplesConfigurationLoader: ConfigLoader[SampleFilesConfiguration] = (root: Config, path: String) => {
     val config = root.getConfig(path)
     SampleFilesConfiguration(
-      storagePath = config.getString("storagePath")
+      storagePath   = config.getString("storagePath"),
+      maxSampleSize = config.getMemorySize("maxSampleSize").toBytes
     )
   }
 }
@@ -35,6 +36,7 @@ case class SampleFile(
   name: String,
   software: String,
   size: Long,
+  extension: String,
   hash: String,
   folder: String,
   isUploaded: Boolean,
@@ -47,12 +49,13 @@ class SampleFileTable(tag: Tag)(implicit userProvider: UserProvider) extends Tab
   def name       = column[String]("name", O.Length(255))
   def software   = column[String]("software", O.Length(64))
   def size       = column[Long]("size")
+  def extension  = column[String]("extension", O.Length(32))
   def hash       = column[String]("hash")
   def folder     = column[String]("folder", O.Unique)
   def isUploaded = column[Boolean]("is_uploaded")
   def isDangling = column[Boolean]("is_dangling")
 
-  def * = (uuid, ownerID, name, software, size, hash, folder, isUploaded, isDangling) <> (SampleFile.tupled, SampleFile.unapply)
+  def * = (uuid, ownerID, name, software, size, extension, hash, folder, isUploaded, isDangling) <> (SampleFile.tupled, SampleFile.unapply)
 
   def owner = foreignKey("sample_file_table_owner_fk", ownerID, userProvider.table)(
     _.uuid,
@@ -81,6 +84,7 @@ object SampleFileProviderEvents {
   case class SampleFileProviderInitialized(configuration: SampleFilesConfiguration) extends SampleFileProviderEvent
   case class SampleFileCreated(sample: SampleFile) extends SampleFileProviderEvent
   case class SampleFileUpdated(sample: SampleFile) extends SampleFileProviderEvent
+  case class SampleFileUploaded(sample: SampleFile) extends SampleFileProviderEvent
   case class SampleFileDeleted(sample: SampleFile) extends SampleFileProviderEvent
 }
 
@@ -97,7 +101,7 @@ class SampleFileProvider @Inject()(
 ) extends HasDatabaseConfigProvider[JdbcProfile]
     with Logging {
 
-  final private val configuration = conf.get[SampleFilesConfiguration]("application.samples")
+  final val configuration = conf.get[SampleFilesConfiguration]("application.samples")
 
   import dbConfig.profile.api._
 
@@ -118,6 +122,7 @@ class SampleFileProvider @Inject()(
     name: String,
     software: String,
     size: Long,
+    extension: String,
     hash: String,
     overrideConfiguration: Option[SampleFilesConfiguration] = None
   ): Future[SampleFile] = {
@@ -137,6 +142,7 @@ class SampleFileProvider @Inject()(
                 name       = name,
                 software   = software,
                 size       = size,
+                extension  = extension,
                 hash       = hash,
                 folder     = s"${config.storagePath}/$sampleID",
                 isUploaded = false,
@@ -168,6 +174,21 @@ class SampleFileProvider @Inject()(
 
     db.run(actions.transactionally) onSuccessSideEffect { sample =>
       events.publish(SampleFileProviderEvents.SampleFileUpdated(sample))
+    }
+  }
+
+  def markAsUploaded(uuid: UUID): Future[SampleFile] = {
+    val actions = samples.filter(_.uuid === uuid).map(s => s.isUploaded).update(true) flatMap {
+        case 0 => DBIO.failed(BadRequestException("Cannot update SampleFile instance in database", "Project does not exist"))
+        case _ =>
+          samples.filter(_.uuid === uuid).result.headOption flatMap {
+            case Some(sample) => DBIO.successful(sample)
+            case None         => DBIO.failed(InternalServerErrorException("Cannot mark SampleFile as uploaded in database", "Database error"))
+          }
+      }
+
+    db.run(actions.transactionally) onSuccessSideEffect { sample =>
+      events.publish(SampleFileProviderEvents.SampleFileUploaded(sample))
     }
   }
 

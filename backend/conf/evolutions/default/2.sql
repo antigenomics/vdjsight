@@ -11,6 +11,7 @@ create table "sample_file"
     name        varchar(255) not null,
     software    varchar(64)  not null,
     size        bigint       not null,
+    extension   varchar(32)  not null,
     hash        text         not null,
     folder      text         not null,
     is_uploaded boolean      not null,

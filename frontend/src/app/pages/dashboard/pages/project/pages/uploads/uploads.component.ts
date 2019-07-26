@@ -12,7 +12,7 @@ import {
   UploadsListAnimation,
   UploadsWarningsAnimation
 } from 'pages/dashboard/pages/project/pages/uploads/uploads.animations';
-import { mergeMap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 
 @Component({
   selector:        'vs-uploads',
@@ -35,6 +35,10 @@ export class ProjectUploadsComponent {
   public readonly errors$   = this.store.pipe(select(fromDashboardProjectUploads.getGlobalErrors));
   public readonly warnings$ = this.store.pipe(select(fromDashboardProjectUploads.getGlobalWarnings));
 
+  public readonly isUploadAllowed$ = this.store.pipe(select(fromDashboardProjectUploads.getGlobalErrors)).pipe(
+    map((errors) => errors.length === 0)
+  );
+
   constructor(private readonly store: Store<DashboardProjectUploadModuleState>,
               private readonly files: FilesDialogService, private readonly uploader: FilesUploaderService) {}
 
@@ -42,6 +46,10 @@ export class ProjectUploadsComponent {
     this.files.process((files) => {
       this.handleFiles(files);
     });
+  }
+
+  public uploadAll(): void {
+
   }
 
   public changeName(entity: UploadEntity, name: string): void {

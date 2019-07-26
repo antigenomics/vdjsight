@@ -9,8 +9,12 @@
         </h2>
     </div>
     <ng-container *ngIf="(currentProjectInfo$ | async).isUploadAllowed; else uploadNotAllowed">
-        <div class="ui segment">
+        <div class="ui clearing segment">
             <div class="ui tiny teal button" (click)="add()">Add file(s)</div>
+            <div class="ui right floated tiny blue button" *ngIf="(currentProjectUploads$ | async).length !== 0"
+                 [ngClass]="{ 'disabled': !(isUploadAllowed$ | async) }" (click)="uploadAll()">
+                Upload all
+            </div>
         </div>
         <ng-container *ngIf="(errors$ | async) as errors">
             <div class="ui segment" *ngIf="errors.length !== 0" @errors>
@@ -39,7 +43,8 @@
             <ng-container *ngIf="uploads.length !== 0">
                 <div class="ui uploads segment" [@uploads]="uploads.length">
                     <div class="upload item" *ngFor="let upload of uploads; trackBy: uploadEntityTrackBy; let isLast = last" [ngClass]="{ 'last': isLast }">
-                        <vs-upload [upload]="upload" (onNameChange)="changeName(upload, $event)" (onRemove)="remove(upload)"></vs-upload>
+                        <vs-upload [upload]="upload" (onNameChange)="changeName(upload, $event)" (onRemove)="remove(upload)"
+                                   [isUploadAllowed]="isUploadAllowed$ | async"></vs-upload>
                     </div>
                 </div>
             </ng-container>

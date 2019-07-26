@@ -28,20 +28,20 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
 
   implicit final private val messages: Messages = messagesAPI.preferred(Seq(Lang.defaultLang))
 
-  private def projectsAction[A](bodyParser: BodyParser[A])(block: SessionRequest[A] => Future[Result]) =
+  private def action[A](bodyParser: BodyParser[A])(block: SessionRequest[A] => Future[Result]) =
     WithRecoverAction {
       (session andThen session.authorizedOnly)(bodyParser).async(block)
     }
 
-  private def projectsActionWithValidate[J](
+  private def actionWithValidate[J](
     error: String = "Request validation failed"
-  )(block: (SessionRequest[JsValue], J) => Future[Result])(implicit reads: Reads[J]) = projectsAction(parse.json) { implicit request =>
+  )(block: (SessionRequest[JsValue], J) => Future[Result])(implicit reads: Reads[J]) = action(parse.json) { implicit request =>
     ControllerHelpers.validateRequest[J](error) { value =>
       block(request, value)
     }
   }
 
-  def info(projectLinkUUID: UUID): Action[Unit] = projectsAction(parse.empty) { implicit request =>
+  def info(projectLinkUUID: UUID): Action[Unit] = action(parse.empty) { implicit request =>
     projectsLinkProvider.getWithProject(projectLinkUUID) map {
       case Some(lwp) =>
         if (lwp._1.userID == request.userID.get) {
@@ -53,13 +53,13 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
     }
   }
 
-  def list: Action[Unit] = projectsAction(parse.empty) { implicit request =>
+  def list: Action[Unit] = action(parse.empty) { implicit request =>
     projectsLinkProvider.findForUserWithProject(request.userID.get).map { projects =>
       Ok(ServerResponse(ProjectsListResponse(projects.map(lwp => ProjectLinkDTO.from(lwp)))))
     }
   }
 
-  def create: Action[JsValue] = projectsActionWithValidate[ProjectsCreateRequest]() { (request, create) =>
+  def create: Action[JsValue] = actionWithValidate[ProjectsCreateRequest]() { (request, create) =>
     projectsProvider.create(request.userID.get, create.name, create.description) flatMap { project =>
       projectsLinkProvider.create(request.userID.get, project.uuid).map { link =>
         Ok(ServerResponse(ProjectsCreateResponse(ProjectLinkDTO.from(link, project))))
@@ -67,7 +67,7 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
     }
   }
 
-  def update: Action[JsValue] = projectsActionWithValidate[ProjectsUpdateRequest]() { (request, update) =>
+  def update: Action[JsValue] = actionWithValidate[ProjectsUpdateRequest]() { (request, update) =>
     projectsLinkProvider.get(update.uuid) flatMap {
       case Some(link) =>
         if (link.userID == request.userID.get && link.isModificationAllowed) {
@@ -81,7 +81,7 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
     }
   }
 
-  def delete: Action[JsValue] = projectsActionWithValidate[ProjectsDeleteRequest]() { (request, delete) =>
+  def delete: Action[JsValue] = actionWithValidate[ProjectsDeleteRequest]() { (request, delete) =>
     projectsLinkProvider.get(delete.uuid).flatMap {
       case Some(link) =>
         if (link.userID == request.userID.get) {

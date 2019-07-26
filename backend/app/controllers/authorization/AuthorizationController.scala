@@ -43,9 +43,7 @@ class AuthorizationController @Inject()(cc: ControllerComponents, session: Sessi
   implicit final private val messages: Messages                                  = messagesAPI.preferred(Seq(Lang.defaultLang))
   implicit final private val configuration: AuthorizationControllerConfiguration = conf.get[AuthorizationControllerConfiguration]("application.auth.controller")
 
-  private def authorizationAction[J](
-    error: String = "Request validation failed"
-  )(block: (SessionRequest[JsValue], J) => Future[Result])(implicit reads: Reads[J]) =
+  private def action[J](error: String = "Request validation failed")(block: (SessionRequest[JsValue], J) => Future[Result])(implicit reads: Reads[J]) =
     DelayedAction(configuration.delay milliseconds) {
       WithRecoverAction {
         (session andThen session.unauthorizedOnly)(parse.json).async { implicit request =>
@@ -56,7 +54,7 @@ class AuthorizationController @Inject()(cc: ControllerComponents, session: Sessi
       }
     }
 
-  def login: Action[JsValue] = authorizationAction[AuthorizationLoginRequest](AuthorizationLoginRequest.failedValidationMessage) { (_, login) =>
+  def login: Action[JsValue] = action[AuthorizationLoginRequest](AuthorizationLoginRequest.failedValidationMessage) { (_, login) =>
     userProvider.getByEmailAndPassword(login.email, login.password).map {
       case None => BadRequest(ServerResponseError(messages("authorization.login.failed.email")))
       case Some(user) =>
@@ -68,7 +66,7 @@ class AuthorizationController @Inject()(cc: ControllerComponents, session: Sessi
     }
   }
 
-  def signup: Action[JsValue] = authorizationAction[AuthorizationSignupRequest](AuthorizationSignupRequest.failedValidationMessage) { (_, signup) =>
+  def signup: Action[JsValue] = action[AuthorizationSignupRequest](AuthorizationSignupRequest.failedValidationMessage) { (_, signup) =>
     userProvider.isUserWithEmailOrLoginExist(signup.email, signup.login).flatMap {
       case (isExistWithEmail, isExistWithLogin) =>
         if (isExistWithEmail) {
@@ -83,21 +81,21 @@ class AuthorizationController @Inject()(cc: ControllerComponents, session: Sessi
     }
   }
 
-  def reset: Action[JsValue] = authorizationAction[AuthorizationResetRequest](AuthorizationResetRequest.failedValidationMessage) { (_, reset) =>
+  def reset: Action[JsValue] = action[AuthorizationResetRequest](AuthorizationResetRequest.failedValidationMessage) { (_, reset) =>
     userProvider.getByEmail(reset.email).map { user =>
       user.foreach(u => resetTokenProvider.create(u.uuid))
       Ok(ServerResponse.MESSAGE(messages("authorization.reset.success")))
     }
   }
 
-  def change: Action[JsValue] = authorizationAction[AuthorizationChangeRequest](AuthorizationChangeRequest.failedValidationMessage) { (_, reset) =>
+  def change: Action[JsValue] = action[AuthorizationChangeRequest](AuthorizationChangeRequest.failedValidationMessage) { (_, reset) =>
     userProvider.reset(reset.token, reset.password1) map {
       case true  => Ok(ServerResponse.MESSAGE(messages("authorization.change.success")))
       case false => BadRequest(ServerResponseError("Invalid reset token provided"))
     }
   }
 
-  def verify: Action[JsValue] = authorizationAction[AuthorizationVerifyRequest]() { (_, verify) =>
+  def verify: Action[JsValue] = action[AuthorizationVerifyRequest]() { (_, verify) =>
     userProvider.verify(verify.token) map {
       case true  => Ok(ServerResponse.MESSAGE(messages("authorization.verify.success")))
       case false => BadRequest(ServerResponseError("Invalid verification token provided"))

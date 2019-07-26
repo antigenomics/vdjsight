@@ -19,7 +19,7 @@
         <div class="two wide column">
             <div class="centered">
                 <ng-container *ngIf="upload.ready; else notReady">
-                    <div class="ui blue tiny fluid button" [ngClass]="{ 'disabled': upload.name === '' }">Upload</div>
+                    <div class="ui blue tiny fluid button" [ngClass]="{ 'disabled': upload.name === '' || !isUploadAllowed }">Upload</div>
                 </ng-container>
                 <ng-template #notReady>
                     <div class="ui active centered inline tiny loader"></div>
