@@ -83,7 +83,7 @@ export class ErrorsEffects {
 
             if (StringUtils.duplicatesExist([
               ...samples.filter((s) => s.link !== undefined).map((s) => s.link.name),
-              ...uploads.map((u) => u.name) ])
+              ...uploads.filter((u) => !u.uploaded).map((u) => u.name) ])
             ) {
               errors.push(UploadGlobalErrors.UPLOAD_NAME_DUPLICATE);
             }
