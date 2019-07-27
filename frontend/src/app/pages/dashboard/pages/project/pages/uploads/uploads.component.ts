@@ -56,6 +56,10 @@ export class ProjectUploadsComponent {
     this.store.dispatch(ProjectUploadsActions.update({ entityId: entity.id, changes: { name } }));
   }
 
+  public changeSoftware(entity: UploadEntity, software: string): void {
+    this.store.dispatch(ProjectUploadsActions.update({ entityId: entity.id, changes: { software } }));
+  }
+
   public remove(entity: UploadEntity): void {
     this.store.dispatch(ProjectUploadsActions.remove({ entityId: entity.id }));
   }

@@ -2,32 +2,33 @@
     <div class="ui grid">
         <div class="four wide column">
             <div class="centered">
-                <vs-upload-name [name]="upload.name" (onNameChange)="onNameChange.emit($event)"></vs-upload-name>
-            </div>
-        </div>
-        <div class="one wide column">
-            <div class="centered">
-                {{ upload.software }}
-            </div>
-        </div>
-        <div class="one wide column">
-            <div class="centered">
-                {{ upload.size | vsHumanReadableSize }}
-            </div>
-        </div>
-        <div vs-upload-status [error]="error | async" class="six wide column"></div>
-        <div class="two wide column">
-            <div class="centered">
-                <ng-container *ngIf="upload.ready; else notReady">
-                    <div class="ui blue tiny fluid button" [ngClass]="{ 'disabled': upload.name === '' || !isUploadAllowed }">Upload</div>
-                </ng-container>
-                <ng-template #notReady>
-                    <div class="ui active centered inline tiny loader"></div>
-                </ng-template>
+                <vs-upload-name [name]="entity.name"
+                                (onNameChange)="onNameChange.emit($event)">
+                </vs-upload-name>
             </div>
         </div>
         <div class="two wide column">
-            <div class="ui orange tiny fluid button" (click)="onRemove.emit()">Remove</div>
+            <div class="centered">
+                <vs-upload-software [software]="entity.software" [available]="availableSoftwareTypes"
+                                    (onSoftwareChange)="onSoftwareChange.emit($event)">
+                </vs-upload-software>
+            </div>
+        </div>
+        <div class="two wide column">
+            <div class="centered">
+                {{ entity.size | vsHumanReadableSize }}
+            </div>
+        </div>
+        <div class="four wide column">
+            <div class="centered">
+                <vs-upload-status [warning]="entity.warning"></vs-upload-status>
+            </div>
+        </div>
+        <div class="two wide column">
+            <div class="ui blue mini fluid button" [ngClass]="{ 'disabled': !isUploadEntityReady || !isUploadAllowed }">Upload</div>
+        </div>
+        <div class="two wide column">
+            <div class="ui orange mini fluid button" (click)="onRemove.emit()">Remove</div>
         </div>
     </div>
 </div>

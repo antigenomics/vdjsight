@@ -1,14 +1,14 @@
-<ng-container *ngIf="error.error; else progressBar">
-    <div class="centered">
+<ng-container *ngIf="warning; else progressBar">
+    <div class="centered" @warning>
         <div class="ui mini negative message">
             <div class="header">
-                {{ error.error }}
+                {{ warning }}
             </div>
         </div>
     </div>
 </ng-container>
 <ng-template #progressBar>
-    <div class="ui small progress centered">
+    <div class="ui small progress centered" @progress>
         <div class="bar"></div>
     </div>
 </ng-template>

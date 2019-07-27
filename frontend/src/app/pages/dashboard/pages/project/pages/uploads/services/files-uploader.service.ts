@@ -30,10 +30,11 @@ export class FilesUploaderService {
           projectLinkUUID: currentProjectUUID,
           name:            FileUtils.eraseExtensions(file.name, FilesUploaderService.AvailableExtensions),
           extension:       FileUtils.getLastExtension(file.name),
+          software:        'VDJtools',
           size:            file.size
         }));
         this.hashFileReactiveWorker.next({ file }).subscribe(({ hash }) => {
-          this.store.dispatch(ProjectUploadsActions.update({ entityId, changes: { hash, ready: true } }));
+          this.store.dispatch(ProjectUploadsActions.update({ entityId, changes: { hash } }));
         });
       });
     } else {

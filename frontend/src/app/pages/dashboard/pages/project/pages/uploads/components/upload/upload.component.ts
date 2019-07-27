@@ -1,9 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { select, Store } from '@ngrx/store';
-import { UploadErrorEntity } from 'pages/dashboard/pages/project/pages/uploads/models/errors/errors';
-import { DashboardProjectUploadModuleState, fromDashboardProjectUploads } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
-import { Observable } from 'rxjs';
+import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
 
 @Component({
   selector:        'vs-upload',
@@ -13,7 +10,7 @@ import { Observable } from 'rxjs';
 })
 export class UploadComponent {
   @Input()
-  public upload: UploadEntity;
+  public entity: UploadEntity;
 
   @Input()
   public isUploadAllowed: boolean;
@@ -24,9 +21,14 @@ export class UploadComponent {
   @Output()
   public onNameChange = new EventEmitter<string>();
 
-  public get error(): Observable<UploadErrorEntity> {
-    return this.store.pipe(select(fromDashboardProjectUploads.getErrorsForUploadEntity, { uploadId: this.upload.id }));
+  @Output()
+  public onSoftwareChange = new EventEmitter<string>();
+
+  public get isUploadEntityReady(): boolean {
+    return UploadEntity.isEntityReadyForUpload(this.entity);
   }
 
-  constructor(private readonly store: Store<DashboardProjectUploadModuleState>) {}
+  public get availableSoftwareTypes(): string[] {
+    return SampleFilesService.AvailableSoftwareTypes;
+  }
 }

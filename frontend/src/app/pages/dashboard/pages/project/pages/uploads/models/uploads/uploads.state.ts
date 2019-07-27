@@ -1,8 +1,16 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 
-interface __UploadsStateInner { // tslint:disable-line:class-name no-empty-interface
+export const enum UploadGlobalErrors {
+  UPLOAD_NOT_ALLOWED             = 'You are not allowed to upload samples in this project',
+  MAX_FILES_COUNT_LIMIT_EXCEEDED = 'Max files count limit has been exceeded',
+  UPLOAD_HASH_DUPLICATE          = 'You probably have a duplicate samples in the upload list',
+  UPLOAD_NAME_DUPLICATE          = 'Duplicate names are not allowed'
+}
 
+interface __UploadsStateInner { // tslint:disable-line:class-name no-empty-interface
+  globalWarnings: string[];
+  globalErrors: string[];
 }
 
 export type __UploadsState = EntityState<UploadEntity> & __UploadsStateInner;
@@ -13,7 +21,13 @@ export const UploadsStateAdapter = createEntityAdapter<UploadEntity>({
 
 export namespace __fromDashboardProjectUploadsState {
 
-  export const initial = UploadsStateAdapter.getInitialState<__UploadsStateInner>({});
+  export const initial = UploadsStateAdapter.getInitialState<__UploadsStateInner>({
+    globalWarnings: [],
+    globalErrors:   []
+  });
+
+  export const getGlobalWarnings = (state: __UploadsState) => state.globalWarnings;
+  export const getGlobalErrors   = (state: __UploadsState) => state.globalErrors;
 
   export const { selectIds, selectEntities, selectAll, selectTotal } = UploadsStateAdapter.getSelectors();
 

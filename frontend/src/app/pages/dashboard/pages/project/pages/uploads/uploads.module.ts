@@ -8,7 +8,6 @@ import { FilesDropComponent } from 'pages/dashboard/pages/project/pages/uploads/
 import { FilesErrorsComponent } from 'pages/dashboard/pages/project/pages/uploads/components/files_errors/files-errors.component';
 import { FilesWarningsComponent } from 'pages/dashboard/pages/project/pages/uploads/components/files_warnings/files-warnings.component';
 import { UploadComponentModule } from 'pages/dashboard/pages/project/pages/uploads/components/upload/upload.module';
-import { ErrorsEffects } from 'pages/dashboard/pages/project/pages/uploads/models/errors/errors.effects';
 import { DashboardProjectUploadModuleReducers } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { UploadsEffects } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.effects';
 import { FilesDialogService } from 'pages/dashboard/pages/project/pages/uploads/services/files-dialog.service';
@@ -23,7 +22,7 @@ const ProjectUploadRouting = RouterModule.forChild([
   imports:      [
     CommonModule, ProjectUploadRouting,
     StoreModule.forFeature('uploads', DashboardProjectUploadModuleReducers),
-    EffectsModule.forFeature([ UploadsEffects, ErrorsEffects ]),
+    EffectsModule.forFeature([ UploadsEffects ]),
     UploadComponentModule
   ],
   declarations: [ ProjectUploadsComponent, FilesErrorsComponent, FilesWarningsComponent, FilesDialogComponent, FilesDropComponent ],

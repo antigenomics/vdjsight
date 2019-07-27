@@ -5,6 +5,10 @@ import { BackendService } from 'services/backend/backend.service';
 
 @Injectable()
 export class SampleFilesService {
+  public static AvailableSoftwareTypes: string[] = [
+    'VDJtools',
+    'MiXCR'
+  ];
 
   constructor(private readonly backend: BackendService) {}
 

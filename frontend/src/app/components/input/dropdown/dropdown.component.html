@@ -1,0 +1,7 @@
+<div class="ui fluid dropdown selection" [ngClass]="{ 'active visible': active | async }" (click)="open($event)">
+    <i class="dropdown icon"></i>
+    <div class="text">{{ value }}</div>
+    <div class="menu transition visible" tabindex="-1" style="display: block !important;" *ngIf="active | async" @dropdown>
+        <div class="item" *ngFor="let item of values" (click)="select(item, $event)">{{ item }}</div>
+    </div>
+</div>
