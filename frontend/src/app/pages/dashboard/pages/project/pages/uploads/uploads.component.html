@@ -41,6 +41,9 @@
                 </div>
             </ng-container>
             <ng-container *ngIf="uploads.length !== 0">
+                <div class="ui segment">
+                    <vs-upload-header></vs-upload-header>
+                </div>
                 <div class="ui uploads segment" [@uploads]="uploads.length">
                     <div class="upload item" *ngFor="let upload of uploads; trackBy: uploadEntityTrackBy; let isLast = last" [ngClass]="{ 'last': isLast }">
                         <vs-upload [entity]="upload"

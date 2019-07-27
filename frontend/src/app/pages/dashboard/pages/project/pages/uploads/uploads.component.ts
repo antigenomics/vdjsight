@@ -53,7 +53,7 @@ export class ProjectUploadsComponent {
   }
 
   public changeName(entity: UploadEntity, name: string): void {
-    this.store.dispatch(ProjectUploadsActions.update({ entityId: entity.id, changes: { name } }));
+    this.store.dispatch(ProjectUploadsActions.update({ entityId: entity.id, changes: { name: name.replace(/ /g, '') } }));
   }
 
   public changeSoftware(entity: UploadEntity, software: string): void {

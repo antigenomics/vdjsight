@@ -73,7 +73,7 @@ class SampleFileSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
     "be able to create new sample" taggedAs ModelsTestTag in {
       val p = events.probe[SampleFileProviderEvent]
       for {
-        created <- sfp.create(users.verifiedUser.uuid, "name", "software", 1, "txt", "h", overrideConfiguration = Some(SampleFilesConfiguration("path")))
+        created <- sfp.create(users.verifiedUser.uuid, "name", "software", 1, "txt", "h", overrideConfiguration = Some(SampleFilesConfiguration("path", 10)))
         _       <- Future(p.expectMsgType[SampleFileProviderEvents.SampleFileCreated])
         _       <- created.ownerID shouldEqual users.verifiedUser.uuid
         _       <- created.name shouldEqual "name"

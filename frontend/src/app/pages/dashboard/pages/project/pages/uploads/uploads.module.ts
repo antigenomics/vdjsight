@@ -7,6 +7,7 @@ import { FilesDialogComponent } from 'pages/dashboard/pages/project/pages/upload
 import { FilesDropComponent } from 'pages/dashboard/pages/project/pages/uploads/components/files_drop/files-drop.component';
 import { FilesErrorsComponent } from 'pages/dashboard/pages/project/pages/uploads/components/files_errors/files-errors.component';
 import { FilesWarningsComponent } from 'pages/dashboard/pages/project/pages/uploads/components/files_warnings/files-warnings.component';
+import { FilesHeaderComponent } from 'pages/dashboard/pages/project/pages/uploads/components/header/header.component';
 import { UploadComponentModule } from 'pages/dashboard/pages/project/pages/uploads/components/upload/upload.module';
 import { DashboardProjectUploadModuleReducers } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { UploadsEffects } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.effects';
@@ -25,7 +26,14 @@ const ProjectUploadRouting = RouterModule.forChild([
     EffectsModule.forFeature([ UploadsEffects ]),
     UploadComponentModule
   ],
-  declarations: [ ProjectUploadsComponent, FilesErrorsComponent, FilesWarningsComponent, FilesDialogComponent, FilesDropComponent ],
+  declarations: [
+    ProjectUploadsComponent,
+    FilesErrorsComponent,
+    FilesWarningsComponent,
+    FilesDialogComponent,
+    FilesDropComponent,
+    FilesHeaderComponent
+  ],
   exports:      [ ProjectUploadsComponent ],
   providers:    [ FilesDialogService, FilesUploaderService ]
 })
