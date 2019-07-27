@@ -1,12 +1,15 @@
 <div class="ui raised segments">
-    <div class="ui teal segment">
-        <h2 class="ui header">
+    <div class="ui teal clearing segment">
+        <h2 class="ui left floated header">
             <i class="cloud upload alternate icon"></i>
             <div class="content">
                 Upload
                 <div class="sub header">Manage your uploads here</div>
             </div>
         </h2>
+        <div class="ui right floated close header" (click)="close()">
+            <i class="small times icon"></i>
+        </div>
     </div>
     <ng-container *ngIf="(currentProjectInfo$ | async).isUploadAllowed; else uploadNotAllowed">
         <div class="ui clearing segment">
@@ -42,7 +45,7 @@
             </ng-container>
             <ng-container *ngIf="uploads.length !== 0">
                 <div class="ui segment">
-                    <vs-upload-header></vs-upload-header>
+                    <vs-upload-header (onGlobalSoftwareChange)="changeGlobalSoftware($event)"></vs-upload-header>
                 </div>
                 <div class="ui uploads segment" [@uploads]="uploads.length">
                     <div class="upload item" *ngFor="let upload of uploads; trackBy: uploadEntityTrackBy; let isLast = last" [ngClass]="{ 'last': isLast }">

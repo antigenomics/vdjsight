@@ -19,6 +19,7 @@ export class UploadsEffects {
 
   public update$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectUploadsActions.update),
+    filter(({ check }) => check),
     mergeMap(({ entityId }) => this.store.pipe(select(fromDashboardProjectUploads.getUploadByID, { id: entityId }), first())),
     filter((entity) => !entity.uploading && !entity.uploaded),
     map((entity) => ProjectUploadsActions.check({ entityId: entity.id }))

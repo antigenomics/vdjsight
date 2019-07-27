@@ -34,7 +34,7 @@ export class FilesUploaderService {
           size:            file.size
         }));
         this.hashFileReactiveWorker.next({ file }).subscribe(({ hash }) => {
-          this.store.dispatch(ProjectUploadsActions.update({ entityId, changes: { hash } }));
+          this.store.dispatch(ProjectUploadsActions.update({ entityId, changes: { hash }, check: true }));
         });
       });
     } else {

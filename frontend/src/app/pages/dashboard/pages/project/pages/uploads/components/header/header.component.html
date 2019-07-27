@@ -1,9 +1,22 @@
-<div class="ui grid">
+<div class="ui grid" style="padding-top: 2em; padding-bottom: 1em">
     <div class="four wide header column">
         Name
     </div>
     <div class="two wide header column">
-        Software
+        <div class="software">
+            <div class="ui fluid dropdown selection" [vs-tooltip]="selectGlobalSoftware">
+                <i class="dropdown icon"></i>
+                <div class="text">Software</div>
+            </div>
+        </div>
+        <ng-template #selectGlobalSoftware let-hide="hide">
+            <div class="ui vertical menu" style="max-width: 250px; max-height: 400px; overflow: auto; text-align: left">
+                <div class="header item">Change software for pending uploads</div>
+                <a class="item" *ngFor="let value of availableSoftware" (click)="onGlobalSoftwareChange.emit(value);hide()">
+                    {{ value }}
+                </a>
+            </div>
+        </ng-template>
     </div>
     <div class="two wide header column">
         Size

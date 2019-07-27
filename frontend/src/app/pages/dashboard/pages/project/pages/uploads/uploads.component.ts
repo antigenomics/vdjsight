@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { DashboardProjectUploadModuleState, fromDashboardProjectUploads } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
@@ -12,7 +13,7 @@ import {
   UploadsListAnimation,
   UploadsWarningsAnimation
 } from 'pages/dashboard/pages/project/pages/uploads/uploads.animations';
-import { map, mergeMap } from 'rxjs/operators';
+import { first, map, mergeMap } from 'rxjs/operators';
 
 @Component({
   selector:        'vs-uploads',
@@ -40,7 +41,9 @@ export class ProjectUploadsComponent {
   );
 
   constructor(private readonly store: Store<DashboardProjectUploadModuleState>,
-              private readonly files: FilesDialogService, private readonly uploader: FilesUploaderService) {}
+              private readonly files: FilesDialogService,
+              private readonly uploader: FilesUploaderService,
+              private readonly router: Router) {}
 
   public add(): void {
     this.files.process((files) => {
@@ -53,11 +56,27 @@ export class ProjectUploadsComponent {
   }
 
   public changeName(entity: UploadEntity, name: string): void {
-    this.store.dispatch(ProjectUploadsActions.update({ entityId: entity.id, changes: { name: name.replace(/ /g, '') } }));
+    this.store.dispatch(ProjectUploadsActions.update({
+      entityId: entity.id,
+      changes:  { name: name.replace(/ /g, '') },
+      check:    true
+    }));
   }
 
   public changeSoftware(entity: UploadEntity, software: string): void {
-    this.store.dispatch(ProjectUploadsActions.update({ entityId: entity.id, changes: { software } }));
+    this.store.dispatch(ProjectUploadsActions.update({
+      entityId: entity.id,
+      changes:  { software },
+      check:    false
+    }));
+  }
+
+  public changeGlobalSoftware(software: string): void {
+    this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), first(), mergeMap((projectLinkUUID) =>
+      this.store.pipe(select(fromDashboardProjectUploads.getPendingUploadsForProject, { projectLinkUUID }), first())
+    )).subscribe((pendingUploads) => {
+      pendingUploads.forEach((p) => this.changeSoftware(p, software));
+    });
   }
 
   public remove(entity: UploadEntity): void {
@@ -72,5 +91,11 @@ export class ProjectUploadsComponent {
 
   public uploadEntityTrackBy(_: number, entity: UploadEntity): number {
     return entity.id;
+  }
+
+  public close(): void {
+    const segments = this.router.url.split('/');
+    segments.pop();
+    this.router.navigate(segments);
   }
 }

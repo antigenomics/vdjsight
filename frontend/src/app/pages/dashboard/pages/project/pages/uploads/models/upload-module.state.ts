@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { DashboardProjectModuleState } from 'pages/dashboard/pages/project/models/dashboard-project.state';
+import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 import { __fromDashboardProjectUploadsReducers } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.reducers';
 import { __fromDashboardProjectUploadsState, __UploadsState } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.state';
 
@@ -30,5 +31,9 @@ export namespace fromDashboardProjectUploads {
   export const getUploadsForProject = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectForProject);
   export const getGlobalErrors      = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.getGlobalErrors);
   export const getGlobalWarnings    = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.getGlobalWarnings);
+
+  export const getPendingUploadsForProject = createSelector(getUploadsForProject, (uploads) => {
+    return uploads.filter((u) => UploadEntity.isEntityReadyForUpload(u));
+  });
 
 }

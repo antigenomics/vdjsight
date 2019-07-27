@@ -1,18 +1,24 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { DropdownAnimation } from 'components/input/dropdown/dropdown.animations';
-import { fromEvent, Subject, Subscription } from 'rxjs';
+import { DropdownAnimation, DropdownIconAnimation, DropdownListAnimation } from 'components/input/dropdown/dropdown.animations';
+import { fromEvent, ReplaySubject, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
+
+export const enum DropdownComponentState {
+  ACTIVE   = 'active',
+  INACTIVE = 'inactive'
+}
 
 @Component({
   selector:        'vs-dropdown',
   templateUrl:     './dropdown.component.html',
+  styleUrls:       [ './dropdown.component.less' ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations:      [ DropdownAnimation ]
+  animations:      [ DropdownAnimation, DropdownListAnimation, DropdownIconAnimation ]
 })
 export class DropdownComponent implements OnInit, OnDestroy {
-  private subscription: Subscription;
+  private subscription?: Subscription;
 
-  public active = new Subject<boolean>();
+  public state = new ReplaySubject<DropdownComponentState>(1);
 
   @Input()
   public value: string;
@@ -24,14 +30,22 @@ export class DropdownComponent implements OnInit, OnDestroy {
   public onSelect = new EventEmitter<string>();
 
   public ngOnInit(): void {
-    this.active.next(false);
+    this.state.next(DropdownComponentState.INACTIVE);
   }
 
-  public open(event: Event): void {
-    event.stopPropagation();
-    this.active.next(true);
-    this.subscription = fromEvent(window, 'click').pipe(first()).subscribe(() => {
-      this.close();
+  public switch(event: Event): void {
+    event.stopImmediatePropagation();
+    this.state.pipe(first()).subscribe((state) => {
+      switch (state) {
+        case DropdownComponentState.ACTIVE:
+          this.close();
+          break;
+        case DropdownComponentState.INACTIVE:
+          this.open();
+          break;
+        default:
+          break;
+      }
     });
   }
 
@@ -41,12 +55,25 @@ export class DropdownComponent implements OnInit, OnDestroy {
     this.close();
   }
 
+  public open(): void {
+    this.state.next(DropdownComponentState.ACTIVE);
+    this.subscription = fromEvent(window, 'click').pipe(first()).subscribe(() => {
+      this.close();
+    });
+  }
+
   public close(): void {
-    this.active.next(false);
-    this.subscription.unsubscribe();
+    this.state.next(DropdownComponentState.INACTIVE);
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+      this.subscription = undefined;
+    }
   }
 
   public ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+      this.subscription = undefined;
+    }
   }
 }

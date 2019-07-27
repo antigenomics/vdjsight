@@ -17,7 +17,8 @@ export namespace ProjectUploadsActions {
       name?: string,
       software?: string,
       hash?: string
-    }
+    },
+    check: boolean
   }>());
 
   export const check   = createAction('[ProjectUploads] Check', props<{ entityId: number }>());
