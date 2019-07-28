@@ -26,7 +26,7 @@ export class LoginPageComponent implements OnInit {
   }
 
   public onSubmit(form: AuthForms.LoginForm): void {
-    this.store.dispatch(LoginPageActions.loginAttempt({ form }));
+    this.store.dispatch(LoginPageActions.login({ form }));
   }
 
 }

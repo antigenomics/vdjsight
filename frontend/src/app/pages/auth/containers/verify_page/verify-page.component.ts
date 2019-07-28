@@ -27,7 +27,7 @@ export class VerifyPageComponent implements OnInit, OnDestroy {
     this.title.setTitle('VDJsight: Account verification');
     this.store.dispatch(VerifyPageActions.init());
     this.token = this.route.params.subscribe((parameters) => {
-      this.store.dispatch(VerifyPageActions.verifyAttempt({ token: parameters.token }));
+      this.store.dispatch(VerifyPageActions.verify({ token: parameters.token }));
     });
   }
 

@@ -7,7 +7,7 @@ import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboa
 import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
 import { SampleFilesActions } from 'pages/dashboard/pages/project/models/samples/samples.actions';
 import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
-import { catchError, filter, map, mergeMap, withLatestFrom } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
 import { withNotification } from 'utils/effects/effects-helper';
 
@@ -26,7 +26,7 @@ export class SampleFilesEffects {
 
   public loadStart$ = createEffect(() => this.actions$.pipe(
     ofType(SampleFilesActions.loadStart),
-    mergeMap(({ projectLinkUUID }) => this.samples.list(projectLinkUUID).pipe(
+    switchMap(({ projectLinkUUID }) => this.samples.list(projectLinkUUID).pipe(
       withLatestFrom(this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID))),
       map(([ { samples }, currentProjectUUID ]) =>
         currentProjectUUID === projectLinkUUID ? SampleFilesActions.loadSuccess({ samples }) : ApplicationActions.noop()

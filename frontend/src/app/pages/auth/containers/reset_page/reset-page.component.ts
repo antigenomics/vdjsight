@@ -26,6 +26,6 @@ export class ResetPageComponent implements OnInit {
   }
 
   public onSubmit(form: AuthForms.ResetForm): void {
-    this.store.dispatch(ResetPageActions.resetAttempt({ form }));
+    this.store.dispatch(ResetPageActions.reset({ form }));
   }
 }

@@ -25,6 +25,6 @@ export class SignupPageComponent implements OnInit {
   }
 
   public onSubmit(form: AuthForms.SignupForm): void {
-    this.store.dispatch(SignupPageActions.signupAttempt({ form }));
+    this.store.dispatch(SignupPageActions.signup({ form }));
   }
 }

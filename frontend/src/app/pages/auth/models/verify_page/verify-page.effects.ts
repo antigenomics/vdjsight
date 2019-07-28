@@ -4,7 +4,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { LoginPageActions } from 'pages/auth/models/login_page/login-page.actions';
 import { VerifyPageActions } from 'pages/auth/models/verify_page/verify-page.actions';
 import { from, of } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { catchError, map, exhaustMap, switchMap } from 'rxjs/operators';
 import { AuthorizationService } from 'services/authorization/authorization.service';
 import { BackendErrorResponse } from 'services/backend/backend-response';
 
@@ -12,8 +12,8 @@ import { BackendErrorResponse } from 'services/backend/backend-response';
 export class VerifyPageEffects {
 
   public verifyAttempt$ = createEffect(() => this.actions$.pipe(
-    ofType(VerifyPageActions.verifyAttempt),
-    mergeMap((action) => this.authorization.verify({ token: action.token }).pipe(
+    ofType(VerifyPageActions.verify),
+    exhaustMap((action) => this.authorization.verify({ token: action.token }).pipe(
       map((response) => VerifyPageActions.verifySuccess(response)),
       catchError((error: BackendErrorResponse) => of(VerifyPageActions.verifyFailed(error)))
     ))
@@ -21,7 +21,7 @@ export class VerifyPageEffects {
 
   public verifySuccess$ = createEffect(() => this.actions$.pipe(
     ofType(VerifyPageActions.verifySuccess),
-    mergeMap((message) => from(this.router.navigateByUrl('/auth/login')).pipe(
+    switchMap((message) => from(this.router.navigateByUrl('/auth/login')).pipe(
       map(() => LoginPageActions.message(message))
     ))
   ));

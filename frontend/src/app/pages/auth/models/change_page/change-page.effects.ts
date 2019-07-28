@@ -4,16 +4,16 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { ChangePageActions } from 'pages/auth/models/change_page/change-page.actions';
 import { LoginPageActions } from 'pages/auth/models/login_page/login-page.actions';
 import { from, of } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
+import { catchError, exhaustMap, map, switchMap } from 'rxjs/operators';
 import { AuthorizationService } from 'services/authorization/authorization.service';
 import { BackendErrorResponse } from 'services/backend/backend-response';
 
 @Injectable()
 export class ChangePageEffects {
 
-  public changeAttempt$ = createEffect(() => this.actions$.pipe(
-    ofType(ChangePageActions.changeAttempt),
-    mergeMap((action) =>
+  public change$ = createEffect(() => this.actions$.pipe(
+    ofType(ChangePageActions.change),
+    exhaustMap((action) =>
       this.authorization.change({ token: action.token, password1: action.form.password1, password2: action.form.password2 }).pipe(
         map((response) => ChangePageActions.changeSuccess(response)),
         catchError((error: BackendErrorResponse) => of(ChangePageActions.changeFailed(error)))
@@ -22,7 +22,7 @@ export class ChangePageEffects {
 
   public changeSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(ChangePageActions.changeSuccess),
-    mergeMap((message) => from(this.router.navigateByUrl('/auth/login')).pipe(
+    switchMap((message) => from(this.router.navigateByUrl('/auth/login')).pipe(
       map(() => LoginPageActions.message(message))
     ))
   ));

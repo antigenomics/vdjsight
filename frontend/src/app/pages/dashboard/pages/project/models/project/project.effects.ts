@@ -5,7 +5,7 @@ import { ApplicationActions } from 'models/application/application.actions';
 import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
 import { ProjectsService } from 'pages/dashboard/services/projects/projects.service';
-import { catchError, filter, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
+import { catchError, filter, map, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
 import { withNotification } from 'utils/effects/effects-helper';
 
@@ -30,7 +30,7 @@ export class ProjectEffects {
 
   public loadStart = createEffect(() => this.actions$.pipe(
     ofType(CurrentProjectActions.loadStart),
-    mergeMap(({ projectLinkUUID }) => this.projects.info(projectLinkUUID).pipe(
+    switchMap(({ projectLinkUUID }) => this.projects.info(projectLinkUUID).pipe(
       withLatestFrom(this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID))),
       map(([ link, currentProjectUUID ]) => currentProjectUUID === projectLinkUUID ? CurrentProjectActions.loadSuccess({ link }) : ApplicationActions.noop()),
       catchError((error) => this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID)).pipe(

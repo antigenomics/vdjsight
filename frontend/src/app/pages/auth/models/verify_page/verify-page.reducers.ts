@@ -5,7 +5,7 @@ import { __fromVerifyPageState, __VerifyPageState } from 'pages/auth/models/veri
 const verifyReducer = createReducer(
   __fromVerifyPageState.initial,
   on(VerifyPageActions.init, () => ({ pending: false })),
-  on(VerifyPageActions.verifyAttempt, () => ({ pending: true })),
+  on(VerifyPageActions.verify, () => ({ pending: true })),
   on(VerifyPageActions.verifySuccess, () => ({ pending: false })),
   on(VerifyPageActions.verifyFailed, (_, payload) => ({ pending: false, error: payload.error, extra: payload.extra }))
 );

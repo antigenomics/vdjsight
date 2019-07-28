@@ -5,7 +5,7 @@ import { Action, select, Store } from '@ngrx/store';
 import { ApplicationActions } from 'models/application/application.actions';
 import { fromRoot, RootModuleState } from 'models/root';
 import { from, of } from 'rxjs';
-import { catchError, delay, map, mergeMap, withLatestFrom } from 'rxjs/operators';
+import { catchError, delay, exhaustMap, map, withLatestFrom } from 'rxjs/operators';
 import { BackendService } from 'services/backend/backend.service';
 
 
@@ -14,7 +14,7 @@ export class ApplicationEffects implements OnInitEffects {
 
   public pingBackend$ = createEffect(() => this.actions$.pipe(
     ofType(ApplicationActions.pingBackend),
-    mergeMap(() => this.backend.ping().pipe(
+    exhaustMap(() => this.backend.ping().pipe(
       map(() => ApplicationActions.pingBackendSuccess()),
       catchError(() => of(ApplicationActions.pingBackendFailed()))
     ))
@@ -22,13 +22,13 @@ export class ApplicationEffects implements OnInitEffects {
 
   public pingBackendSchedule$ = createEffect(() => this.actions$.pipe(
     ofType(ApplicationActions.pingBackendSchedule),
-    mergeMap((action) => of(ApplicationActions.pingBackend()).pipe(delay(action.timeout)))
+    exhaustMap((action) => of(ApplicationActions.pingBackend()).pipe(delay(action.timeout)))
   ));
 
   public restoreLastSavedURL$ = createEffect(() => this.actions$.pipe(
     ofType(ApplicationActions.restoreLastSavedURL),
     withLatestFrom(this.store.pipe(select(fromRoot.getApplicationLastSavedURL))),
-    mergeMap(([ action, lastSavedURL ]) => {
+    exhaustMap(([ action, lastSavedURL ]) => {
       const url = lastSavedURL ? lastSavedURL : action.fallbackURL;
       return from(this.router.navigateByUrl(url)).pipe(
         map(() => ApplicationActions.clearLastSavedURL())

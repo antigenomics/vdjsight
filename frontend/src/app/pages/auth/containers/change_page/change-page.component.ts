@@ -30,7 +30,7 @@ export class ChangePageComponent implements OnInit {
   }
 
   public onSubmit(event: { token: string, form: AuthForms.ChangeForm }): void {
-    this.store.dispatch(ChangePageActions.changeAttempt({ token: event.token, form: event.form }));
+    this.store.dispatch(ChangePageActions.change({ token: event.token, form: event.form }));
   }
 
 }

@@ -6,7 +6,7 @@ import { __ChangePageState, __fromChangePageState } from 'pages/auth/models/chan
 const changeReducer = createReducer(
   __fromChangePageState.initial,
   on(ChangePageActions.init, () => ({ pending: false })),
-  on(ChangePageActions.changeAttempt, () => ({ pending: true })),
+  on(ChangePageActions.change, () => ({ pending: true })),
   on(ChangePageActions.changeSuccess, () => ({ pending: false })),
   on(ChangePageActions.changeFailed, (_, payload) => ({ pending: false, error: payload.error, extra: payload.extra }))
 );

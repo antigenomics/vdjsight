@@ -6,7 +6,7 @@ import { DashboardProjectsModuleState, fromDashboardProjects } from 'pages/dashb
 import { ProjectsActions } from 'pages/dashboard/pages/projects/models/projects/projects.actions';
 import { ProjectsService } from 'pages/dashboard/services/projects/projects.service';
 import { of } from 'rxjs';
-import { catchError, filter, map, mergeMap, withLatestFrom } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, withLatestFrom, switchMap } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
 import { withNotification } from 'utils/effects/effects-helper';
 
@@ -25,7 +25,7 @@ export class ProjectsEffects {
 
   public loadStart$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectsActions.loadStart),
-    mergeMap(() => this.projects.list().pipe(
+    switchMap(() => this.projects.list().pipe(
       map((response) => ProjectsActions.loadSuccess({ projects: response.projects })),
       catchError((error) => of(ProjectsActions.loadFailed({ error })))
     )),

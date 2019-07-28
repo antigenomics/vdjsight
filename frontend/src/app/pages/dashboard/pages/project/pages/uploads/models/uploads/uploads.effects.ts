@@ -22,35 +22,41 @@ export class UploadsEffects {
   public update$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectUploadsActions.update),
     filter(({ check }) => check),
-    mergeMap(({ entityId }) => this.store.pipe(select(fromDashboardProjectUploads.getUploadByID, { id: entityId }), first())),
-    filter((entity) => UploadEntity.isEntityPending(entity)),
-    map((entity) => ProjectUploadsActions.check({ entityId: entity.id }))
+    mergeMap(({ entityId }) => this.store.pipe(
+      select(fromDashboardProjectUploads.getUploadByID, { id: entityId }),
+      first(),
+      filter((entity) => UploadEntity.isEntityPending(entity)),
+      map((entity) => ProjectUploadsActions.check({ entityId: entity.id }))
+    ))
   ));
 
   public check$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectUploadsActions.check),
-    mergeMap(({ entityId }) => this.store.pipe(select(fromDashboardProjectUploads.getUploadByID, { id: entityId }), first())),
-    withLatestFrom(this.store.select(fromRoot.getUserCredentials)),
-    map(([ entity, user ]) => {
+    mergeMap(({ entityId }) => this.store.pipe(
+      select(fromDashboardProjectUploads.getUploadByID, { id: entityId }),
+      first(),
+      withLatestFrom(this.store.select(fromRoot.getUserCredentials)),
+      map(([ entity, user ]) => {
 
-      const warning = (() => {
-        if (entity.name === '') {
-          return UploadEntity.Errors.EMPTY_NAME;
-        }
+        const warning = (() => {
+          if (entity.name === '') {
+            return UploadEntity.Errors.EMPTY_NAME;
+          }
 
-        if (FilesUploaderService.AvailableExtensions.indexOf(entity.extension) === -1) {
-          return UploadEntity.Errors.INVALID_EXTENSION;
-        }
+          if (FilesUploaderService.AvailableExtensions.indexOf(entity.extension) === -1) {
+            return UploadEntity.Errors.INVALID_EXTENSION;
+          }
 
-        if (user.permissions.maxSampleSize > 0 && entity.size > user.permissions.maxSampleSize) {
-          return UploadEntity.Errors.MAX_FILE_SIZE_LIMIT_EXCEEDED;
-        }
+          if (user.permissions.maxSampleSize > 0 && entity.size > user.permissions.maxSampleSize) {
+            return UploadEntity.Errors.MAX_FILE_SIZE_LIMIT_EXCEEDED;
+          }
 
-        return undefined;
-      })();
+          return undefined;
+        })();
 
-      return ProjectUploadsActions.checked({ entityId: entity.id, warning });
-    })
+        return ProjectUploadsActions.checked({ entityId: entity.id, warning });
+      })
+    ))
   ));
 
   public global$ = createEffect(() => this.actions$.pipe(
@@ -110,17 +116,21 @@ export class UploadsEffects {
 
   public upload$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectUploadsActions.startUpload),
-    mergeMap(({ entityId }) => this.store.pipe(select(fromDashboardProjectUploads.getUploadByID, { id: entityId }), first())),
-    filter((entity) => UploadEntity.isEntityPending(entity)),
-    tap((entity) => {
-      this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), first()).subscribe((projectLinkUUID) => {
-        this.samplesAPI.create(projectLinkUUID, entity, this.uploader.fileFor(entity.id));
-        // const [ response, progress ] = this.samplesAPI.create(projectLinkUUID, upload, this.uploader.fileFor(entityId));
-        //
-        // response.subscribe((r) => console.log(r));
-        // progress.subscribe((p) => console.log(p));
-      });
-    })
+    mergeMap(({ entityId }) => this.store.pipe(
+      select(fromDashboardProjectUploads.getUploadByID, { id: entityId }),
+      first(),
+      filter((entity) => UploadEntity.isEntityPending(entity)),
+      tap((entity) => {
+        this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), first()).subscribe((projectLinkUUID) => {
+          // this.samplesAPI.create(projectLinkUUID, entity, this.uploader.fileFor(entity.id));
+          console.log(`Upload attempt for ${projectLinkUUID}`, entity);
+          // const [ response, progress ] = this.samplesAPI.create(projectLinkUUID, upload, this.uploader.fileFor(entityId));
+          //
+          // response.subscribe((r) => console.log(r));
+          // progress.subscribe((p) => console.log(p));
+        });
+      })
+    ))
   ), { dispatch: false });
 
   constructor(private readonly actions$: Actions, private readonly store: Store<DashboardProjectUploadModuleState>,
