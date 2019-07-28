@@ -104,7 +104,7 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
   }
 
   def list(projectLinkUUID: UUID): Action[Unit] = action(parse.empty, projectLinkUUID) { (_, projectLink) =>
-    sampleFileLinkProvider.findForProjectWithSample(projectLinkUUID) map { samples =>
+    sampleFileLinkProvider.findForProjectWithSample(projectLink.projectID) map { samples =>
       Ok(ServerResponse(SamplesListResponse(samples.map(lws => SampleFileLinkDTO.from(lws, projectLink)))))
     }
   }
@@ -113,16 +113,16 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
     SamplesCreateRequest.samplesUploadRequestMapping
       .bindFromRequest()(request)
       .fold(
-        formWithErrors => Future(BadRequest(ServerResponseError(messages(formWithErrors.errors.head.message)))),
+        formWithErrors => Future(BadRequest(ServerResponseError(s"${formWithErrors.errors.head.key} : ${messages(formWithErrors.errors.head.message)}"))),
         form =>
           request.body.file("file").fold(Future(BadRequest(ServerResponseError("File is empty")))) { file =>
             if (file.fileSize != form.size) {
               Future(BadRequest(ServerResponseError("Bad file")))
             } else {
               sampleFileProvider.create(request.userID.get, form.name, form.software, form.size, form.extension, form.hash).flatMap { created =>
-                file.ref.copyTo(Paths.get(s"${created.folder}/${created.uuid}"), replace = true)
+                file.ref.copyTo(Paths.get(s"${created.folder}/sample"), replace = true)
                 sampleFileProvider.markAsUploaded(created.uuid) flatMap { uploaded =>
-                  sampleFileLinkProvider.create(uploaded.uuid, projectLinkUUID) map { link =>
+                  sampleFileLinkProvider.create(uploaded.uuid, projectLink.projectID) map { link =>
                     Ok(ServerResponse(SamplesCreateResponse(SampleFileLinkDTO.from(link, uploaded, projectLink))))
                   }
                 }

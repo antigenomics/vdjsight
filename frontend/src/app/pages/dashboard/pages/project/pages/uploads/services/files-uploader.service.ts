@@ -18,6 +18,8 @@ export class FilesUploaderService {
   private readonly hashFileWorker                   = new Worker(`./../workers/hash-file/hash-file.worker`, { type: `module` });
   private readonly hashFileReactiveWorker           = new ReactiveWebWorker<HashFileWorkerInput, HashFileWorkerOutput>(this.hashFileWorker);
 
+  private readonly files: Map<number, File> = new Map<number, File>();
+
   constructor(private readonly store: Store<DashboardProjectUploadModuleState>,
               private readonly notifications: NotificationsService) {}
 
@@ -36,10 +38,24 @@ export class FilesUploaderService {
         this.hashFileReactiveWorker.next({ file }).subscribe(({ hash }) => {
           this.store.dispatch(ProjectUploadsActions.update({ entityId, changes: { hash }, check: true }));
         });
+        this.files.set(entityId, file);
       });
     } else {
       this.notifications.warning('Invalid extension', file.name);
     }
+  }
+
+  public upload(entityId: number): void {
+    this.store.dispatch(ProjectUploadsActions.startUpload({ entityId }));
+  }
+
+  public remove(entityId: number): void {
+    this.store.dispatch(ProjectUploadsActions.remove({ entityId: entityId }));
+    this.files.delete(entityId);
+  }
+
+  public fileFor(entityId: number): File {
+    return this.files.get(entityId);
   }
 
 }

@@ -1,5 +1,6 @@
 package models.sample
 
+import java.nio.file.{Files, Paths}
 import java.util.UUID
 
 import com.google.inject.{Inject, Singleton}
@@ -17,6 +18,8 @@ import utils.FutureUtils._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
+import scala.reflect.io.Path
+import scala.util.{Failure, Success, Try}
 
 case class SampleFilesConfiguration(storagePath: String, maxSampleSize: Long)
 
@@ -150,7 +153,13 @@ class SampleFileProvider @Inject()(
               )
               (samples += sample) flatMap {
                 case 0 => DBIO.failed(InternalServerErrorException("Cannot create SampleFile instance in database", "Database error"))
-                case _ => DBIO.successful(sample)
+                case _ =>
+                  Try(Files.createDirectories(Paths.get(sample.folder))) match {
+                    case Success(_) => DBIO.successful(sample)
+                    case Failure(exception) =>
+                      logger.error("Cannot create SampleFile instance in database: Disk error", exception)
+                      DBIO.failed(InternalServerErrorException("Cannot create SampleFile instance in database", "Disk error"))
+                  }
               }
             }
           }
@@ -197,7 +206,15 @@ class SampleFileProvider @Inject()(
         case Some(sample) =>
           samples.filter(_.uuid === uuid).delete flatMap {
             case 0 => DBIO.failed(InternalServerErrorException("Cannot delete SampleFile instance in database", "Database error"))
-            case _ => DBIO.successful(sample)
+            case _ =>
+              Try(Path ("/tmp/file") deleteRecursively()) match {
+                case Success(deleted) => if (!deleted) {
+                  logger.warn("Exception occurred while deleting SampleFile instance in database")
+                }
+                case Failure(exception) =>
+                  logger.warn("Exception occurred while deleting SampleFile instance in database", exception)
+              }
+              DBIO.successful(sample)
           }
         case None => DBIO.failed(BadRequestException("Cannot delete SampleFile instance in database", "Project does not exist"))
       }

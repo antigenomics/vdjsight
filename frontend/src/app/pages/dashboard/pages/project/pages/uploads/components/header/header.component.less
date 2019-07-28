@@ -1,4 +1,11 @@
-.header.column {
+.grid > .column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  resize: vertical;
+}
+
+.grid > .header.column {
   text-align: center;
   font-weight: bold;
 }
@@ -6,8 +13,6 @@
 .header.column > .software {
   text-align: center;
   margin: 0;
+  width: 100%;
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 95%;
 }

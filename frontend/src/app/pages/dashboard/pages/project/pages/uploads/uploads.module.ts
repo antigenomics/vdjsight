@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { TooltipModule } from 'directives/tooltip/tooltip.module';
+import { InputComponentsModule } from 'components/input/input.module';
 import { FilesDialogComponent } from 'pages/dashboard/pages/project/pages/uploads/components/files_dialog/files-dialog.component';
 import { FilesDropComponent } from 'pages/dashboard/pages/project/pages/uploads/components/files_drop/files-drop.component';
 import { FilesErrorsComponent } from 'pages/dashboard/pages/project/pages/uploads/components/files_errors/files-errors.component';
@@ -25,7 +25,7 @@ const ProjectUploadRouting = RouterModule.forChild([
     CommonModule, ProjectUploadRouting,
     StoreModule.forFeature('uploads', DashboardProjectUploadModuleReducers),
     EffectsModule.forFeature([ UploadsEffects ]),
-    UploadComponentModule, TooltipModule
+    UploadComponentModule, InputComponentsModule
   ],
   declarations: [
     ProjectUploadsComponent,

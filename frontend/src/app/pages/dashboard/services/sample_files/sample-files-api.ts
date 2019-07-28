@@ -9,6 +9,7 @@ export namespace SampleFilesAPI {
   export interface CreateRequest {
     readonly name: string;
     readonly software: string;
+    readonly extension: string;
     readonly size: number;
     readonly hash: string;
   }

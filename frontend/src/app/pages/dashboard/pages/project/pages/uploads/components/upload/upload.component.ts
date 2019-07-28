@@ -16,6 +16,9 @@ export class UploadComponent {
   public isUploadAllowed: boolean;
 
   @Output()
+  public onUpload = new EventEmitter();
+
+  @Output()
   public onRemove = new EventEmitter();
 
   @Output()

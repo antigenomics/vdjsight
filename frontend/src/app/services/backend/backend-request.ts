@@ -1,4 +1,4 @@
-import { HttpHeaders } from '@angular/common/http';
+import { HttpHeaders, HttpRequest } from '@angular/common/http';
 
 export const enum BackendRequestType {
   GET, POST, PUT, DELETE
@@ -11,6 +11,7 @@ export interface BackendRequest<T> {
   endpoint: BackendRequestEndpoint;
   type: BackendRequestType;
   data?: T;
+  request?: HttpRequest<T>;
 }
 
 export interface BackendRequestOptions {

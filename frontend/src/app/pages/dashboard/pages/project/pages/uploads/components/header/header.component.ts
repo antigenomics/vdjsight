@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, Input } from '@angular/core';
 import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
 
 @Component({
@@ -10,6 +10,15 @@ import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample
 export class FilesHeaderComponent {
   public availableSoftware = SampleFilesService.AvailableSoftwareTypes;
 
+  @Input()
+  public isUploadAllowed: boolean;
+
   @Output()
   public onGlobalSoftwareChange = new EventEmitter<string>();
+
+  @Output()
+  public onUploadAll = new EventEmitter();
+
+  @Output()
+  public onRemoveAll = new EventEmitter();
 }

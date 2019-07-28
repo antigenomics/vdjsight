@@ -25,17 +25,22 @@ import { first, map, mergeMap } from 'rxjs/operators';
 export class ProjectUploadsComponent {
   public readonly extensions = FilesUploaderService.AvailableExtensions;
 
-  public readonly currentProjectInfo$    = this.store.pipe(select(fromDashboardProject.getCurrentProjectInfo));
-  public readonly currentProjectUploads$ = this.store.pipe(
+  public readonly currentProjectInfo$           = this.store.pipe(select(fromDashboardProject.getCurrentProjectInfo));
+  public readonly currentProjectUploads$        = this.store.pipe(
     select(fromDashboardProject.getCurrentProjectUUID),
     mergeMap((currentProjectUUID) => this.store.pipe(
       select(fromDashboardProjectUploads.getUploadsForProject, { projectLinkUUID: currentProjectUUID }))
     )
   );
+  public readonly currentProjectPendingUploads$ = this.store.pipe(
+    select(fromDashboardProject.getCurrentProjectUUID),
+    mergeMap((projectLinkUUID) => this.store.pipe(
+      select(fromDashboardProjectUploads.getPendingUploadsForProject, { projectLinkUUID }))
+    )
+  );
 
-  public readonly errors$   = this.store.pipe(select(fromDashboardProjectUploads.getGlobalErrors));
-  public readonly warnings$ = this.store.pipe(select(fromDashboardProjectUploads.getGlobalWarnings));
-
+  public readonly errors$          = this.store.pipe(select(fromDashboardProjectUploads.getGlobalErrors));
+  public readonly warnings$        = this.store.pipe(select(fromDashboardProjectUploads.getGlobalWarnings));
   public readonly isUploadAllowed$ = this.store.pipe(select(fromDashboardProjectUploads.getGlobalErrors)).pipe(
     map((errors) => errors.length === 0)
   );
@@ -49,6 +54,10 @@ export class ProjectUploadsComponent {
     this.files.process((files) => {
       this.handleFiles(files);
     });
+  }
+
+  public upload(entity: UploadEntity): void {
+    this.uploader.upload(entity.id);
   }
 
   public uploadAll(): void {
@@ -72,15 +81,19 @@ export class ProjectUploadsComponent {
   }
 
   public changeGlobalSoftware(software: string): void {
-    this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), first(), mergeMap((projectLinkUUID) =>
-      this.store.pipe(select(fromDashboardProjectUploads.getPendingUploadsForProject, { projectLinkUUID }), first())
-    )).subscribe((pendingUploads) => {
-      pendingUploads.forEach((p) => this.changeSoftware(p, software));
+    this.currentProjectPendingUploads$.pipe(first()).subscribe((pending) => {
+      pending.forEach((p) => this.changeSoftware(p, software));
     });
   }
 
   public remove(entity: UploadEntity): void {
-    this.store.dispatch(ProjectUploadsActions.remove({ entityId: entity.id }));
+    this.uploader.remove(entity.id);
+  }
+
+  public removeAll(): void {
+    this.currentProjectPendingUploads$.pipe(first()).subscribe((pending) => {
+      pending.forEach((p) => this.remove(p));
+    });
   }
 
   public handleFiles(files: File[]): void {

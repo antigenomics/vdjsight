@@ -2,12 +2,16 @@
   padding: 2em 1em;
 }
 
+.content > .grid > .column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  resize: vertical;
+}
+
 .centered {
   text-align: center;
   margin: 0;
   position: absolute;
-  top: 50%;
-  -ms-transform: translateY(-50%);
-  transform: translateY(-50%);
-  width: 95%;
+  width: 100%;
 }

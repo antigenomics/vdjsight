@@ -10,6 +10,7 @@ import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models
 import { ProjectUploadsActions } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.actions';
 import { UploadGlobalErrors } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.state';
 import { FilesUploaderService } from 'pages/dashboard/pages/project/pages/uploads/services/files-uploader.service';
+import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
 import { combineLatest } from 'rxjs';
 import { filter, first, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { StringUtils } from 'utils/utils';
@@ -106,6 +107,23 @@ export class UploadsEffects {
     })
   ), { dispatch: false });
 
-  constructor(private readonly actions$: Actions, private readonly store: Store<DashboardProjectUploadModuleState>) {}
+  public upload$ = createEffect(() => this.actions$.pipe(
+    ofType(ProjectUploadsActions.startUpload),
+    tap(({ entityId }) => {
+      combineLatest([
+        this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID)),
+        this.store.pipe(select(fromDashboardProjectUploads.getUploadByID, { id: entityId }))
+      ]).pipe(first()).subscribe(([ projectLinkUUID, upload ]) => {
+        this.samplesAPI.create(projectLinkUUID, upload, this.uploader.fileFor(entityId));
+        // const [ response, progress ] = this.samplesAPI.create(projectLinkUUID, upload, this.uploader.fileFor(entityId));
+        //
+        // response.subscribe((r) => console.log(r));
+        // progress.subscribe((p) => console.log(p));
+      });
+    })
+  ), { dispatch: false });
+
+  constructor(private readonly actions$: Actions, private readonly store: Store<DashboardProjectUploadModuleState>,
+              private readonly uploader: FilesUploaderService, private readonly samplesAPI: SampleFilesService) {}
 
 }

@@ -8,6 +8,7 @@ export interface UploadEntity {
   readonly hash?: string;
 
   readonly uploading: boolean;
+  readonly progress: number;
   readonly uploaded: boolean;
 
   readonly warning?: string;

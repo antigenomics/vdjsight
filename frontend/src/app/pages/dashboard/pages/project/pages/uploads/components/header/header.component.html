@@ -4,24 +4,19 @@
     </div>
     <div class="two wide header column">
         <div class="software">
-            <div class="ui fluid dropdown selection" [vs-tooltip]="selectGlobalSoftware">
-                <i class="dropdown icon"></i>
-                <div class="text">Software</div>
-            </div>
+            <vs-dropdown [value]="'Software'" [values]="availableSoftware" (onSelect)="onGlobalSoftwareChange.emit($event)"></vs-dropdown>
         </div>
-        <ng-template #selectGlobalSoftware let-hide="hide">
-            <div class="ui vertical menu" style="max-width: 250px; max-height: 400px; overflow: auto; text-align: left">
-                <div class="header item">Change software for pending uploads</div>
-                <a class="item" *ngFor="let value of availableSoftware" (click)="onGlobalSoftwareChange.emit(value);hide()">
-                    {{ value }}
-                </a>
-            </div>
-        </ng-template>
     </div>
     <div class="two wide header column">
         Size
     </div>
     <div class="four wide header column">
         Status
+    </div>
+    <div class="two wide column">
+        <div class="ui blue mini fluid button" [ngClass]="{ 'disabled': !isUploadAllowed }" (click)="onUploadAll.emit()">Upload all</div>
+    </div>
+    <div class="two wide column">
+        <div class="ui orange mini fluid button" (click)="onRemoveAll.emit()">Remove all</div>
     </div>
 </div>

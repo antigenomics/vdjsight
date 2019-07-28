@@ -29,23 +29,30 @@ export class DropdownComponent implements OnInit, OnDestroy {
   @Output()
   public onSelect = new EventEmitter<string>();
 
+  @Input()
+  public closeOtherDropdownOnFocus: boolean = true;
+
   public ngOnInit(): void {
     this.state.next(DropdownComponentState.INACTIVE);
   }
 
   public switch(event: Event): void {
-    event.stopImmediatePropagation();
-    this.state.pipe(first()).subscribe((state) => {
-      switch (state) {
-        case DropdownComponentState.ACTIVE:
-          this.close();
-          break;
-        case DropdownComponentState.INACTIVE:
-          this.open();
-          break;
-        default:
-          break;
-      }
+    if (!this.closeOtherDropdownOnFocus) {
+      event.stopPropagation();
+    }
+    window.setTimeout(() => {
+      this.state.pipe(first()).subscribe((state) => {
+        switch (state) {
+          case DropdownComponentState.ACTIVE:
+            this.close();
+            break;
+          case DropdownComponentState.INACTIVE:
+            this.open();
+            break;
+          default:
+            break;
+        }
+      });
     });
   }
 

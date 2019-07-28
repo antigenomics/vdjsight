@@ -25,7 +25,9 @@
             </div>
         </div>
         <div class="two wide column">
-            <div class="ui blue mini fluid button" [ngClass]="{ 'disabled': !isUploadEntityReady || !isUploadAllowed }">Upload</div>
+            <div class="ui blue mini fluid button" (click)="onUpload.emit()"
+                 [ngClass]="{ 'disabled': !isUploadEntityReady || !isUploadAllowed }">Upload
+            </div>
         </div>
         <div class="two wide column">
             <div class="ui orange mini fluid button" (click)="onRemove.emit()">Remove</div>

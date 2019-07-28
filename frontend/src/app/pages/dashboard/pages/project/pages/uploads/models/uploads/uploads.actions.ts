@@ -21,10 +21,11 @@ export namespace ProjectUploadsActions {
     check: boolean
   }>());
 
-  export const check   = createAction('[ProjectUploads] Check', props<{ entityId: number }>());
-  export const checked = createAction('[ProjectUploads] Checked', props<{ entityId: number, warning?: string }>());
-
+  export const check         = createAction('[ProjectUploads] Check', props<{ entityId: number }>());
+  export const checked       = createAction('[ProjectUploads] Checked', props<{ entityId: number, warning?: string }>());
   export const globalChecked = createAction('[ProjectUploads] Global Checked', props<{ warnings?: string[], errors?: string[] }>());
+
+  export const startUpload = createAction('[ProjectUploads] Start Upload', props<{ entityId: number }>());
 
   export const remove = createAction('[ProjectUploads] Remove', props<{ entityId: number }>());
 

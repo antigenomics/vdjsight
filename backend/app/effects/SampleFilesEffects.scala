@@ -19,9 +19,10 @@ class SampleFileEffectsActor extends Actor with Logging {
         logger.info("Initializing samples storage folder")
         Files.createDirectories(Paths.get(configuration.storagePath))
       }
-    case SampleFileProviderEvents.SampleFileCreated(sample) => Files.createDirectories(Paths.get(sample.folder))
-    case SampleFileProviderEvents.SampleFileUpdated(_)      =>
-    case SampleFileProviderEvents.SampleFileDeleted(sample) => Files.deleteIfExists(Paths.get(sample.folder))
+    case SampleFileProviderEvents.SampleFileCreated(_) =>
+    case SampleFileProviderEvents.SampleFileUpdated(_) =>
+    case SampleFileProviderEvents.SampleFileDeleted(_) =>
+
   }
 }
 

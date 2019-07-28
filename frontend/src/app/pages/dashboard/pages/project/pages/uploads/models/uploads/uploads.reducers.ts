@@ -14,6 +14,7 @@ const uploadsReducer = createReducer(
       size:            size,
       software:        software,
       uploading:       false,
+      progress:        0,
       uploaded:        false
     }, state);
   }),
@@ -33,6 +34,12 @@ const uploadsReducer = createReducer(
     draft.globalWarnings = warnings;
     draft.globalErrors   = errors;
   })),
+  on(ProjectUploadsActions.startUpload, (state, { entityId }) => {
+    return UploadsStateAdapter.updateOne({
+      id:      entityId,
+      changes: { uploading: true, progress: 0 }
+    }, state);
+  }),
   on(ProjectUploadsActions.remove, (state, { entityId }) => {
     return UploadsStateAdapter.removeOne(entityId, state);
   })

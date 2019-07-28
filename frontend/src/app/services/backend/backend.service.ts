@@ -7,7 +7,7 @@ import { NetworkActions } from 'models/network/network.actions';
 import { fromRoot, RootModuleState } from 'models/root';
 import { UserActions } from 'models/user/user.actions';
 import { Observable, throwError } from 'rxjs';
-import { catchError, flatMap, map, retryWhen, take, tap } from 'rxjs/operators';
+import { catchError, first, flatMap, map, retryWhen, take, tap } from 'rxjs/operators';
 import { backendDebug } from 'services/backend/backend-debug';
 import { LoggerService } from 'utils/logger/logger.service';
 import { BackendRequest, BackendRequestEndpoint, BackendRequestOptions, BackendRequestType } from './backend-request';
@@ -52,33 +52,12 @@ export class BackendService {
     return this.get<void>('ping');
   }
 
-  private next<T, B = T>(request: BackendRequest<T>, options?: BackendRequestOptions): Observable<B> {
-    const url = BackendService.endpointToURL(request.endpoint);
-    return this.limiter.request(request).pipe(backendDebug(), flatMap((r: BackendRequest<T>) => {
-      let call: Observable<BackendSuccessResponse<B>>;
-      switch (r.type) {
-        case BackendRequestType.GET:
-          call = this.http.get<BackendSuccessResponse<B>>(url, { ...options, withCredentials: true });
-          break;
-        case BackendRequestType.POST:
-          call = this.http.post<BackendSuccessResponse<B>>(url, r.data, { ...options, withCredentials: true });
-          break;
-        case BackendRequestType.PUT:
-          call = this.http.put<BackendSuccessResponse<B>>(url, r.data, { ...options, withCredentials: true });
-          break;
-        case BackendRequestType.DELETE:
-          call = this.http.delete<BackendSuccessResponse<B>>(url, { ...options, withCredentials: true });
-          break;
-        default:
-          break;
-      }
-      return call.pipe(
-        retryWhen(retryStrategy(BackendService.retryCount)),
-        take(1),
-        map((response) => response.data),
-        tap((data) => this.logger.debug('[BackendResponse]', data))
-      );
-    }), catchError((error: HttpErrorResponse) => {
+  public retryOnFail<T>(observable: Observable<T>): Observable<T> {
+    return observable.pipe(retryWhen(retryStrategy(BackendService.retryCount)));
+  }
+
+  public catchErrors<T>(observable: Observable<T>): Observable<T> {
+    return observable.pipe(catchError((error: HttpErrorResponse) => {
       if (!navigator.onLine) {
         this.store.dispatch(NetworkActions.GoOffline());
       }
@@ -97,14 +76,36 @@ export class BackendService {
     }));
   }
 
-  private static getAPIUrl(): string {
-    const backend  = environment.backend;
-    const protocol = backend.protocol === 'auto' ? window.location.protocol : backend.protocol;
-    const host     = backend.host === 'auto' ? window.location.host : backend.host;
-    return `${protocol}//${backend.prefix}${host}${backend.suffix}`;
+  private next<T, B = T>(request: BackendRequest<T>, options?: BackendRequestOptions): Observable<B> {
+    const url = BackendService.endpointToURL(request.endpoint);
+    return this.catchErrors(
+      this.limiter.request(request).pipe(backendDebug(), flatMap((r: BackendRequest<T>) => {
+        let call: Observable<BackendSuccessResponse<B>>;
+        switch (r.type) {
+          case BackendRequestType.GET:
+            call = this.http.get<BackendSuccessResponse<B>>(url, { ...options, withCredentials: true });
+            break;
+          case BackendRequestType.POST:
+            call = this.http.post<BackendSuccessResponse<B>>(url, r.data, { ...options, withCredentials: true });
+            break;
+          case BackendRequestType.PUT:
+            call = this.http.put<BackendSuccessResponse<B>>(url, r.data, { ...options, withCredentials: true });
+            break;
+          case BackendRequestType.DELETE:
+            call = this.http.delete<BackendSuccessResponse<B>>(url, { ...options, withCredentials: true });
+            break;
+          default:
+            break;
+        }
+
+        return this.retryOnFail(call).pipe(first(), map((d) => d.data),
+          tap((data) => this.logger.debug('[BackendResponse]', data))
+        );
+      }))
+    );
   }
 
-  private static endpointToURL(endpoint: BackendRequestEndpoint): string {
+  public static endpointToURL(endpoint: BackendRequestEndpoint): string {
     let url = '';
     if (typeof endpoint === 'string') {
       url = `/${endpoint}`;
@@ -115,5 +116,12 @@ export class BackendService {
       url         = `/${endpoint.segments.concat('/')}?${query}`;
     }
     return `${BackendService.api}${url.replace(/([^:]\/)\/+/g, '$1').replace('//', '/')}`;
+  }
+
+  private static getAPIUrl(): string {
+    const backend  = environment.backend;
+    const protocol = backend.protocol === 'auto' ? window.location.protocol : backend.protocol;
+    const host     = backend.host === 'auto' ? window.location.host : backend.host;
+    return `${protocol}//${backend.prefix}${host}${backend.suffix}`;
   }
 }
