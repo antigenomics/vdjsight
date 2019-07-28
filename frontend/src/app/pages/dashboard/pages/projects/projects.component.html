@@ -1,5 +1,5 @@
 <div class="ui projects container">
-    <div class="ui raised violet attached projects segment" [ngClass]="{ 'placeholder': !(isLoaded | async) }">
+    <div class="ui raised violet attached projects segment" [ngClass]="{ 'placeholder': (isLoaded | async) === (false) }">
         <div class="ui projects grid" *ngIf="isLoaded | async; else notLoaded">
             <div class="six wide projects list column right vertically divided">
                 <div vs-projects-list [projects]="projects$ | async" [selected]="selected$ | async" (onSelect)="select($event)"></div>
@@ -24,7 +24,7 @@
             </ng-container>
         </ng-template>
     </div>
-    <div class="ui secondary bottom attached raised segment" *ngIf="(isLoaded | async) && !(isLoadFailed | async)" @footer>
+    <div class="ui secondary bottom attached raised segment" *ngIf="(isLoaded | async) && ((isLoadFailed | async) === (false))" @footer>
         <div class="ui grid">
             <div class="six wide column right vertically divided">
                 <vs-projects-list-util-buttons (onCreate)="create()"></vs-projects-list-util-buttons>

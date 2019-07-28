@@ -37,7 +37,7 @@ export class SampleFilesService {
 
     const events = this.http.request<SampleFilesAPI.CreateResponse>(request);
 
-    events.subscribe((r) => console.log(r));
+    events.subscribe((r) => console.log(r)); // tslint:disable-line:no-console
 
     return [ undefined, undefined ];
   }

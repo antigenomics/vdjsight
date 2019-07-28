@@ -38,7 +38,6 @@
     ],
     "no-non-null-assertion": true,
     "no-redundant-jsdoc": true,
-    "no-use-before-declare": true,
     "no-var-requires": false,
     "object-literal-key-quotes": [
       true,
@@ -93,7 +92,6 @@
       "allow-number",
       "allow-string"
     ],
-    "no-unused-variable": true,
     "ordered-imports": true,
     "no-console": [
       true

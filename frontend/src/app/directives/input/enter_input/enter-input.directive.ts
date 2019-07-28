@@ -32,7 +32,7 @@ export class EnterInputDirective<T> implements OnInit, OnDestroy {
   @HostListener('keypress', [ '$event' ])
   public press($event: KeyboardEvent) {
     $event.stopPropagation();
-    if ($event.key === 'Enter' || $event.keyCode === 13) { // tslint:disable-line:no-magic-numbers
+    if ($event.key === 'Enter' || $event.keyCode === 13) { // tslint:disable-line:no-magic-numbers deprecation
       this.enter.next();
       if (this.focusOutOnEnter) {
         this.element.nativeElement.blur();

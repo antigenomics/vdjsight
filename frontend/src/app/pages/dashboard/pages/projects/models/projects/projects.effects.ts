@@ -6,7 +6,7 @@ import { DashboardProjectsModuleState, fromDashboardProjects } from 'pages/dashb
 import { ProjectsActions } from 'pages/dashboard/pages/projects/models/projects/projects.actions';
 import { ProjectsService } from 'pages/dashboard/services/projects/projects.service';
 import { of } from 'rxjs';
-import { catchError, filter, map, mergeMap, withLatestFrom, switchMap } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
 import { withNotification } from 'utils/effects/effects-helper';
 

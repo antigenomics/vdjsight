@@ -4,7 +4,7 @@ import { ApplicationActions } from 'models/application/application.actions';
 import { UserActions } from 'models/user/user.actions';
 import { LoginPageActions } from 'pages/auth/models/login_page/login-page.actions';
 import { of } from 'rxjs';
-import { catchError, map, switchMap, exhaustMap } from 'rxjs/operators';
+import { catchError, exhaustMap, map, switchMap } from 'rxjs/operators';
 import { AccountService } from 'services/account/account.service';
 import { AuthorizationService } from 'services/authorization/authorization.service';
 import { BackendErrorResponse } from 'services/backend/backend-response';

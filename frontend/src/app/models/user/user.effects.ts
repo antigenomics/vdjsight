@@ -6,7 +6,7 @@ import { Action, select, Store } from '@ngrx/store';
 import { fromRoot, RootModuleState } from 'models/root';
 import { UserActions } from 'models/user/user.actions';
 import { from, of } from 'rxjs';
-import { catchError, filter, map, tap, withLatestFrom, exhaustMap } from 'rxjs/operators';
+import { catchError, exhaustMap, filter, map, tap, withLatestFrom } from 'rxjs/operators';
 import { AccountService } from 'services/account/account.service';
 import { HttpStatusCode } from 'services/backend/http-codes';
 

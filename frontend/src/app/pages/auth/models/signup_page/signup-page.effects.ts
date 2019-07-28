@@ -4,7 +4,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { LoginPageActions } from 'pages/auth/models/login_page/login-page.actions';
 import { SignupPageActions } from 'pages/auth/models/signup_page/signup-page.actions';
 import { from, of } from 'rxjs';
-import { catchError, map, exhaustMap, switchMap } from 'rxjs/operators';
+import { catchError, exhaustMap, map, switchMap } from 'rxjs/operators';
 import { AuthorizationService } from 'services/authorization/authorization.service';
 import { BackendErrorResponse } from 'services/backend/backend-response';
 
