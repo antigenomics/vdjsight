@@ -45,13 +45,11 @@ export class SampleFilesEffects {
     map(() => SampleFilesActions.load())
   ));
 
-  public deselect$ = createEffect(() => this.actions$.pipe(
-    ofType(CurrentProjectActions.deselect),
-    map(() => SampleFilesActions.clear())
-  ));
-
-  public logout$ = createEffect(() => this.actions$.pipe(
-    ofType(UserActions.logout),
+  public clear$ = createEffect(() => this.actions$.pipe(
+    ofType(
+      UserActions.logout,
+      CurrentProjectActions.deselect
+    ),
     map(() => SampleFilesActions.clear())
   ));
 

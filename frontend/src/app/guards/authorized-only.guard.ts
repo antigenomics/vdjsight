@@ -5,7 +5,7 @@ import { ApplicationActions } from 'models/application/application.actions';
 import { NetworkActions } from 'models/network/network.actions';
 import { fromRoot, RootModuleState } from 'models/root';
 import { from, Observable, of } from 'rxjs';
-import { map, mergeMap, skipWhile, take } from 'rxjs/operators';
+import { first, map, mergeMap, skipWhile } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +24,8 @@ export class AuthorizedOnlyGuard implements CanLoad, CanActivate {
 
   private guard(route: Route | ActivatedRouteSnapshot, url: string): Observable<boolean> {
     this.store.dispatch(NetworkActions.GuardActivationStart({ title: 'Authorized only access', message: 'We need some time to check your credentials...' }));
-    return this.store.pipe(select(fromRoot.isUserStateInitialized), skipWhile((initialized) => !initialized), take(1), mergeMap(() => {
-      return this.store.pipe(select(fromRoot.isUserLoggedIn), take(1), mergeMap((isLoggedIn) => {
+    return this.store.pipe(select(fromRoot.isUserStateInitialized), skipWhile((initialized) => !initialized), first(), mergeMap(() => {
+      return this.store.pipe(select(fromRoot.isUserLoggedIn), first(), mergeMap((isLoggedIn) => {
         this.store.dispatch(NetworkActions.GuardActivationEnd());
         if (!isLoggedIn) {
           this.store.dispatch(ApplicationActions.saveURL({ url }));

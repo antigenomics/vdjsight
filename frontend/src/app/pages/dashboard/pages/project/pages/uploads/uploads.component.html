@@ -11,20 +11,16 @@
             <i class="small times icon"></i>
         </div>
     </div>
-    <ng-container *ngIf="(currentProjectInfo$ | async).isUploadAllowed; else uploadNotAllowed">
+    <ng-container *ngIf="isUploadAllowedForCurrentProject | async; else uploadNotAllowed">
         <div class="ui clearing segment">
             <div class="ui tiny teal button" (click)="add()">Add file(s)</div>
         </div>
-        <ng-container *ngIf="(errors$ | async) as errors">
-            <div class="ui segment" *ngIf="errors.length !== 0" @errors>
-                <vs-files-errors [errors]="errors"></vs-files-errors>
-            </div>
-        </ng-container>
-        <ng-container *ngIf="(warnings$ | async) as warnings">
-            <div class="ui segment" *ngIf="warnings.length !== 0" @warnings>
-                <vs-files-warnings [warnings]="warnings"></vs-files-warnings>
-            </div>
-        </ng-container>
+        <div class="ui segment" *ngIf="isGlobalErrorsNotEmpty$ | async" @errors>
+            <vs-files-errors [errors]="globalErrors$ | async"></vs-files-errors>
+        </div>
+        <div class="ui segment" *ngIf="isGlobalWarningsNotEmpty$ | async" @warnings>
+            <vs-files-warnings [warnings]="globalWarnings$ | async"></vs-files-warnings>
+        </div>
         <ng-container *ngIf="currentProjectUploads$ | async as uploads">
             <ng-container *ngIf="uploads.length === 0">
                 <div vs-files-drop (onDrop)="handleFiles($event)" class="ui empty segment" @empty>
@@ -41,7 +37,7 @@
             </ng-container>
             <ng-container *ngIf="uploads.length !== 0">
                 <div class="ui segment">
-                    <vs-upload-header [isUploadAllowed]="isUploadAllowed$ | async"
+                    <vs-upload-header [isUploadForbidden]="isGlobalErrorsNotEmpty$ | async"
                                       (onGlobalSoftwareChange)="changeGlobalSoftware($event)"
                                       (onUploadAll)="uploadAll()" (onRemoveAll)="removeAll()">
                     </vs-upload-header>
@@ -53,7 +49,7 @@
                                    (onSoftwareChange)="changeSoftware(entity, $event)"
                                    (onUpload)="upload(entity)"
                                    (onRemove)="remove(entity)"
-                                   [isUploadAllowed]="isUploadAllowed$ | async">
+                                   [isUploadForbidden]="isGlobalErrorsNotEmpty$ | async">
                         </vs-upload>
                     </div>
                 </div>

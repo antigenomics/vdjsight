@@ -13,7 +13,7 @@ export class UploadComponent {
   public entity: UploadEntity;
 
   @Input()
-  public isUploadAllowed: boolean;
+  public isUploadForbidden: boolean;
 
   @Output()
   public onUpload = new EventEmitter();

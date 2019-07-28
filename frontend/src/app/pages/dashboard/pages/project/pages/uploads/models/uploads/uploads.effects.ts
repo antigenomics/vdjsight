@@ -4,6 +4,7 @@ import { select, Store } from '@ngrx/store';
 import { fromRoot } from 'models/root';
 import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
+import { SampleFileEntity } from 'pages/dashboard/pages/project/models/samples/samples';
 import { SampleFilesActions } from 'pages/dashboard/pages/project/models/samples/samples.actions';
 import { DashboardProjectUploadModuleState, fromDashboardProjectUploads } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
@@ -12,7 +13,7 @@ import { UploadGlobalErrors } from 'pages/dashboard/pages/project/pages/uploads/
 import { FilesUploaderService } from 'pages/dashboard/pages/project/pages/uploads/services/files-uploader.service';
 import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
 import { combineLatest } from 'rxjs';
-import { filter, first, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, first, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { StringUtils } from 'utils/utils';
 
 @Injectable()
@@ -22,7 +23,7 @@ export class UploadsEffects {
     ofType(ProjectUploadsActions.update),
     filter(({ check }) => check),
     mergeMap(({ entityId }) => this.store.pipe(select(fromDashboardProjectUploads.getUploadByID, { id: entityId }), first())),
-    filter((entity) => !entity.uploading && !entity.uploaded),
+    filter((entity) => UploadEntity.isEntityPending(entity)),
     map((entity) => ProjectUploadsActions.check({ entityId: entity.id }))
   ));
 
@@ -31,7 +32,8 @@ export class UploadsEffects {
     mergeMap(({ entityId }) => this.store.pipe(select(fromDashboardProjectUploads.getUploadByID, { id: entityId }), first())),
     withLatestFrom(this.store.select(fromRoot.getUserCredentials)),
     map(([ entity, user ]) => {
-      const w = () => {
+
+      const warning = (() => {
         if (entity.name === '') {
           return UploadEntity.Errors.EMPTY_NAME;
         }
@@ -45,15 +47,16 @@ export class UploadsEffects {
         }
 
         return undefined;
-      };
-      return ProjectUploadsActions.checked({ entityId: entity.id, warning: w() });
+      })();
+
+      return ProjectUploadsActions.checked({ entityId: entity.id, warning });
     })
   ));
 
   public global$ = createEffect(() => this.actions$.pipe(
     ofType(
-      ProjectUploadsActions.checked,
       ProjectUploadsActions.add,
+      ProjectUploadsActions.checked,
       ProjectUploadsActions.remove,
       SampleFilesActions.loadSuccess,
       SampleFilesActions.forceDeleteSuccess,
@@ -62,16 +65,14 @@ export class UploadsEffects {
       CurrentProjectActions.select
     ),
     tap(() => {
-      this.store.pipe(select(fromDashboardProject.getCurrentProjectInfo), take(1)).subscribe((projectInfo) => {
+      this.store.pipe(select(fromDashboardProject.getCurrentProjectInfo), first()).subscribe((projectInfo) => {
         if (projectInfo !== undefined) {
-
           if (projectInfo.isUploadAllowed) {
-
             combineLatest([
               this.store.pipe(select(fromRoot.getUserCredentials)),
               this.store.pipe(select(fromDashboardProject.getSamplesForProject, { projectLinkUUID: projectInfo.uuid })),
-              this.store.pipe(select(fromDashboardProjectUploads.getUploadsForProject, { projectLinkUUID: projectInfo.uuid }))
-            ]).pipe(take(1)).subscribe(([ user, samples, uploads ]) => {
+              this.store.pipe(select(fromDashboardProjectUploads.getNotUploadedUploadsForProject, { projectLinkUUID: projectInfo.uuid }))
+            ]).pipe(first()).subscribe(([ user, samples, uploads ]) => {
               const errors: string[]   = [];
               const warnings: string[] = [];
 
@@ -80,15 +81,15 @@ export class UploadsEffects {
               }
 
               if (StringUtils.duplicatesExist([
-                ...samples.filter((s) => s.link !== undefined).map((s) => s.link.name),
-                ...uploads.filter((u) => !u.uploaded).map((u) => u.name) ])
+                ...samples.filter((s) => SampleFileEntity.isEntityLinked(s)).map((s) => s.link.name),
+                ...uploads.filter((u) => !UploadEntity.isEntityUploaded(u)).map((u) => u.name) ])
               ) {
                 errors.push(UploadGlobalErrors.UPLOAD_NAME_DUPLICATE);
               }
 
               if (StringUtils.duplicatesExist([
-                ...samples.filter((s) => s.link !== undefined).map((s) => s.link.hash),
-                ...uploads.filter((u) => u.hash !== undefined).map((u) => u.hash) ])
+                ...samples.filter((s) => SampleFileEntity.isEntityLinked(s)).map((s) => s.link.hash),
+                ...uploads.filter((u) => UploadEntity.isEntityHashReady(u)).map((u) => u.hash) ])
               ) {
                 warnings.push(UploadGlobalErrors.UPLOAD_HASH_DUPLICATE);
               }
@@ -109,12 +110,11 @@ export class UploadsEffects {
 
   public upload$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectUploadsActions.startUpload),
-    tap(({ entityId }) => {
-      combineLatest([
-        this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID)),
-        this.store.pipe(select(fromDashboardProjectUploads.getUploadByID, { id: entityId }))
-      ]).pipe(first()).subscribe(([ projectLinkUUID, upload ]) => {
-        this.samplesAPI.create(projectLinkUUID, upload, this.uploader.fileFor(entityId));
+    mergeMap(({ entityId }) => this.store.pipe(select(fromDashboardProjectUploads.getUploadByID, { id: entityId }), first())),
+    filter((entity) => UploadEntity.isEntityPending(entity)),
+    tap((entity) => {
+      this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), first()).subscribe((projectLinkUUID) => {
+        this.samplesAPI.create(projectLinkUUID, entity, this.uploader.fileFor(entity.id));
         // const [ response, progress ] = this.samplesAPI.create(projectLinkUUID, upload, this.uploader.fileFor(entityId));
         //
         // response.subscribe((r) => console.log(r));

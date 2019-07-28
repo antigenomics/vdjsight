@@ -33,6 +33,11 @@ export namespace fromDashboardProject {
   export const isCurrentProjectLoadFailed = createSelector(selectDashboardProjectModuleCurrentProjectState, __fromDashboardCurrentProjectState.isCurrentProjectLoadFailed);
   export const getCurrentProjectInfo      = createSelector(selectDashboardProjectModuleCurrentProjectState, __fromDashboardCurrentProjectState.getCurrentProjectInfo);
 
+  /** Current project info selectors */
+  export const isUploadAllowedForCurrentProject       = createSelector(getCurrentProjectInfo, (info) => info ? info.isUploadAllowed : false);
+  export const isDeleteAllowedForCurrentProject       = createSelector(getCurrentProjectInfo, (info) => info ? info.isDeleteAllowed : false);
+  export const isModificationAllowedForCurrentProject = createSelector(getCurrentProjectInfo, (info) => info ? info.isModificationAllowed : false);
+
 
   /** Samples selectors */
   export const isSamplesLoading        = createSelector(selectDashboardProjectModuleSampleFilesState, __fromDashboardSampleFilesState.isLoading);

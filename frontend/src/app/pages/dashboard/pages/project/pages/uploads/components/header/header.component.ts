@@ -11,7 +11,7 @@ export class FilesHeaderComponent {
   public availableSoftware = SampleFilesService.AvailableSoftwareTypes;
 
   @Input()
-  public isUploadAllowed: boolean;
+  public isUploadForbidden: boolean;
 
   @Output()
   public onGlobalSoftwareChange = new EventEmitter<string>();

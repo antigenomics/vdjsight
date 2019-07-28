@@ -26,7 +26,7 @@
         </div>
         <div class="two wide column">
             <div class="ui blue mini fluid button" (click)="onUpload.emit()"
-                 [ngClass]="{ 'disabled': !isUploadEntityReady || !isUploadAllowed }">Upload
+                 [ngClass]="{ 'disabled': !isUploadEntityReady || isUploadForbidden }">Upload
             </div>
         </div>
         <div class="two wide column">

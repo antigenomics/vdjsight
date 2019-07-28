@@ -7,7 +7,7 @@ import { NetworkActions } from 'models/network/network.actions';
 import { fromRoot, RootModuleState } from 'models/root';
 import { UserActions } from 'models/user/user.actions';
 import { Observable, throwError } from 'rxjs';
-import { catchError, first, flatMap, map, retryWhen, take, tap } from 'rxjs/operators';
+import { catchError, first, flatMap, map, retryWhen, tap } from 'rxjs/operators';
 import { backendDebug } from 'services/backend/backend-debug';
 import { LoggerService } from 'utils/logger/logger.service';
 import { BackendRequest, BackendRequestEndpoint, BackendRequestOptions, BackendRequestType } from './backend-request';
@@ -62,7 +62,7 @@ export class BackendService {
         this.store.dispatch(NetworkActions.GoOffline());
       }
       if (error.status === 0) {
-        return this.store.pipe(select(fromRoot.isApplicationBackendDead), take(1), flatMap((isBackendDead) => {
+        return this.store.pipe(select(fromRoot.isApplicationBackendDead), first(), flatMap((isBackendDead) => {
           if (isBackendDead) {
             this.store.dispatch(ApplicationActions.pingBackendSchedule({ timeout: BackendService.deadBackendPingTimeout }));
             return throwError({ error: 'Server is unavailable now. Please try again later.' } as BackendErrorResponse);

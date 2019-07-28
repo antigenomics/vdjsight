@@ -17,8 +17,28 @@ export interface UploadEntity {
 
 export namespace UploadEntity {
 
+  export function isEntityUploading(entity: UploadEntity): boolean {
+    return entity.uploading;
+  }
+
+  export function isEntityUploaded(entity: UploadEntity): boolean {
+    return entity.uploaded;
+  }
+
+  export function isEntityPending(entity: UploadEntity): boolean {
+    return !entity.uploading && !entity.uploaded;
+  }
+
+  export function isEntityPendingAndValid(entity: UploadEntity): boolean {
+    return isEntityPending(entity) && entity.warning === undefined;
+  }
+
+  export function isEntityHashReady(entity: UploadEntity): boolean {
+    return entity.hash !== undefined;
+  }
+
   export function isEntityReadyForUpload(entity: UploadEntity): boolean {
-    return !entity.uploading && !entity.uploaded && entity.hash !== undefined && entity.warning === undefined;
+    return isEntityPendingAndValid(entity) && isEntityHashReady(entity);
   }
 
   export const enum Errors {

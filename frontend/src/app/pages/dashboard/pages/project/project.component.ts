@@ -6,7 +6,7 @@ import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/proj
 import { ContentAnimation, ExtraAnimation, SidebarAnimation } from 'pages/dashboard/pages/project/project.animations';
 import { DashboardProjectsModuleState } from 'pages/dashboard/pages/projects/models/dashboard-projects.state';
 import { Subscription } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 
 @Component({
   selector:        'vs-project-page',
@@ -16,7 +16,7 @@ import { map, take } from 'rxjs/operators';
   animations:      [ SidebarAnimation, ContentAnimation, ExtraAnimation ]
 })
 export class ProjectComponent implements OnInit, OnDestroy {
-  private currentProjectUpdateSubscription$: Subscription;
+  private currentProjectUpdateSubscription: Subscription;
 
   public readonly isCurrentProjectLoading$    = this.store.pipe(select(fromDashboardProject.isCurrentProjectLoading));
   public readonly isCurrentProjectLoaded$     = this.store.pipe(select(fromDashboardProject.isCurrentProjectLoaded));
@@ -25,19 +25,19 @@ export class ProjectComponent implements OnInit, OnDestroy {
   constructor(private readonly route: ActivatedRoute, private readonly store: Store<DashboardProjectsModuleState>) {}
 
   public ngOnInit(): void {
-    this.currentProjectUpdateSubscription$ = this.route.params.pipe(map((p) => p.uuid)).subscribe((uuid) => {
+    this.currentProjectUpdateSubscription = this.route.params.pipe(map((p) => p.uuid)).subscribe((uuid) => {
       this.store.dispatch(CurrentProjectActions.select({ projectLinkUUID: uuid }));
     });
   }
 
   public reload(): void {
-    this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), take(1)).subscribe((uuid) => {
+    this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), first()).subscribe((uuid) => {
       this.store.dispatch(CurrentProjectActions.load({ projectLinkUUID: uuid }));
     });
   }
 
   public ngOnDestroy(): void {
-    this.currentProjectUpdateSubscription$.unsubscribe();
+    this.currentProjectUpdateSubscription.unsubscribe();
     this.store.dispatch(CurrentProjectActions.deselect());
   }
 

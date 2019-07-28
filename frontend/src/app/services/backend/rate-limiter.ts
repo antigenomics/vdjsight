@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable, Subject, timer } from 'rxjs';
-import { filter, map, mergeMap, take } from 'rxjs/operators';
+import { filter, first, map, mergeMap } from 'rxjs/operators';
 
 interface RequestWrapper<T> {
   id: number;
@@ -22,7 +22,7 @@ export class RateLimiter<T> {
     const wrapper = { id: this.counter++, request: request };
     return new Observable((subscriber) => {
       this.wrapperStream.pipe(filter((w) => w.id === wrapper.id), mergeMap((value) => this.availableTokens.pipe(
-        take(1),
+        first(),
         map(() => {
           this.tokenChanged.next(--this.count);
           timer(this.timeout).subscribe(() => this.tokenChanged.next(++this.count));

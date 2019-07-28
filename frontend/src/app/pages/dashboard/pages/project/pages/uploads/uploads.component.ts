@@ -13,10 +13,10 @@ import {
   UploadsListAnimation,
   UploadsWarningsAnimation
 } from 'pages/dashboard/pages/project/pages/uploads/uploads.animations';
-import { first, map, mergeMap } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 
 @Component({
-  selector:        'vs-uploads',
+  selector:        'vs-project-uploads',
   templateUrl:     './uploads.component.html',
   styleUrls:       [ './uploads.component.less' ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,25 +25,15 @@ import { first, map, mergeMap } from 'rxjs/operators';
 export class ProjectUploadsComponent {
   public readonly extensions = FilesUploaderService.AvailableExtensions;
 
-  public readonly currentProjectInfo$           = this.store.pipe(select(fromDashboardProject.getCurrentProjectInfo));
-  public readonly currentProjectUploads$        = this.store.pipe(
-    select(fromDashboardProject.getCurrentProjectUUID),
-    mergeMap((currentProjectUUID) => this.store.pipe(
-      select(fromDashboardProjectUploads.getUploadsForProject, { projectLinkUUID: currentProjectUUID }))
-    )
-  );
-  public readonly currentProjectPendingUploads$ = this.store.pipe(
-    select(fromDashboardProject.getCurrentProjectUUID),
-    mergeMap((projectLinkUUID) => this.store.pipe(
-      select(fromDashboardProjectUploads.getPendingUploadsForProject, { projectLinkUUID }))
-    )
-  );
+  public readonly currentProjectUploads$           = this.store.pipe(select(fromDashboardProjectUploads.getUploadsForCurrentProject));
+  public readonly currentProjectPendingUploads$    = this.store.pipe(select(fromDashboardProjectUploads.getPendingUploadsForCurrentProject));
+  public readonly isUploadAllowedForCurrentProject = this.store.pipe(select(fromDashboardProject.isUploadAllowedForCurrentProject));
 
-  public readonly errors$          = this.store.pipe(select(fromDashboardProjectUploads.getGlobalErrors));
-  public readonly warnings$        = this.store.pipe(select(fromDashboardProjectUploads.getGlobalWarnings));
-  public readonly isUploadAllowed$ = this.store.pipe(select(fromDashboardProjectUploads.getGlobalErrors)).pipe(
-    map((errors) => errors.length === 0)
-  );
+  public readonly isGlobalErrorsNotEmpty$ = this.store.pipe(select(fromDashboardProjectUploads.isGlobalErrorsNotEmpty));
+  public readonly globalErrors$           = this.store.pipe(select(fromDashboardProjectUploads.getGlobalErrors));
+
+  public readonly isGlobalWarningsNotEmpty$ = this.store.pipe(select(fromDashboardProjectUploads.isGlobalWarningsNotEmpty));
+  public readonly globalWarnings$           = this.store.pipe(select(fromDashboardProjectUploads.getGlobalWarnings));
 
   constructor(private readonly store: Store<DashboardProjectUploadModuleState>,
               private readonly files: FilesDialogService,
@@ -51,9 +41,7 @@ export class ProjectUploadsComponent {
               private readonly router: Router) {}
 
   public add(): void {
-    this.files.process((files) => {
-      this.handleFiles(files);
-    });
+    this.files.process((files) => this.handleFiles(files));
   }
 
   public upload(entity: UploadEntity): void {
@@ -61,7 +49,9 @@ export class ProjectUploadsComponent {
   }
 
   public uploadAll(): void {
-
+    this.currentProjectPendingUploads$.pipe(first()).subscribe((pending) => {
+      pending.forEach((p) => this.upload(p));
+    });
   }
 
   public changeName(entity: UploadEntity, name: string): void {
@@ -97,9 +87,7 @@ export class ProjectUploadsComponent {
   }
 
   public handleFiles(files: File[]): void {
-    files.forEach((file) => {
-      this.uploader.add(file);
-    });
+    files.forEach((file) => this.uploader.add(file));
   }
 
   public uploadEntityTrackBy(_: number, entity: UploadEntity): number {

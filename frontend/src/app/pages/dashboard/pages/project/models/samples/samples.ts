@@ -19,6 +19,14 @@ export interface SampleFileEntity {
   readonly link?: SampleFileLink;
 }
 
+export namespace SampleFileEntity {
+
+  export function isEntityLinked(entity: SampleFileEntity): boolean {
+    return entity.link !== undefined;
+  }
+
+}
+
 const SampleFileEntitiesLocalUUIDGenerator = new IncrementalUUIDGenerator();
 
 export function CreateEmptySampleFileEntity(): SampleFileEntity {

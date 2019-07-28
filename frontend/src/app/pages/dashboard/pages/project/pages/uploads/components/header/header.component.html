@@ -14,7 +14,7 @@
         Status
     </div>
     <div class="two wide column">
-        <div class="ui blue mini fluid button" [ngClass]="{ 'disabled': !isUploadAllowed }" (click)="onUploadAll.emit()">Upload all</div>
+        <div class="ui blue mini fluid button" [ngClass]="{ 'disabled': isUploadForbidden }" (click)="onUploadAll.emit()">Upload all</div>
     </div>
     <div class="two wide column">
         <div class="ui orange mini fluid button" (click)="onRemoveAll.emit()">Remove all</div>

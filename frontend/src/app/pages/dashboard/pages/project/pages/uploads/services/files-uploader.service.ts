@@ -4,7 +4,7 @@ import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashb
 import { DashboardProjectUploadModuleState } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { ProjectUploadsActions } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.actions';
 import { HashFileWorkerInput, HashFileWorkerOutput } from 'pages/dashboard/pages/project/pages/uploads/workers/hash-file/hash-file';
-import { take } from 'rxjs/operators';
+import { first } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
 import { FileUtils } from 'utils/utils';
 import { IncrementalUUIDGenerator } from 'utils/uuid/incremental-uuid-generator';
@@ -25,7 +25,7 @@ export class FilesUploaderService {
 
   public add(file: File): void {
     if (FilesUploaderService.AvailableExtensions.some((v) => file.name.endsWith(v))) {
-      this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), take(1)).subscribe((currentProjectUUID) => {
+      this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), first()).subscribe((currentProjectUUID) => {
         const entityId = this.uploadEntitiesLocalUUIDGenerator.next();
         this.store.dispatch(ProjectUploadsActions.add({
           entityId:        entityId,
