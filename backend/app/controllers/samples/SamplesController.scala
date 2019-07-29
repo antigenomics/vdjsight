@@ -5,7 +5,7 @@ import java.util.UUID
 
 import actions.{SessionRequest, SessionRequestAction}
 import com.google.inject.{Inject, Singleton}
-import controllers.samples.dto.{SamplesCreateRequest, SamplesCreateResponse, SamplesListResponse}
+import controllers.samples.dto.{SamplesCreateRequest, SamplesCreateResponse, SamplesDeleteRequest, SamplesListResponse}
 import controllers.{ControllerHelpers, WithRecoverAction}
 import models.project.{ProjectLink, ProjectLinkProvider, ProjectProvider}
 import models.sample.{SampleFileLinkDTO, SampleFileLinkProvider, SampleFileProvider}
@@ -130,6 +130,23 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
             }
           }
       )
+  }
+
+  def delete(projectLinkUUID: UUID): Action[JsValue] = actionWithValidate[SamplesDeleteRequest](projectLinkUUID) { (r, delete, projectLink) =>
+    if (projectLink.isDeleteAllowed) {
+      sampleFileLinkProvider.get(delete.uuid).flatMap {
+        case Some(link) if link.projectID == projectLink.projectID =>
+          if (delete.force) {
+            sampleFileLinkProvider.delete(link.uuid)
+            Future(Ok(ServerResponse.EMPTY))
+          } else {
+            Future(NotImplemented(ServerResponseError("Scheduled delete not implemented yet")))
+          }
+        case _ => Future(BadRequest(ServerResponseError("Invalid request")))
+      }
+    } else {
+      Future(BadRequest(ServerResponseError("You are not allowed to do this")))
+    }
   }
 
 }

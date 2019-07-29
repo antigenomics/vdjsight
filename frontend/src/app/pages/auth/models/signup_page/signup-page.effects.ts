@@ -4,7 +4,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { LoginPageActions } from 'pages/auth/models/login_page/login-page.actions';
 import { SignupPageActions } from 'pages/auth/models/signup_page/signup-page.actions';
 import { from, of } from 'rxjs';
-import { catchError, exhaustMap, map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import { AuthorizationService } from 'services/authorization/authorization.service';
 import { BackendErrorResponse } from 'services/backend/backend-response';
 
@@ -13,7 +13,7 @@ export class SignupPageEffects {
 
   public signup$ = createEffect(() => this.actions$.pipe(
     ofType(SignupPageActions.signup),
-    exhaustMap((action) => this.authorization.signup(action.form).pipe(
+    switchMap((action) => this.authorization.signup(action.form).pipe(
       map((response) => SignupPageActions.signupSuccess(response)),
       catchError((error: BackendErrorResponse) => of(SignupPageActions.signupFailed(error))))
     ))

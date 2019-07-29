@@ -52,12 +52,12 @@ export class BackendService {
     return this.get<void>('ping');
   }
 
-  public retryOnFail<T>(observable: Observable<T>): Observable<T> {
-    return observable.pipe(retryWhen(retryStrategy(BackendService.retryCount)));
+  public retryOnFail<T>(): (source: Observable<T>) => Observable<T> {
+    return (source) => source.pipe(retryWhen(retryStrategy(BackendService.retryCount)));
   }
 
-  public catchErrors<T>(observable: Observable<T>): Observable<T> {
-    return observable.pipe(catchError((error: HttpErrorResponse) => {
+  public catchErrors<T>(): (source: Observable<T>) => Observable<T> {
+    return (source) => source.pipe(catchError((error: HttpErrorResponse) => {
       if (!navigator.onLine) {
         this.store.dispatch(NetworkActions.GoOffline());
       }
@@ -78,31 +78,30 @@ export class BackendService {
 
   private next<T, B = T>(request: BackendRequest<T>, options?: BackendRequestOptions): Observable<B> {
     const url = BackendService.endpointToURL(request.endpoint);
-    return this.catchErrors(
-      this.limiter.request(request).pipe(backendDebug(), flatMap((r: BackendRequest<T>) => {
-        let call: Observable<BackendSuccessResponse<B>>;
-        switch (r.type) {
-          case BackendRequestType.GET:
-            call = this.http.get<BackendSuccessResponse<B>>(url, { ...options, withCredentials: true });
-            break;
-          case BackendRequestType.POST:
-            call = this.http.post<BackendSuccessResponse<B>>(url, r.data, { ...options, withCredentials: true });
-            break;
-          case BackendRequestType.PUT:
-            call = this.http.put<BackendSuccessResponse<B>>(url, r.data, { ...options, withCredentials: true });
-            break;
-          case BackendRequestType.DELETE:
-            call = this.http.delete<BackendSuccessResponse<B>>(url, { ...options, withCredentials: true });
-            break;
-          default:
-            break;
-        }
+    return this.limiter.request(request).pipe(backendDebug(), flatMap((r: BackendRequest<T>) => {
+      let call: Observable<BackendSuccessResponse<B>>;
+      switch (r.type) {
+        case BackendRequestType.GET:
+          call = this.http.get<BackendSuccessResponse<B>>(url, { ...options, withCredentials: true });
+          break;
+        case BackendRequestType.POST:
+          call = this.http.post<BackendSuccessResponse<B>>(url, r.data, { ...options, withCredentials: true });
+          break;
+        case BackendRequestType.PUT:
+          call = this.http.put<BackendSuccessResponse<B>>(url, r.data, { ...options, withCredentials: true });
+          break;
+        case BackendRequestType.DELETE:
+          call = this.http.delete<BackendSuccessResponse<B>>(url, { ...options, withCredentials: true });
+          break;
+        default:
+          break;
+      }
 
-        return this.retryOnFail(call).pipe(first(), map((d) => d.data),
-          tap((data) => this.logger.debug('[BackendResponse]', data))
-        );
-      }))
-    );
+      return call.pipe(first(), map((d) => d.data),
+        tap((data) => this.logger.debug('[BackendResponse]', data)),
+        this.retryOnFail()
+      );
+    }), this.catchErrors());
   }
 
   public static endpointToURL(endpoint: BackendRequestEndpoint): string {

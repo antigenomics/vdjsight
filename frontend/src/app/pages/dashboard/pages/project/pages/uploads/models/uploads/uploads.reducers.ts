@@ -34,10 +34,28 @@ const uploadsReducer = createReducer(
     draft.globalWarnings = warnings;
     draft.globalErrors   = errors;
   })),
-  on(ProjectUploadsActions.startUpload, (state, { entityId }) => {
+  on(ProjectUploadsActions.uploadStart, (state, { entityId }) => {
     return UploadsStateAdapter.updateOne({
       id:      entityId,
-      changes: { uploading: true, progress: 0 }
+      changes: { uploading: true, uploaded: false, progress: 0 }
+    }, state);
+  }),
+  on(ProjectUploadsActions.uploadProgress, (state, { entityId, progress }) => {
+    return UploadsStateAdapter.updateOne({
+      id:      entityId,
+      changes: { uploading: true, uploaded: false, progress: progress }
+    }, state);
+  }),
+  on(ProjectUploadsActions.uploadSuccess, (state, { entityId }) => {
+    return UploadsStateAdapter.updateOne({
+      id:      entityId,
+      changes: { uploading: false, uploaded: true, progress: 100 }
+    }, state);
+  }),
+  on(ProjectUploadsActions.uploadFailed, (state, { entityId, error }) => {
+    return UploadsStateAdapter.updateOne({
+      id:      entityId,
+      changes: { uploading: false, uploaded: false, progress: 0, error: error.error }
     }, state);
   }),
   on(ProjectUploadsActions.remove, (state, { entityId }) => {

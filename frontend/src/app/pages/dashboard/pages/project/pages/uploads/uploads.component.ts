@@ -6,7 +6,7 @@ import { DashboardProjectUploadModuleState, fromDashboardProjectUploads } from '
 import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 import { ProjectUploadsActions } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.actions';
 import { FilesDialogService } from 'pages/dashboard/pages/project/pages/uploads/services/files-dialog.service';
-import { FilesUploaderService } from 'pages/dashboard/pages/project/pages/uploads/services/files-uploader.service';
+import { UploadsService } from 'pages/dashboard/pages/project/pages/uploads/services/uploads.service';
 import {
   EmptyListNoteAnimation,
   UploadsErrorsAnimation,
@@ -23,7 +23,7 @@ import { first } from 'rxjs/operators';
   animations:      [ UploadsListAnimation, EmptyListNoteAnimation, UploadsErrorsAnimation, UploadsWarningsAnimation ]
 })
 export class ProjectUploadsComponent {
-  public readonly extensions = FilesUploaderService.AvailableExtensions;
+  public readonly extensions = UploadsService.AvailableExtensions;
 
   public readonly currentProjectUploads$           = this.store.pipe(select(fromDashboardProjectUploads.getUploadsForCurrentProject));
   public readonly currentProjectPendingUploads$    = this.store.pipe(select(fromDashboardProjectUploads.getPendingUploadsForCurrentProject));
@@ -37,7 +37,7 @@ export class ProjectUploadsComponent {
 
   constructor(private readonly store: Store<DashboardProjectUploadModuleState>,
               private readonly files: FilesDialogService,
-              private readonly uploader: FilesUploaderService,
+              private readonly uploader: UploadsService,
               private readonly router: Router) {}
 
   public add(): void {

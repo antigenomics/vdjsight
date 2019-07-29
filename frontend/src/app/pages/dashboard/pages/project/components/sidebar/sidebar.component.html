@@ -10,6 +10,7 @@
             <ng-container *ngIf="samples.length !== 0; else emptyList">
                 <div class="item" *ngFor="let sample of samples; trackBy: sampleFileTrackBy">
                     {{ sample | json }}
+                    <button class="ui button red" (click)="deleteSample(sample)">Delete</button>
                 </div>
             </ng-container>
             <ng-template #emptyList>

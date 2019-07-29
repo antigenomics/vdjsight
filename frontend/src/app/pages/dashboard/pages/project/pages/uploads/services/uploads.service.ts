@@ -11,7 +11,7 @@ import { IncrementalUUIDGenerator } from 'utils/uuid/incremental-uuid-generator'
 import { ReactiveWebWorker } from 'utils/worker/reactive-web-worker';
 
 @Injectable()
-export class FilesUploaderService {
+export class UploadsService {
   public static readonly AvailableExtensions = [ '.txt', '.gz' ];
 
   private readonly uploadEntitiesLocalUUIDGenerator = new IncrementalUUIDGenerator();
@@ -24,13 +24,13 @@ export class FilesUploaderService {
               private readonly notifications: NotificationsService) {}
 
   public add(file: File): void {
-    if (FilesUploaderService.AvailableExtensions.some((v) => file.name.endsWith(v))) {
+    if (UploadsService.AvailableExtensions.some((v) => file.name.endsWith(v))) {
       this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), first()).subscribe((currentProjectUUID) => {
         const entityId = this.uploadEntitiesLocalUUIDGenerator.next();
         this.store.dispatch(ProjectUploadsActions.add({
           entityId:        entityId,
           projectLinkUUID: currentProjectUUID,
-          name:            FileUtils.eraseExtensions(file.name, FilesUploaderService.AvailableExtensions),
+          name:            FileUtils.eraseExtensions(file.name, UploadsService.AvailableExtensions),
           extension:       FileUtils.getLastExtension(file.name),
           software:        'VDJtools',
           size:            file.size
@@ -46,7 +46,7 @@ export class FilesUploaderService {
   }
 
   public upload(entityId: number): void {
-    this.store.dispatch(ProjectUploadsActions.startUpload({ entityId }));
+    this.store.dispatch(ProjectUploadsActions.upload({ entityId }));
   }
 
   public remove(entityId: number): void {

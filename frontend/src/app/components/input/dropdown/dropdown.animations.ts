@@ -39,12 +39,14 @@ export const DropdownIconAnimation = trigger('icon', [
 
 export const DropdownListAnimation = trigger('list', [
   state('inactive', style({
-    visibility: 'hidden'
+    visibility: 'hidden',
+    overflow:   'hidden'
   })),
   state('active', style({
     'border-color': '#96c8da',
     'box-shadow':   '0 2px 3px 0 rgba(34,36,38,.15)',
-    visibility:     'visible'
+    visibility:     'visible',
+    overflow:       'auto'
   })),
   transition('inactive => active', [
     style({ height: '0', overflow: 'hidden', visibility: 'visible' }),

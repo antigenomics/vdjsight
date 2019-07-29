@@ -3,6 +3,7 @@ import { select, Store } from '@ngrx/store';
 import { LoadFailedLabelAnimation, LoadingLabelAnimation } from 'pages/dashboard/pages/project/components/sidebar/sidebar.animations';
 import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { SampleFileEntity } from 'pages/dashboard/pages/project/models/samples/samples';
+import { SampleFilesActions } from 'pages/dashboard/pages/project/models/samples/samples.actions';
 
 @Component({
   selector:        'vs-project-sidebar',
@@ -18,6 +19,10 @@ export class SidebarComponent {
   public readonly samples$             = this.store.pipe(select(fromDashboardProject.getAllSamples));
 
   constructor(private readonly store: Store<DashboardProjectModuleState>) {}
+
+  public deleteSample(entity: SampleFileEntity): void {
+    this.store.dispatch(SampleFilesActions.forceDelete({ entity: entity }));
+  }
 
   public sampleFileTrackBy(_: number, entity: SampleFileEntity): number {
     return entity.id;

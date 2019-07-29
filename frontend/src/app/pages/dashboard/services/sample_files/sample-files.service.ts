@@ -1,8 +1,8 @@
-import { HttpClient, HttpRequest } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 import { SampleFilesAPI } from 'pages/dashboard/services/sample_files/sample-files-api';
 import { Observable } from 'rxjs';
+import { BackendMessageResponse, BackendSuccessResponse } from 'services/backend/backend-response';
 import { BackendService } from 'services/backend/backend.service';
 
 @Injectable()
@@ -18,31 +18,34 @@ export class SampleFilesService {
     return this.backend.get(SampleFilesService.SamplesListEndpoint(projectLinkUUID));
   }
 
-  public create(projectLinkUUID: string, upload: UploadEntity, file: File): [ Observable<SampleFilesAPI.CreateResponse>, Observable<number> ] {
+  public create(projectLinkUUID: string, request: SampleFilesAPI.CreateRequest, file: File):
+    Observable<HttpEvent<BackendSuccessResponse<SampleFilesAPI.CreateResponse>>> {
     const data = new FormData();
 
     data.append('file', file);
-    data.append('name', upload.name);
-    data.append('extension', upload.extension);
-    data.append('software', upload.software);
-    data.append('size', `${upload.size}`);
-    data.append('hash', upload.hash);
+    data.append('name', request.name);
+    data.append('extension', request.extension);
+    data.append('software', request.software);
+    data.append('size', `${request.size}`);
+    data.append('hash', request.hash);
 
-    const request = new HttpRequest<FormData>(
-      'POST',
-      BackendService.endpointToURL(SampleFilesService.SamplesCreateEndpoint(projectLinkUUID)),
-      data,
+    const req = new HttpRequest<FormData>(
+      'POST', BackendService.endpointToURL(SampleFilesService.SamplesCreateEndpoint(projectLinkUUID)), data,
       { reportProgress: true, withCredentials: true }
     );
 
-    const events = this.http.request<SampleFilesAPI.CreateResponse>(request);
+    return this.http.request<BackendSuccessResponse<SampleFilesAPI.CreateResponse>>(req).pipe(
+      this.backend.retryOnFail(),
+      this.backend.catchErrors()
+    );
+  }
 
-    events.subscribe((r) => console.log(r)); // tslint:disable-line:no-console
-
-    return [ undefined, undefined ];
+  public delete(projectLinkUUID: string, request: SampleFilesAPI.DeleteRequest): Observable<BackendMessageResponse> {
+    return this.backend.post(SampleFilesService.SamplesDeleteEndpoint(projectLinkUUID), request);
   }
 
   private static readonly SamplesListEndpoint   = (uuid: string) => `/samples/${uuid}/list/`;
   private static readonly SamplesCreateEndpoint = (uuid: string) => `/samples/${uuid}/create/`;
+  private static readonly SamplesDeleteEndpoint = (uuid: string) => `/samples/${uuid}/delete/`;
 
 }

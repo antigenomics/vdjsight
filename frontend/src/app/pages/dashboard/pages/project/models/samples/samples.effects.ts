@@ -7,7 +7,8 @@ import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboa
 import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
 import { SampleFilesActions } from 'pages/dashboard/pages/project/models/samples/samples.actions';
 import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
-import { catchError, filter, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { catchError, filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
 import { withNotification } from 'utils/effects/effects-helper';
 
@@ -43,6 +44,19 @@ export class SampleFilesEffects {
   public currentProjectLoadSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(CurrentProjectActions.loadSuccess),
     map(() => SampleFilesActions.load())
+  ));
+
+  public delete$ = createEffect(() => this.actions$.pipe(
+    ofType(SampleFilesActions.forceDelete),
+    withLatestFrom(this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID))),
+    mergeMap(([ action, currentProjectLinkUUID ]) => this.samples.delete(currentProjectLinkUUID, { uuid: action.entity.link.uuid, force: true }).pipe(
+      map(() => SampleFilesActions.forceDeleteSuccess({ entityId: action.entity.id })),
+      catchError((error) => of(SampleFilesActions.forceDeleteFailed({ entityId: action.entity.id, error })))
+    )),
+    withNotification('Samples', {
+      success: { action: SampleFilesActions.forceDeleteSuccess, message: 'Sample has been deleted', options: { timeout: 2500 } },
+      error:   { action: SampleFilesActions.forceDeleteFailed, message: 'An error occurred while deleting the sample', options: { timeout: 5000 } }
+    }, this.notifications)
   ));
 
   public clear$ = createEffect(() => this.actions$.pipe(

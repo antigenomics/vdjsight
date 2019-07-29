@@ -13,7 +13,7 @@ import { UploadComponentModule } from 'pages/dashboard/pages/project/pages/uploa
 import { DashboardProjectUploadModuleReducers } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { UploadsEffects } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.effects';
 import { FilesDialogService } from 'pages/dashboard/pages/project/pages/uploads/services/files-dialog.service';
-import { FilesUploaderService } from 'pages/dashboard/pages/project/pages/uploads/services/files-uploader.service';
+import { UploadsService } from 'pages/dashboard/pages/project/pages/uploads/services/uploads.service';
 import { ProjectUploadsComponent } from 'pages/dashboard/pages/project/pages/uploads/uploads.component';
 
 const ProjectUploadRouting = RouterModule.forChild([
@@ -36,6 +36,6 @@ const ProjectUploadRouting = RouterModule.forChild([
     FilesHeaderComponent
   ],
   exports:      [ ProjectUploadsComponent ],
-  providers:    [ FilesDialogService, FilesUploaderService ]
+  providers:    [ FilesDialogService, UploadsService ]
 })
 export class ProjectUploadsModule {}
