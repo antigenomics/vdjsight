@@ -1,6 +1,6 @@
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SampleFilesAPI } from 'pages/dashboard/services/sample_files/sample-files-api';
+import { SamplesAPI } from 'pages/dashboard/services/sample_files/sample-files-api';
 import { Observable } from 'rxjs';
 import { BackendMessageResponse, BackendSuccessResponse } from 'services/backend/backend-response';
 import { BackendService } from 'services/backend/backend.service';
@@ -14,12 +14,12 @@ export class SampleFilesService {
 
   constructor(private readonly backend: BackendService, private readonly http: HttpClient) {}
 
-  public list(projectLinkUUID: string): Observable<SampleFilesAPI.ListResponse> {
+  public list(projectLinkUUID: string): Observable<SamplesAPI.ListResponse> {
     return this.backend.get(SampleFilesService.SamplesListEndpoint(projectLinkUUID));
   }
 
-  public create(projectLinkUUID: string, request: SampleFilesAPI.CreateRequest, file: File):
-    Observable<HttpEvent<BackendSuccessResponse<SampleFilesAPI.CreateResponse>>> {
+  public create(projectLinkUUID: string, request: SamplesAPI.CreateRequest, file: File):
+    Observable<HttpEvent<BackendSuccessResponse<SamplesAPI.CreateResponse>>> {
     const data = new FormData();
 
     data.append('file', file);
@@ -34,13 +34,13 @@ export class SampleFilesService {
       { reportProgress: true, withCredentials: true }
     );
 
-    return this.http.request<BackendSuccessResponse<SampleFilesAPI.CreateResponse>>(req).pipe(
+    return this.http.request<BackendSuccessResponse<SamplesAPI.CreateResponse>>(req).pipe(
       this.backend.retryOnFail(),
       this.backend.catchErrors()
     );
   }
 
-  public delete(projectLinkUUID: string, request: SampleFilesAPI.DeleteRequest): Observable<BackendMessageResponse> {
+  public delete(projectLinkUUID: string, request: SamplesAPI.DeleteRequest): Observable<BackendMessageResponse> {
     return this.backend.post(SampleFilesService.SamplesDeleteEndpoint(projectLinkUUID), request);
   }
 

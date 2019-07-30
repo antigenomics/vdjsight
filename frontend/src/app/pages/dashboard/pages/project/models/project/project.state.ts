@@ -1,4 +1,4 @@
-import { ProjectLink } from 'pages/dashboard/pages/projects/models/projects/projects';
+import { ProjectLink } from 'pages/dashboard/models/projects/projects';
 
 export interface __DashboardCurrentProjectState { // tslint:disable-line:class-name
   readonly uuid: string;

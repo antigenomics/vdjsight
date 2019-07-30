@@ -3,16 +3,17 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { fromRoot } from 'models/root';
+import { fromDashboard } from 'pages/dashboard/models/dashboard.state';
+import { CreateEmptySampleFileEntity, SampleEntity } from 'pages/dashboard/models/samples/samples';
+import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
 import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
-import { CreateEmptySampleFileEntity, SampleFileEntity } from 'pages/dashboard/pages/project/models/samples/samples';
-import { SampleFilesActions } from 'pages/dashboard/pages/project/models/samples/samples.actions';
 import { DashboardProjectUploadModuleState, fromDashboardProjectUploads } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 import { ProjectUploadsActions } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.actions';
 import { UploadGlobalErrors } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.state';
 import { UploadsService } from 'pages/dashboard/pages/project/pages/uploads/services/uploads.service';
-import { SampleFilesAPI } from 'pages/dashboard/services/sample_files/sample-files-api';
+import { SamplesAPI } from 'pages/dashboard/services/sample_files/sample-files-api';
 import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
 import { combineLatest } from 'rxjs';
 import { filter, first, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
@@ -70,10 +71,9 @@ export class UploadsEffects {
       ProjectUploadsActions.uploadSuccess,
       ProjectUploadsActions.uploadFailed,
       ProjectUploadsActions.remove,
-      SampleFilesActions.loadSuccess,
-      SampleFilesActions.forceDeleteSuccess,
-      SampleFilesActions.createSuccess,
-      SampleFilesActions.updateSuccess,
+      SamplesActions.loadSuccess,
+      SamplesActions.forceDeleteSuccess,
+      SamplesActions.updateSuccess,
       CurrentProjectActions.select
     ),
     tap(() => {
@@ -82,14 +82,14 @@ export class UploadsEffects {
           if (projectInfo.isUploadAllowed) {
             combineLatest([
               this.store.pipe(select(fromRoot.getUserCredentials)),
-              this.store.pipe(select(fromDashboardProject.getSamplesForProject, { projectLinkUUID: projectInfo.uuid })),
+              this.store.pipe(select(fromDashboard.getSamplesForProject, { projectLinkUUID: projectInfo.uuid })),
               this.store.pipe(select(fromDashboardProjectUploads.getNotUploadedUploadsForProject, { projectLinkUUID: projectInfo.uuid }))
             ]).pipe(first()).subscribe(([ user, samples, uploads ]) => {
               const errors: string[]   = [];
               const warnings: string[] = [];
 
               const pendingCount =
-                      samples.filter((s) => !SampleFileEntity.isEntityCreateFailed(s)).length +
+                      samples.filter((s) => !SampleEntity.isEntityCreateFailed(s)).length +
                       uploads.filter((u) => !UploadEntity.isEntityWithError(u)).length;
 
               if (user.permissions.maxSamplesCount > 0 && pendingCount > user.permissions.maxSamplesCount) {
@@ -97,14 +97,14 @@ export class UploadsEffects {
               }
 
               if (StringUtils.duplicatesExist([
-                ...samples.filter((s) => SampleFileEntity.isEntityLinked(s)).map((s) => s.link.name),
+                ...samples.filter((s) => SampleEntity.isEntityLinked(s)).map((s) => s.link.name),
                 ...uploads.filter((u) => !UploadEntity.isEntityUploaded(u) && !UploadEntity.isEntityWithError(u)).map((u) => u.name) ])
               ) {
                 errors.push(UploadGlobalErrors.UPLOAD_NAME_DUPLICATE);
               }
 
               if (StringUtils.duplicatesExist([
-                ...ArrayUtils.distinct(samples.filter((s) => SampleFileEntity.isEntityLinked(s)).map((s) => s.link.hash)),
+                ...ArrayUtils.distinct(samples.filter((s) => SampleEntity.isEntityLinked(s)).map((s) => s.link.hash)),
                 ...uploads.filter((u) => UploadEntity.isEntityHashReady(u) && !UploadEntity.isEntityWithError(u)).map((u) => u.hash) ])
               ) {
                 warnings.push(UploadGlobalErrors.UPLOAD_HASH_DUPLICATE);
@@ -142,8 +142,8 @@ export class UploadsEffects {
       tap((entity) => {
         this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), first()).subscribe((projectLinkUUID) => {
 
-          const sample: SampleFileEntity              = CreateEmptySampleFileEntity();
-          const request: SampleFilesAPI.CreateRequest = {
+          const sample: SampleEntity              = CreateEmptySampleFileEntity(projectLinkUUID);
+          const request: SamplesAPI.CreateRequest = {
             name:      entity.name,
             software:  entity.software,
             extension: entity.extension,
@@ -155,20 +155,20 @@ export class UploadsEffects {
 
             switch (event.type) {
               case HttpEventType.Sent:
-                this.store.dispatch(SampleFilesActions.create({ entity: sample, request: request }));
+                this.store.dispatch(SamplesActions.create({ entity: sample, request: request }));
                 break;
               case HttpEventType.UploadProgress:
                 this.store.dispatch(ProjectUploadsActions.uploadProgress({ entityId: entityId, progress: event.loaded / event.total }));
                 break;
               case HttpEventType.Response:
-                this.store.dispatch(SampleFilesActions.createSuccess({ entityId: sample.id, link: event.body.data.link }));
+                this.store.dispatch(SamplesActions.createSuccess({ entityId: sample.id, link: event.body.data.link }));
                 this.store.dispatch(ProjectUploadsActions.uploadSuccess({ entityId: entityId }));
                 break;
               default:
             }
 
           }, (error: BackendErrorResponse) => {
-            this.store.dispatch(SampleFilesActions.createFailed({ entityId: sample.id, error: error }));
+            this.store.dispatch(SamplesActions.createFailed({ entityId: sample.id, error: error }));
             this.store.dispatch(ProjectUploadsActions.uploadFailed({ entityId: entityId, error: error }));
           });
         });

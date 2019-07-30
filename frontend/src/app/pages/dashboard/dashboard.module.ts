@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
 import { DashboardPageComponent } from 'pages/dashboard/dashboard.component';
+import { DashboardModuleReducers } from 'pages/dashboard/models/dashboard.state';
+import { ProjectsEffects } from 'pages/dashboard/models/projects/projects.effects';
 import { ProjectsService } from 'pages/dashboard/services/projects/projects.service';
 import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
 
@@ -17,7 +21,11 @@ const DashboardRouting = RouterModule.forChild([
 ]);
 
 @NgModule({
-  imports:      [ CommonModule, DashboardRouting ],
+  imports:      [
+    CommonModule, DashboardRouting,
+    StoreModule.forFeature('dashboard', DashboardModuleReducers),
+    EffectsModule.forFeature([ ProjectsEffects ])
+  ],
   declarations: [ DashboardPageComponent ],
   providers:    [ ProjectsService, SampleFilesService ]
 })

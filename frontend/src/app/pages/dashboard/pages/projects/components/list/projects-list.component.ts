@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FadeInAnimation } from 'animations/fade-in.animation';
 import { ProjectsListAnimation } from 'pages/dashboard/pages/projects/components/list/projects-list.animations';
-import { ProjectEntity } from 'pages/dashboard/pages/projects/models/projects/projects';
+import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
 
 @Component({
   selector:        'div[vs-projects-list]',

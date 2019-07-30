@@ -1,9 +1,9 @@
-import { SampleFileLink } from 'pages/dashboard/pages/project/models/samples/samples';
+import { SampleLink } from 'pages/dashboard/models/samples/samples';
 
-export namespace SampleFilesAPI {
+export namespace SamplesAPI {
 
   export interface ListResponse {
-    readonly samples: SampleFileLink[];
+    readonly samples: SampleLink[];
   }
 
   export interface CreateRequest {
@@ -15,7 +15,7 @@ export namespace SampleFilesAPI {
   }
 
   export interface CreateResponse {
-    readonly link: SampleFileLink;
+    readonly link: SampleLink;
   }
 
   export interface UpdateRequest {
@@ -25,7 +25,7 @@ export namespace SampleFilesAPI {
   }
 
   export interface UpdateResponse {
-    readonly link: SampleFileLink;
+    readonly link: SampleLink;
   }
 
   export interface DeleteRequest {

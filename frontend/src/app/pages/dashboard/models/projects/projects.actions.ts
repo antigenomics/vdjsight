@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { ProjectEntity, ProjectLink } from 'pages/dashboard/pages/projects/models/projects/projects';
+import { ProjectEntity, ProjectLink } from 'pages/dashboard/models/projects/projects';
 import { ProjectsAPI } from 'pages/dashboard/services/projects/projects-api';
 import { BackendErrorResponse } from 'services/backend/backend-response';
 

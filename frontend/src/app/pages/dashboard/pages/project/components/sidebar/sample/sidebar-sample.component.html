@@ -1,0 +1,24 @@
+<ng-container *ngIf="sample.link; else notLoaded">
+    {{ sample.link.name }}
+</ng-container>
+<ng-template #notLoaded>
+    <div class="util" smoothHeight [smoothTrigger]="sample">
+        <ng-container *ngIf="sample.creating.active else createFailed">
+            <div class="ui active inline teal loader"></div>
+            <span style="padding-left: 1em">Loading new sample</span>
+        </ng-container>
+        <ng-template #createFailed>
+            <div class="failed">
+                <div class="ui icon negative small message">
+                    <i class="exclamation triangle red icon"></i>
+                    <div class="content">
+                        <div class="header">
+                            Failed to create new sample
+                        </div>
+                        <div class="extra">{{ sample.creating.error }}</div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </div>
+</ng-template>

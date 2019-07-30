@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FadeInAnimation } from 'animations/fade-in.animation';
-import { ProjectEntity } from 'pages/dashboard/pages/projects/models/projects/projects';
+import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
 
 @Component({
   selector:        'div[vs-project-selected]',

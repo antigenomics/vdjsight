@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { select, Store } from '@ngrx/store';
-import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
+import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
 import { ContentAnimation, ExtraAnimation, SidebarAnimation } from 'pages/dashboard/pages/project/project.animations';
-import { DashboardProjectsModuleState } from 'pages/dashboard/pages/projects/models/dashboard-projects.state';
 import { Subscription } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 
@@ -22,7 +21,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   public readonly isCurrentProjectLoaded$     = this.store.pipe(select(fromDashboardProject.isCurrentProjectLoaded));
   public readonly isCurrentProjectLoadFailed$ = this.store.pipe(select(fromDashboardProject.isCurrentProjectLoadFailed));
 
-  constructor(private readonly route: ActivatedRoute, private readonly store: Store<DashboardProjectsModuleState>) {}
+  constructor(private readonly route: ActivatedRoute, private readonly store: Store<DashboardProjectModuleState>) {}
 
   public ngOnInit(): void {
     this.currentProjectUpdateSubscription = this.route.params.pipe(map((p) => p.uuid)).subscribe((uuid) => {

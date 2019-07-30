@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { select, Store } from '@ngrx/store';
+import { SampleEntity } from 'pages/dashboard/models/samples/samples';
+import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
 import { LoadFailedLabelAnimation, LoadingLabelAnimation } from 'pages/dashboard/pages/project/components/sidebar/sidebar.animations';
 import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
-import { SampleFileEntity } from 'pages/dashboard/pages/project/models/samples/samples';
-import { SampleFilesActions } from 'pages/dashboard/pages/project/models/samples/samples.actions';
 
 @Component({
   selector:        'vs-project-sidebar',
@@ -13,18 +13,18 @@ import { SampleFilesActions } from 'pages/dashboard/pages/project/models/samples
   animations:      [ LoadingLabelAnimation, LoadFailedLabelAnimation ]
 })
 export class SidebarComponent {
-  public readonly isSamplesLoading$    = this.store.pipe(select(fromDashboardProject.isSamplesLoading));
-  public readonly isSamplesLoaded$     = this.store.pipe(select(fromDashboardProject.isSamplesLoaded));
-  public readonly isSamplesLoadFailed$ = this.store.pipe(select(fromDashboardProject.isSamplesLoadFailed));
-  public readonly samples$             = this.store.pipe(select(fromDashboardProject.getAllSamples));
+  public readonly isSamplesLoading$    = this.store.pipe(select(fromDashboardProject.isSamplesLoadingForCurrentProject));
+  public readonly isSamplesLoaded$     = this.store.pipe(select(fromDashboardProject.isSamplesLoadedForCurrentProject));
+  public readonly isSamplesLoadFailed$ = this.store.pipe(select(fromDashboardProject.isSamplesLoadFailedForCurrentProject));
+  public readonly samples$             = this.store.pipe(select(fromDashboardProject.getSamplesForCurrentProject));
 
   constructor(private readonly store: Store<DashboardProjectModuleState>) {}
 
-  public deleteSample(entity: SampleFileEntity): void {
-    this.store.dispatch(SampleFilesActions.forceDelete({ entity: entity }));
+  public deleteSample(entity: SampleEntity): void {
+    this.store.dispatch(SamplesActions.forceDelete({ entity: entity }));
   }
 
-  public sampleFileTrackBy(_: number, entity: SampleFileEntity): number {
+  public sampleFileTrackBy(_: number, entity: SampleEntity): number {
     return entity.id;
   }
 }
