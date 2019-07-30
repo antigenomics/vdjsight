@@ -2,35 +2,39 @@
     <div class="ui grid">
         <div class="four wide column">
             <div class="centered">
-                <vs-upload-name [name]="entity.name"
+                <vs-upload-name [name]="entity.name" [pending]="isUploadEntityPending"
                                 (onNameChange)="onNameChange.emit($event)">
                 </vs-upload-name>
             </div>
         </div>
         <div class="two wide column">
-            <div class="centered">
-                <vs-upload-software [software]="entity.software" [available]="availableSoftwareTypes"
+            <div class="centered text">
+                <vs-upload-software [software]="entity.software" [available]="availableSoftwareTypes" [pending]="isUploadEntityPending"
                                     (onSoftwareChange)="onSoftwareChange.emit($event)">
                 </vs-upload-software>
             </div>
         </div>
         <div class="two wide column">
-            <div class="centered">
+            <div class="centered text">
                 {{ entity.size | vsHumanReadableSize }}
             </div>
         </div>
         <div class="four wide column">
             <div class="centered">
-                <vs-upload-status [warning]="entity.warning"></vs-upload-status>
+                <vs-upload-status [warning]="entity.warning" [error]="entity.error"
+                                  [uploaded]="entity.uploaded" [progress]="entity.progress">
+                </vs-upload-status>
             </div>
         </div>
-        <div class="two wide column">
-            <div class="ui blue mini fluid button" (click)="onUpload.emit()"
-                 [ngClass]="{ 'disabled': !isUploadEntityReady || isUploadForbidden }">Upload
+        <ng-container *ngIf="isUploadEntityPending">
+            <div class="two wide column">
+                <div class="ui blue mini fluid button" (click)="onUpload.emit()"
+                     [ngClass]="{ 'disabled': !isUploadEntityReady || isUploadForbidden }">Upload
+                </div>
             </div>
-        </div>
-        <div class="two wide column">
-            <div class="ui orange mini fluid button" (click)="onRemove.emit()">Remove</div>
-        </div>
+            <div class="two wide column">
+                <div class="ui orange mini fluid button" (click)="onRemove.emit()">Remove</div>
+            </div>
+        </ng-container>
     </div>
 </div>

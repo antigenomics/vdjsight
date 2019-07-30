@@ -17,6 +17,14 @@ export interface UploadEntity {
 
 export namespace UploadEntity {
 
+  export function isEntityWithWarning(entity: UploadEntity): boolean {
+    return entity.warning !== undefined;
+  }
+
+  export function isEntityWithError(entity: UploadEntity): boolean {
+    return entity.error !== undefined;
+  }
+
   export function isEntityUploading(entity: UploadEntity): boolean {
     return entity.uploading;
   }
@@ -26,11 +34,11 @@ export namespace UploadEntity {
   }
 
   export function isEntityPending(entity: UploadEntity): boolean {
-    return !entity.uploading && !entity.uploaded;
+    return !entity.uploading && !entity.uploaded && !isEntityWithError(entity);
   }
 
   export function isEntityPendingAndValid(entity: UploadEntity): boolean {
-    return isEntityPending(entity) && entity.warning === undefined;
+    return isEntityPending(entity) && !isEntityWithWarning(entity);
   }
 
   export function isEntityHashReady(entity: UploadEntity): boolean {

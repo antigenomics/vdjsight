@@ -1,4 +1,4 @@
-<ng-container *ngIf="warning; else progressBar">
+<ng-container *ngIf="warning">
     <div class="centered" @warning>
         <div class="ui mini negative message">
             <div class="header">
@@ -7,8 +7,26 @@
         </div>
     </div>
 </ng-container>
-<ng-template #progressBar>
-    <div class="ui small progress centered" @progress>
-        <div class="bar"></div>
+<ng-container *ngIf="error">
+    <div class="centered" @error>
+        <div class="ui mini negative message">
+            <div class="header">
+                {{ error }}
+            </div>
+        </div>
     </div>
-</ng-template>
+</ng-container>
+<ng-container *ngIf="uploaded">
+    <div class="centered" @error>
+        <div class="ui mini positive message">
+            <div class="header">
+                Uploaded
+            </div>
+        </div>
+    </div>
+</ng-container>
+<ng-container *ngIf="!warning && !error && !uploaded">
+    <div class="ui small progress indicating centered" @progress [attr.data-percent]="progress">
+        <div class="bar" [ngStyle]="{ width: progress + '%' }"></div>
+    </div>
+</ng-container>

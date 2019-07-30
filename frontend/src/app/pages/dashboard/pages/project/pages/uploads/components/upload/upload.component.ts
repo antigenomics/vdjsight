@@ -31,6 +31,10 @@ export class UploadComponent {
     return UploadEntity.isEntityReadyForUpload(this.entity);
   }
 
+  public get isUploadEntityPending(): boolean {
+    return UploadEntity.isEntityPending(this.entity);
+  }
+
   public get availableSoftwareTypes(): string[] {
     return SampleFilesService.AvailableSoftwareTypes;
   }

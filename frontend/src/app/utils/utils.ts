@@ -28,3 +28,13 @@ export namespace StringUtils {
   }
 
 }
+
+export namespace ArrayUtils {
+
+  export function distinct<T>(array: T[], compare?: (element: T, index: number, array: T[]) => boolean): T[] {
+    return array.filter(compare !== undefined ? compare : (element: T, index: number, self: T[]) => {
+      return self.indexOf(element) === index;
+    });
+  }
+
+}

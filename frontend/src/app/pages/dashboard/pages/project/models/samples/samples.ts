@@ -25,6 +25,10 @@ export namespace SampleFileEntity {
     return entity.link !== undefined;
   }
 
+  export function isEntityCreateFailed(entity: SampleFileEntity): boolean {
+    return entity.creating.error !== undefined;
+  }
+
 }
 
 const SampleFileEntitiesLocalUUIDGenerator = new IncrementalUUIDGenerator();

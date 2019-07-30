@@ -18,7 +18,7 @@ import { combineLatest } from 'rxjs';
 import { filter, first, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { BackendErrorResponse } from 'services/backend/backend-response';
 import { NotificationsService } from 'services/notifications/notifications.service';
-import { StringUtils } from 'utils/utils';
+import { ArrayUtils, StringUtils } from 'utils/utils';
 
 @Injectable()
 export class UploadsEffects {
@@ -88,20 +88,24 @@ export class UploadsEffects {
               const errors: string[]   = [];
               const warnings: string[] = [];
 
-              if (user.permissions.maxSamplesCount > 0 && (samples.length + uploads.length) > user.permissions.maxSamplesCount) {
+              const pendingCount =
+                      samples.filter((s) => !SampleFileEntity.isEntityCreateFailed(s)).length +
+                      uploads.filter((u) => !UploadEntity.isEntityWithError(u)).length;
+
+              if (user.permissions.maxSamplesCount > 0 && pendingCount > user.permissions.maxSamplesCount) {
                 errors.push(UploadGlobalErrors.MAX_FILES_COUNT_LIMIT_EXCEEDED);
               }
 
               if (StringUtils.duplicatesExist([
                 ...samples.filter((s) => SampleFileEntity.isEntityLinked(s)).map((s) => s.link.name),
-                ...uploads.filter((u) => !UploadEntity.isEntityUploaded(u)).map((u) => u.name) ])
+                ...uploads.filter((u) => !UploadEntity.isEntityUploaded(u) && !UploadEntity.isEntityWithError(u)).map((u) => u.name) ])
               ) {
                 errors.push(UploadGlobalErrors.UPLOAD_NAME_DUPLICATE);
               }
 
               if (StringUtils.duplicatesExist([
-                ...samples.filter((s) => SampleFileEntity.isEntityLinked(s)).map((s) => s.link.hash),
-                ...uploads.filter((u) => UploadEntity.isEntityHashReady(u)).map((u) => u.hash) ])
+                ...ArrayUtils.distinct(samples.filter((s) => SampleFileEntity.isEntityLinked(s)).map((s) => s.link.hash)),
+                ...uploads.filter((u) => UploadEntity.isEntityHashReady(u) && !UploadEntity.isEntityWithError(u)).map((u) => u.hash) ])
               ) {
                 warnings.push(UploadGlobalErrors.UPLOAD_HASH_DUPLICATE);
               }
@@ -165,7 +169,7 @@ export class UploadsEffects {
 
           }, (error: BackendErrorResponse) => {
             this.store.dispatch(SampleFilesActions.createFailed({ entityId: sample.id, error: error }));
-            this.store.dispatch(ProjectUploadsActions.uploadFailed({ entityId: sample.id, error: error }));
+            this.store.dispatch(ProjectUploadsActions.uploadFailed({ entityId: entityId, error: error }));
           });
         });
       })

@@ -1,4 +1,10 @@
-<div class="ui fluid transparent left icon input" [ngClass]="{ 'error': name.length === 0 }">
-    <input type="text" placeholder="Enter sample file name here..." [ngModel]="name" [delay]="200" debounced-input (debouncedValue)="onNameChange.emit($event)">
-    <i class="pen icon"></i>
-</div>
+<ng-container *ngIf="pending; else staticName">
+    <div class="ui fluid transparent left icon input" [ngClass]="{ 'error': name.length === 0 }">
+        <input type="text" placeholder="Enter sample file name here..." [ngModel]="name" [delay]="200" debounced-input
+               (debouncedValue)="onNameChange.emit($event)">
+        <i class="pen icon"></i>
+    </div>
+</ng-container>
+<ng-template #staticName>
+    {{ name }}
+</ng-template>

@@ -1,12 +1,6 @@
-<!--<div class="ui fluid dropdown selection" [vs-tooltip]="selectSoftware">-->
-<!--    <i class="dropdown icon"></i>-->
-<!--    <div class="text">{{ software }}</div>-->
-<!--</div>-->
-<!--<ng-template #selectSoftware let-hide="hide">-->
-<!--    <div class="ui vertical menu" style="max-width: 100px; max-height: 400px; overflow: auto; text-align: left">-->
-<!--        <a class="item" *ngFor="let value of available" (click)="onSoftwareChange.emit(value);hide()">-->
-<!--            {{ value }}-->
-<!--        </a>-->
-<!--    </div>-->
-<!--</ng-template>-->
-<vs-dropdown [value]="software" [values]="available" (onSelect)="onSoftwareChange.emit($event)"></vs-dropdown>
+<ng-container *ngIf="pending; else staticSoftware">
+    <vs-dropdown [value]="software" [values]="available" (onSelect)="onSoftwareChange.emit($event)"></vs-dropdown>
+</ng-container>
+<ng-template #staticSoftware>
+    {{ software }}
+</ng-template>

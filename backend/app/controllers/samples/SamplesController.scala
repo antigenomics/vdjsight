@@ -132,7 +132,7 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
       )
   }
 
-  def delete(projectLinkUUID: UUID): Action[JsValue] = actionWithValidate[SamplesDeleteRequest](projectLinkUUID) { (r, delete, projectLink) =>
+  def delete(projectLinkUUID: UUID): Action[JsValue] = actionWithValidate[SamplesDeleteRequest](projectLinkUUID) { (_, delete, projectLink) =>
     if (projectLink.isDeleteAllowed) {
       sampleFileLinkProvider.get(delete.uuid).flatMap {
         case Some(link) if link.projectID == projectLink.projectID =>

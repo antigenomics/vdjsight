@@ -7,6 +7,9 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 })
 export class UploadNameComponent {
   @Input()
+  public pending: boolean;
+
+  @Input()
   public name: string;
 
   @Output()
