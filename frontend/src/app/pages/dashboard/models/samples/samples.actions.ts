@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { SampleEntity, SampleLink } from 'pages/dashboard/models/samples/samples';
-import { SamplesAPI } from 'pages/dashboard/services/sample_files/sample-files-api';
+import { SamplesAPI } from 'pages/dashboard/services/samples/samples-api';
 import { BackendErrorResponse } from 'services/backend/backend-response';
 
 export namespace SamplesActions {

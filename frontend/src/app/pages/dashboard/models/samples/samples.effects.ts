@@ -6,7 +6,7 @@ import { UserActions } from 'models/user/user.actions';
 import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
 import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
-import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
+import { SamplesService } from 'pages/dashboard/services/samples/samples.service';
 import { of } from 'rxjs';
 import { catchError, filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
@@ -63,6 +63,6 @@ export class SampleFilesEffects {
   ));
 
   constructor(private readonly actions$: Actions, private readonly store: Store<DashboardProjectModuleState>,
-              private readonly samples: SampleFilesService, private readonly notifications: NotificationsService) {}
+              private readonly samples: SamplesService, private readonly notifications: NotificationsService) {}
 
 }

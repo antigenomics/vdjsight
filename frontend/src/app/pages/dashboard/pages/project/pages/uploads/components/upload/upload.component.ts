@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
-import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
+import { SamplesService } from 'pages/dashboard/services/samples/samples.service';
 
 @Component({
   selector:        'vs-upload',
@@ -36,6 +36,6 @@ export class UploadComponent {
   }
 
   public get availableSoftwareTypes(): string[] {
-    return SampleFilesService.AvailableSoftwareTypes;
+    return SamplesService.AvailableSoftwareTypes;
   }
 }

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
+import { SamplesService } from 'pages/dashboard/services/samples/samples.service';
 
 @Component({
   selector:        'vs-upload-header',
@@ -8,7 +8,7 @@ import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FilesHeaderComponent {
-  public availableSoftware = SampleFilesService.AvailableSoftwareTypes;
+  public availableSoftware = SamplesService.AvailableSoftwareTypes;
 
   @Input()
   public isUploadForbidden: boolean;

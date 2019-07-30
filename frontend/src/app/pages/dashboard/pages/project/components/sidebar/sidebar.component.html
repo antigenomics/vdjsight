@@ -8,7 +8,7 @@
         </div>
         <ng-container *ngIf="samples$ | async as samples">
             <ng-container *ngIf="samples.length !== 0; else emptyList">
-                <div class="item" *ngFor="let sample of samples; trackBy: sampleFileTrackBy" (click)="deleteSample(sample)">
+                <div class="item" *ngFor="let sample of samples; trackBy: sampleFileTrackBy" (click)="selectSample(sample)">
                     <vs-sidebar-sample [sample]="sample"></vs-sidebar-sample>
                 </div>
             </ng-container>

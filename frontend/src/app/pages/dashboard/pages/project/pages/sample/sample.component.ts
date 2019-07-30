@@ -5,8 +5,9 @@ import { fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { SampleEntity } from 'pages/dashboard/models/samples/samples';
 import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { DashboardSampleModuleState } from 'pages/dashboard/pages/project/pages/sample/models/dashboard-sample.state';
+import { CurrentSampleActions } from 'pages/dashboard/pages/project/pages/sample/models/sample/sample.actions';
 import { Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 
 @Component({
   selector:        'vs-project-sample',
@@ -17,7 +18,10 @@ export class ProjectSampleComponent {
   public loadInfo$ = this.store.pipe(select(fromDashboardProject.getSamplesLoadingInfoForCurrentProject));
 
   public sample$: Observable<SampleEntity> = this.route.params.pipe(map((p) => p.uuid), switchMap((uuid) => {
-    return this.store.pipe(select(fromDashboard.getSampleByLinkUUID, { linkUUID: uuid }));
+    return this.store.pipe(
+      select(fromDashboard.getSampleByLinkUUID, { linkUUID: uuid }),
+      tap((sample) => this.store.dispatch(CurrentSampleActions.select({ entity: sample })))
+    );
   }));
 
   constructor(private readonly route: ActivatedRoute, private readonly store: Store<DashboardSampleModuleState>) {}

@@ -1,12 +1,12 @@
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SamplesAPI } from 'pages/dashboard/services/sample_files/sample-files-api';
+import { SamplesAPI } from 'pages/dashboard/services/samples/samples-api';
 import { Observable } from 'rxjs';
 import { BackendMessageResponse, BackendSuccessResponse } from 'services/backend/backend-response';
 import { BackendService } from 'services/backend/backend.service';
 
 @Injectable()
-export class SampleFilesService {
+export class SamplesService {
   public static AvailableSoftwareTypes: string[] = [
     'VDJtools',
     'MiXCR'
@@ -15,7 +15,7 @@ export class SampleFilesService {
   constructor(private readonly backend: BackendService, private readonly http: HttpClient) {}
 
   public list(projectLinkUUID: string): Observable<SamplesAPI.ListResponse> {
-    return this.backend.get(SampleFilesService.SamplesListEndpoint(projectLinkUUID));
+    return this.backend.get(SamplesService.SamplesListEndpoint(projectLinkUUID));
   }
 
   public create(projectLinkUUID: string, request: SamplesAPI.CreateRequest, file: File):
@@ -30,7 +30,7 @@ export class SampleFilesService {
     data.append('hash', request.hash);
 
     const req = new HttpRequest<FormData>(
-      'POST', BackendService.endpointToURL(SampleFilesService.SamplesCreateEndpoint(projectLinkUUID)), data,
+      'POST', BackendService.endpointToURL(SamplesService.SamplesCreateEndpoint(projectLinkUUID)), data,
       { reportProgress: true, withCredentials: true }
     );
 
@@ -41,7 +41,7 @@ export class SampleFilesService {
   }
 
   public delete(projectLinkUUID: string, request: SamplesAPI.DeleteRequest): Observable<BackendMessageResponse> {
-    return this.backend.post(SampleFilesService.SamplesDeleteEndpoint(projectLinkUUID), request);
+    return this.backend.post(SamplesService.SamplesDeleteEndpoint(projectLinkUUID), request);
   }
 
   private static readonly SamplesListEndpoint   = (uuid: string) => `/samples/${uuid}/list/`;

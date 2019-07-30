@@ -13,8 +13,8 @@ import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models
 import { ProjectUploadsActions } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.actions';
 import { UploadGlobalErrors } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.state';
 import { UploadsService } from 'pages/dashboard/pages/project/pages/uploads/services/uploads.service';
-import { SamplesAPI } from 'pages/dashboard/services/sample_files/sample-files-api';
-import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
+import { SamplesAPI } from 'pages/dashboard/services/samples/samples-api';
+import { SamplesService } from 'pages/dashboard/services/samples/samples.service';
 import { combineLatest } from 'rxjs';
 import { filter, first, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { BackendErrorResponse } from 'services/backend/backend-response';
@@ -197,7 +197,7 @@ export class UploadsEffects {
   ), { dispatch: false });
 
   constructor(private readonly actions$: Actions, private readonly store: Store<DashboardProjectUploadModuleState>,
-              private readonly samplesAPI: SampleFilesService, private readonly uploads: UploadsService,
+              private readonly samplesAPI: SamplesService, private readonly uploads: UploadsService,
               private readonly notifications: NotificationsService) {}
 
 }

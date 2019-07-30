@@ -7,7 +7,7 @@ import { DashboardPageComponent } from 'pages/dashboard/dashboard.component';
 import { DashboardModuleReducers } from 'pages/dashboard/models/dashboard.state';
 import { ProjectsEffects } from 'pages/dashboard/models/projects/projects.effects';
 import { ProjectsService } from 'pages/dashboard/services/projects/projects.service';
-import { SampleFilesService } from 'pages/dashboard/services/sample_files/sample-files.service';
+import { SamplesService } from 'pages/dashboard/services/samples/samples.service';
 
 const DashboardRouting = RouterModule.forChild([
   {
@@ -27,6 +27,6 @@ const DashboardRouting = RouterModule.forChild([
     EffectsModule.forFeature([ ProjectsEffects ])
   ],
   declarations: [ DashboardPageComponent ],
-  providers:    [ ProjectsService, SampleFilesService ]
+  providers:    [ ProjectsService, SamplesService ]
 })
 export class DashboardModule {}

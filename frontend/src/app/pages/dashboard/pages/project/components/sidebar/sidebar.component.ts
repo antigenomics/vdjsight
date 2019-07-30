@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { SampleEntity } from 'pages/dashboard/models/samples/samples';
-import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
 import { LoadFailedLabelAnimation, LoadingLabelAnimation } from 'pages/dashboard/pages/project/components/sidebar/sidebar.animations';
 import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 
@@ -18,10 +18,13 @@ export class SidebarComponent {
   public readonly isSamplesLoadFailed$ = this.store.pipe(select(fromDashboardProject.isSamplesLoadFailedForCurrentProject));
   public readonly samples$             = this.store.pipe(select(fromDashboardProject.getSamplesForCurrentProject));
 
-  constructor(private readonly store: Store<DashboardProjectModuleState>) {}
+  constructor(private readonly store: Store<DashboardProjectModuleState>,
+              private readonly activatedRoute: ActivatedRoute, private readonly router: Router) {}
 
-  public deleteSample(entity: SampleEntity): void {
-    this.store.dispatch(SamplesActions.forceDelete({ entity: entity }));
+  public selectSample(entity: SampleEntity): void {
+    if (SampleEntity.isEntityLinked(entity)) {
+      this.router.navigate([ 's', entity.link.uuid ], { relativeTo: this.activatedRoute });
+    }
   }
 
   public sampleFileTrackBy(_: number, entity: SampleEntity): number {
