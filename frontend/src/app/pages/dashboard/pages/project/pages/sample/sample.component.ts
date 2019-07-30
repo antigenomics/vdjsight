@@ -1,26 +1,25 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { select, Store } from '@ngrx/store';
+import { fromDashboard } from 'pages/dashboard/models/dashboard.state';
+import { SampleEntity } from 'pages/dashboard/models/samples/samples';
+import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
+import { DashboardSampleModuleState } from 'pages/dashboard/pages/project/pages/sample/models/dashboard-sample.state';
+import { Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector:        'vs-project-sample',
   templateUrl:     './sample.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectSampleComponent implements OnInit, OnDestroy {
-  private currentSampleUpdateSubscription: Subscription;
+export class ProjectSampleComponent {
+  public loadInfo$ = this.store.pipe(select(fromDashboardProject.getSamplesLoadingInfoForCurrentProject));
 
-  constructor(private readonly route: ActivatedRoute) {}
+  public sample$: Observable<SampleEntity> = this.route.params.pipe(map((p) => p.uuid), switchMap((uuid) => {
+    return this.store.pipe(select(fromDashboard.getSampleByLinkUUID, { linkUUID: uuid }));
+  }));
 
-  public ngOnInit(): void {
-    this.currentSampleUpdateSubscription = this.route.params.pipe(map((p) => p.uuid)).subscribe((uuid) => {
-      console.log('asd', uuid);
-    });
-  }
+  constructor(private readonly route: ActivatedRoute, private readonly store: Store<DashboardSampleModuleState>) {}
 
-  public ngOnDestroy(): void {
-
-    this.currentSampleUpdateSubscription.unsubscribe();
-  }
 }

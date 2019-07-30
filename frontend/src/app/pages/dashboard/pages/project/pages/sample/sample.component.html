@@ -1,1 +1,19 @@
-<router-outlet></router-outlet>
+<ng-container *ngIf="loadInfo$ | async as info">
+    <ng-container *ngIf="info.loading">
+        Loading
+    </ng-container>
+    <ng-container *ngIf="info.loadFailed">
+        Load failed
+    </ng-container>
+    <ng-container *ngIf="info.loaded">
+        <ng-container *ngIf="sample$ | async as sample; else badSample">
+            {{ sample.link.name }}
+            <router-outlet></router-outlet>
+        </ng-container>
+        <ng-template #badSample>
+            Bad sample
+        </ng-template>
+    </ng-container>
+</ng-container>
+
+
