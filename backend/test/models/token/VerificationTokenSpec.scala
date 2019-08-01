@@ -15,7 +15,7 @@ class VerificationTokenSpec extends BaseTestSpecWithDatabaseAndApplication with 
   "VerificationMethod" should {
 
     "correctly accept valid method string values" in {
-      VerificationMethod.values.map { value =>
+      VerificationMethod.values.unsorted.map { value =>
         Future.successful(
           VerificationMethod.convert(value.toString) shouldEqual value
         )

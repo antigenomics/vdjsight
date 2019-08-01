@@ -15,7 +15,7 @@ class ResetTokenSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
   "ResetMethod" should {
 
     "correctly accept valid method string values" in {
-      ResetMethod.values.map { value =>
+      ResetMethod.values.unsorted.map { value =>
         Future.successful(
           ResetMethod.convert(value.toString) shouldEqual value
         )
