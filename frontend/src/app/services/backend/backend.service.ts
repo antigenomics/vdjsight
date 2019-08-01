@@ -2,12 +2,11 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { environment } from 'environments/environment';
-import { ApplicationActions } from 'models/application/application.actions';
 import { NetworkActions } from 'models/network/network.actions';
 import { fromRoot, RootModuleState } from 'models/root';
 import { UserActions } from 'models/user/user.actions';
-import { Observable, throwError } from 'rxjs';
-import { catchError, first, flatMap, map, retryWhen, tap } from 'rxjs/operators';
+import { combineLatest, Observable, throwError } from 'rxjs';
+import { catchError, first, flatMap, map, mergeMap, retryWhen, tap } from 'rxjs/operators';
 import { backendDebug } from 'services/backend/backend-debug';
 import { LoggerService } from 'utils/logger/logger.service';
 import { BackendRequest, BackendRequestEndpoint, BackendRequestOptions, BackendRequestType } from './backend-request';
@@ -62,12 +61,18 @@ export class BackendService {
         this.store.dispatch(NetworkActions.GoOffline());
       }
       if (error.status === 0) {
-        return this.store.pipe(select(fromRoot.isApplicationBackendDead), first(), flatMap((isBackendDead) => {
-          if (isBackendDead) {
-            this.store.dispatch(ApplicationActions.pingBackendSchedule({ timeout: BackendService.deadBackendPingTimeout }));
-            return throwError({ error: 'Server is unavailable now. Please try again later.' } as BackendErrorResponse);
+        return combineLatest([
+          this.store.pipe(select(fromRoot.isNetworkBackendDead)),
+          this.store.pipe(select(fromRoot.isNetworkBackendPingScheduled))
+        ]).pipe(first(), mergeMap(([ isBackendDead, isBackendPingScheduled ]) => {
+          if (isBackendDead && !isBackendPingScheduled) {
+            this.store.dispatch(NetworkActions.pingBackendScheduleStart({ timeout: BackendService.deadBackendPingTimeout }));
           }
-          return throwError({ error: 'Unknown error. Please try again later.' } as BackendErrorResponse);
+          if (isBackendDead) {
+            return throwError({ error: 'Server is unavailable now. Please try again later.' } as BackendErrorResponse);
+          } else {
+            return throwError({ error: 'Unknown error. Please try again later.' } as BackendErrorResponse);
+          }
         }));
       } else if (error.status === HttpStatusCode.UNAUTHORIZED) {
         this.store.dispatch(UserActions.logout());

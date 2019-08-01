@@ -1,29 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Actions, createEffect, ofType, OnInitEffects } from '@ngrx/effects';
-import { Action, select, Store } from '@ngrx/store';
+import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { select, Store } from '@ngrx/store';
 import { ApplicationActions } from 'models/application/application.actions';
 import { fromRoot, RootModuleState } from 'models/root';
-import { from, of } from 'rxjs';
-import { catchError, delay, exhaustMap, map, withLatestFrom } from 'rxjs/operators';
-import { BackendService } from 'services/backend/backend.service';
+import { from } from 'rxjs';
+import { exhaustMap, map, withLatestFrom } from 'rxjs/operators';
 
 
 @Injectable()
-export class ApplicationEffects implements OnInitEffects {
-
-  public pingBackend$ = createEffect(() => this.actions$.pipe(
-    ofType(ApplicationActions.pingBackend),
-    exhaustMap(() => this.backend.ping().pipe(
-      map(() => ApplicationActions.pingBackendSuccess()),
-      catchError(() => of(ApplicationActions.pingBackendFailed()))
-    ))
-  ));
-
-  public pingBackendSchedule$ = createEffect(() => this.actions$.pipe(
-    ofType(ApplicationActions.pingBackendSchedule),
-    exhaustMap((action) => of(ApplicationActions.pingBackend()).pipe(delay(action.timeout)))
-  ));
+export class ApplicationEffects {
 
   public restoreLastSavedURL$ = createEffect(() => this.actions$.pipe(
     ofType(ApplicationActions.restoreLastSavedURL),
@@ -37,10 +23,6 @@ export class ApplicationEffects implements OnInitEffects {
   ));
 
   constructor(private readonly actions$: Actions, private readonly store: Store<RootModuleState>,
-              private readonly router: Router, private readonly backend: BackendService) {}
-
-  public ngrxOnInitEffects(): Action {
-    return ApplicationActions.pingBackend();
-  }
+              private readonly router: Router) {}
 
 }

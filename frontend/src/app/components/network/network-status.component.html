@@ -1,5 +1,5 @@
-<ng-container *ngIf="(isOffline$ | async)">
-    <div class="network-status-container" [@status]>
+<ng-container *ngIf="isOffline$ | async else online">
+    <div class="network-status-container" @status>
         <div class="ui negative icon message">
             <i class="wifi icon"></i>
             <div class="content">
@@ -13,19 +13,26 @@
     </div>
     <div class="network-blur-background" [@background]></div>
 </ng-container>
-<ng-container *ngIf="(guardInfo$ | async) as guard">
-    <ng-container *ngIf="guard.active">
-        <div class="network-guard-container" [@guard]>
-            <div class="ui info icon message">
-                <i class="notched circle loading icon"></i>
-                <div class="content">
-                    <div class="header">
-                        {{ guard.title }}
+<ng-template #online>
+    <ng-container *ngIf="isBackendDead$ | async">
+        <div class="network-backend-status-container" @backend>
+            <div class="message">Server connection is lost. Some features may be unavailable.</div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="guardInfo$ | async as guard">
+        <ng-container *ngIf="guard.active">
+            <div class="network-guard-container" @guard>
+                <div class="ui info icon message">
+                    <i class="notched circle loading icon"></i>
+                    <div class="content">
+                        <div class="header">
+                            {{ guard.title }}
+                        </div>
+                        <p>{{ guard.message }}</p>
                     </div>
-                    <p>{{ guard.message }}</p>
                 </div>
             </div>
-        </div>
-        <div class="network-blur-background" [@background]></div>
+            <div class="network-blur-background" @background></div>
+        </ng-container>
     </ng-container>
-</ng-container>
+</ng-template>

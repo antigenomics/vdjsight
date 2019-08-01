@@ -48,7 +48,6 @@ export namespace fromRoot {
   const getNetworkState       = (state: RootModuleState) => state.network;
 
   /** Application state selectors */
-  export const isApplicationBackendDead   = createSelector(getApplicationState, __fromApplicationState.isBackendDead);
   export const getApplicationSavedURLs    = createSelector(getApplicationState, __fromApplicationState.getSavedURLs);
   export const getApplicationLastSavedURL = createSelector(getApplicationState, __fromApplicationState.getLastSavedURL);
 
@@ -77,7 +76,10 @@ export namespace fromRoot {
   export const getRouterStateURL          = routerStateSelectors.selectUrl;
 
   /** Network state selectors */
-  export const isNetworkOffline    = createSelector(getNetworkState, __fromNetworkState.isOffline);
-  export const isNetworkOnline     = createSelector(getNetworkState, __fromNetworkState.isOnline);
-  export const getNetworkGuardInfo = createSelector(getNetworkState, __fromNetworkState.getGuardInfo);
+  export const isNetworkOffline               = createSelector(getNetworkState, __fromNetworkState.isOffline);
+  export const isNetworkOnline                = createSelector(getNetworkState, __fromNetworkState.isOnline);
+  export const isNetworkBackendDead           = createSelector(getNetworkState, __fromNetworkState.isBackendDead);
+  export const isNetworkBackendPingScheduled  = createSelector(getNetworkState, __fromNetworkState.isBackendPingScheduled);
+  export const getNetworkBackendPingTimeoutId = createSelector(getNetworkState, __fromNetworkState.getBackendPingTimeoutId);
+  export const getNetworkGuardInfo            = createSelector(getNetworkState, __fromNetworkState.getGuardInfo);
 }
