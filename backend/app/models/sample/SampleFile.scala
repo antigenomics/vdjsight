@@ -207,7 +207,7 @@ class SampleFileProvider @Inject()(
           samples.filter(_.uuid === uuid).delete flatMap {
             case 0 => DBIO.failed(InternalServerErrorException("Cannot delete SampleFile instance in database", "Database error"))
             case _ =>
-              Try(Path (sample.folder) deleteRecursively()) match {
+              Try(Path(sample.folder).deleteRecursively()) match {
                 case Success(deleted) => if (!deleted) {
                   logger.warn("Exception occurred while deleting SampleFile instance in database")
                 }

@@ -1,19 +1,28 @@
-<ng-container *ngIf="loadInfo$ | async as info">
-    <ng-container *ngIf="info.loading">
-        Loading
-    </ng-container>
-    <ng-container *ngIf="info.loadFailed">
-        Load failed
-    </ng-container>
-    <ng-container *ngIf="info.loaded">
-        <ng-container *ngIf="sample$ | async as sample; else badSample">
-            {{ sample.link.name }}
+<vs-sample-loaded-check [isLoaded]="isSamplesLoadedForCurrentProject$ | async"
+                        [isLoading]="isSamplesLoadingForCurrentProject$ | async"
+                        [isLoadFailed]="isSamplesLoadFailedForCurrentProject$ | async"
+                        (onReload)="reload()">
+    <ng-container *ngIf="sample$ | async as sample; else badSample">
+        <vs-sample-header [sample]="sample"></vs-sample-header>
+        <div class="top pushed">
             <router-outlet></router-outlet>
-        </ng-container>
-        <ng-template #badSample>
-            Bad sample
-        </ng-template>
+        </div>
     </ng-container>
-</ng-container>
+    <ng-template #badSample>
+        <div class="ui raised placeholder top pushed red segment" style="min-height: 300px">
+            <h2 class="ui icon header">
+                <i class="exclamation triangle icon"></i>
+                <div class="content">
+                    An error occurred while fetching the sample info
+                    <div class="sub header">
+                        Sample either was deleted or does not exist
+                    </div>
+                </div>
+            </h2>
+            <div class="ui basic button" (click)="reload()">Reload</div>
+        </div>
+    </ng-template>
+</vs-sample-loaded-check>
+
 
 

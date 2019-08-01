@@ -1,0 +1,22 @@
+<div class="ui raised placeholder top pushed segment" *ngIf="!isLoaded else loaded" style="min-height: 300px" [ngClass]="{ 'red': isLoadFailed }" @loading>
+    <ng-container *ngIf="isLoading">
+        <div class="ui active inverted dimmer">
+            <div class="ui text blue loader">Loading current sample info</div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="isLoadFailed">
+        <h2 class="ui icon header">
+            <i class="exclamation triangle icon"></i>
+            <div class="content">
+                An error occurred while fetching the sample info
+                <div class="sub header">
+                    Sample either was deleted or does not exist
+                </div>
+            </div>
+        </h2>
+        <div class="ui basic button" (click)="onReload.emit()">Reload</div>
+    </ng-container>
+</div>
+<ng-template #loaded>
+    <ng-content></ng-content>
+</ng-template>

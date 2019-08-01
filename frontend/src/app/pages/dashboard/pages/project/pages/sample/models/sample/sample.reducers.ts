@@ -4,8 +4,8 @@ import { __DashboardCurrentSampleState, __fromDashboardCurrentSampleState } from
 
 const currentSampleReducers = createReducer(
   __fromDashboardCurrentSampleState.initial,
-  on(CurrentSampleActions.select, (_, { entity }) => ({ uuid: entity.link.uuid, entity })),
-  on(CurrentSampleActions.deselect, (_) => ({ uuid: '' }))
+  on(CurrentSampleActions.select, (_, { entity }) => ({ entity })),
+  on(CurrentSampleActions.deselect, () => ({}))
 );
 
 export namespace __fromCurrentSampleReducers {

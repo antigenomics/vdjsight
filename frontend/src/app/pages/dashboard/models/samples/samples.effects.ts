@@ -17,7 +17,13 @@ export class SampleFilesEffects {
 
   public currentProjectLoadSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(CurrentProjectActions.loadSuccess),
-    map(({ link }) => SamplesActions.load({ projectLinkUUID: link.uuid }))
+    map(() => SamplesActions.loadForCurrentProject())
+  ));
+
+  public loadForCurrentProject$ = createEffect(() => this.actions$.pipe(
+    ofType(SamplesActions.loadForCurrentProject),
+    withLatestFrom(this.store.select(fromDashboardProject.getCurrentProjectUUID)),
+    map(([ _, currentProjectLinkUUID ]) => SamplesActions.load({ projectLinkUUID: currentProjectLinkUUID }))
   ));
 
   public load$ = createEffect(() => this.actions$.pipe(

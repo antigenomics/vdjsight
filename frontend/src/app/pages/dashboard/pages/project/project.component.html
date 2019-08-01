@@ -1,6 +1,10 @@
 <div class="project container">
-    <div class="ui grid">
-        <ng-container *ngIf="isCurrentProjectLoaded$ | async; else notLoaded">
+
+    <vs-project-loaded-check [isLoaded]="isCurrentProjectLoaded$ | async"
+                             [isLoading]="isCurrentProjectLoading$ | async"
+                             [isLoadFailed]="isCurrentProjectLoadFailed$ | async"
+                             (onReload)="reload()">
+        <div class="ui grid">
             <div class="three wide sidebar column" @sidebar>
                 <vs-project-sidebar></vs-project-sidebar>
             </div>
@@ -9,32 +13,7 @@
                     <router-outlet></router-outlet>
                 </div>
             </div>
-        </ng-container>
-        <ng-template #notLoaded>
-            <div class="five wide column"></div>
-            <div class="six wide column">
-                <div class="ui raised placeholder top pushed segment" style="min-height: 300px"
-                     [ngClass]="{ 'red': isCurrentProjectLoadFailed$ | async }" @extra>
-                    <ng-container *ngIf="isCurrentProjectLoading$ | async; else loadFailed">
-                        <div class="ui active inverted dimmer">
-                            <div class="ui text blue loader">Loading current project info</div>
-                        </div>
-                    </ng-container>
-                    <ng-template #loadFailed>
-                        <h2 class="ui icon header">
-                            <i class="exclamation triangle icon"></i>
-                            <div class="content">
-                                An error occurred while fetching the project info
-                                <div class="sub header">
-                                    Project either was deleted or does not exist
-                                </div>
-                            </div>
-                        </h2>
-                        <div class="ui basic button" (click)="reload()">Reload</div>
-                    </ng-template>
-                </div>
-            </div>
-            <div class="five wide column"></div>
-        </ng-template>
-    </div>
+        </div>
+    </vs-project-loaded-check>
+
 </div>

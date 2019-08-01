@@ -4,7 +4,6 @@ import java.util.UUID
 
 import com.google.inject.{Inject, Singleton}
 import effects.{AbstractEffectEvent, EffectsEventsStream}
-import io.github.nremond.SecureHash
 import models.token.{ResetTokenProvider, VerificationTokenProvider}
 import play.api.Logging
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
@@ -14,6 +13,7 @@ import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.Tag
 import utils.FutureUtils._
+import utils.secure.SecureHash
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.language.higherKinds
@@ -83,7 +83,7 @@ class UserProvider @Inject()(
   def getByLogin(login: String): Future[Option[User]] = db.run(users.filter(_.login === login).result.headOption)
 
   def getByEmailAndPassword(email: String, password: String): Future[Option[User]] = {
-    getByEmail(email).map(_.filter(u => SecureHash.validatePassword(password, u.password)))
+    getByEmail(email).map(_.filter(u => SecureHash.validate(password, u.password)))
   }
 
   def create(login: String, email: String, password: String): Future[User] = {
@@ -96,7 +96,7 @@ class UserProvider @Inject()(
             login    = login,
             email    = email,
             verified = false,
-            password = SecureHash.createHash(password)
+            password = SecureHash.create(password)
           )
           (users += user) flatMap {
             case 0 => DBIO.failed(InternalServerErrorException("Cannot create User instance in database", "Database error"))
@@ -127,7 +127,7 @@ class UserProvider @Inject()(
   def reset(tokenID: UUID, password: String)(implicit resetTokenProvider: ResetTokenProvider): Future[Boolean] = {
     val actions = resetTokenProvider.table.filter(_.token === tokenID).result.headOption flatMap {
         case Some(token) =>
-          users.filter(_.uuid === token.userID).map(u => (u.password, u.verified)).update((SecureHash.createHash(password), true)) map {
+          users.filter(_.uuid === token.userID).map(u => (u.password, u.verified)).update((SecureHash.create(password), true)) map {
             case 0 => false
             case _ =>
               events.publish(UserProviderEvents.UserReset(token.userID))

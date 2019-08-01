@@ -3,7 +3,7 @@ organization := "com.antigenomics"
 maintainer := "bvdmitri@gmail.com"
 version := "0.0.1"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.13.0"
 
 resolvers += "Local Maven Repository" at Path.userHome.asFile.toURI.toURL + ".m2/repository"
 resolvers += Resolver.sonatypeRepo("releases")
@@ -20,11 +20,11 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.postgresql" % "postgresql" % "42.2.5",
-  "com.typesafe.slick" %% "slick" % "3.3.0",
-  "com.typesafe.play" %% "play-slick" % "4.0.0",
-  "com.typesafe.play" %% "play-slick-evolutions" % "4.0.0",
-  "io.github.nremond" %% "pbkdf2-scala" % "0.6.3"
+  "org.postgresql" % "postgresql" % "42.2.6",
+  "com.typesafe.slick" %% "slick" % "3.3.2",
+  "com.typesafe.play" %% "play-slick" % "4.0.2",
+  "com.typesafe.play" %% "play-slick-evolutions" % "4.0.2",
+  "com.lambdaworks" % "scrypt" % "1.4.0"
 )
 
 scalacOptions ++= Seq(
@@ -32,8 +32,6 @@ scalacOptions ++= Seq(
   "UTF-8",
   "-unchecked",
   "-deprecation",
-  "-Xfuture",
-  "-Yno-adapted-args",
   "-Ywarn-dead-code",
   "-Ywarn-numeric-widen",
   "-feature",
@@ -42,7 +40,8 @@ scalacOptions ++= Seq(
 
 scalacOptions in Universal ++= Seq(
   "-Xdisable-assertions",
-  "–optimise"
+  "-optimize",
+  "-opt"
 )
 
 PlayKeys.devSettings := Seq(
@@ -69,13 +68,13 @@ javaOptions in Test ++= Seq(
   "-Dapplication.auth.reset.method=noop",
   "-Dapplication.auth.controller.delay=0 seconds",
   "-Dapplication.projects.storagePath=/tmp/vdjsight-test/projects",
-  "-Dapplication.samples.storagePath=/tmp/vdjsight-test/samples",
+  "-Dapplication.samples.storagePath=/tmp/vdjsight-test/samples"
 )
 
 libraryDependencies ++= Seq(
   "com.h2database" % "h2" % "1.4.199" % Test,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.2" % Test,
-  "com.typesafe.akka" %% "akka-testkit" % "2.5.22" % Test
+  "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.3" % Test,
+  "com.typesafe.akka" %% "akka-testkit" % "2.5.23" % Test
 )
 // Ends.
 

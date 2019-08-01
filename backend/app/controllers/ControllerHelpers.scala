@@ -33,7 +33,7 @@ object ControllerHelpers {
   )(block: A => Future[Result])(implicit request: Request[JsValue], messages: Messages, reads: Reads[A], ec: ExecutionContext): Future[Result] = {
     request.body.validate[A] match {
       case JsError(errors) =>
-        Future.successful(BadRequest(ServerResponseError(error, extra = Some(errors.map(e => messages(e._2.head.message)).distinct))))
+        Future.successful(BadRequest(ServerResponseError(error, extra = Some(errors.toSeq.map(e => messages(e._2.head.message)).distinct))))
       case JsSuccess(value, _) =>
         block(value)
     }

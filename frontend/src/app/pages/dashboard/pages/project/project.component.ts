@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
-import { ContentAnimation, ExtraAnimation, SidebarAnimation } from 'pages/dashboard/pages/project/project.animations';
+import { ContentAnimation, SidebarAnimation } from 'pages/dashboard/pages/project/project.animations';
 import { Subscription } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 
@@ -12,7 +12,7 @@ import { first, map } from 'rxjs/operators';
   templateUrl:     './project.component.html',
   styleUrls:       [ './project.component.less' ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations:      [ SidebarAnimation, ContentAnimation, ExtraAnimation ]
+  animations:      [ SidebarAnimation, ContentAnimation ]
 })
 export class ProjectComponent implements OnInit, OnDestroy {
   private currentProjectUpdateSubscription: Subscription;

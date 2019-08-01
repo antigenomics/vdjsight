@@ -27,7 +27,7 @@ export class LoginPageEffects {
         UserActions.login({ info: response.user }),
         ApplicationActions.restoreLastSavedURL({ fallbackURL: '/' })
       ]),
-      catchError(() => of(LoginPageActions.loginFailed({ error: 'Internal Server Error' })))
+      catchError((error) => of(LoginPageActions.loginFailed(error)))
     ))
   ));
 

@@ -3,10 +3,11 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { SampleFilesEffects } from 'pages/dashboard/models/samples/samples.effects';
+import { ProjectLoadedCheckComponent } from 'pages/dashboard/pages/project/components/loaded_check/project-loaded-check.component';
 import { SidebarModule } from 'pages/dashboard/pages/project/components/sidebar/sidebar.module';
 import { DashboardProjectModuleReducers } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { ProjectEffects } from 'pages/dashboard/pages/project/models/project/project.effects';
-import { SampleFilesEffects } from 'pages/dashboard/models/samples/samples.effects';
 import { ProjectHomeComponent } from 'pages/dashboard/pages/project/pages/home/home.component';
 import { ProjectHomeModule } from 'pages/dashboard/pages/project/pages/home/home.module';
 import { ProjectComponent } from 'pages/dashboard/pages/project/project.component';
@@ -35,7 +36,7 @@ const ProjectRouting = RouterModule.forChild([
     EffectsModule.forFeature([ ProjectEffects, SampleFilesEffects ]),
     SidebarModule, ProjectHomeModule
   ],
-  declarations: [ ProjectComponent ],
+  declarations: [ ProjectComponent, ProjectLoadedCheckComponent ],
   exports:      [ ProjectComponent ]
 })
 export class ProjectModule {}
