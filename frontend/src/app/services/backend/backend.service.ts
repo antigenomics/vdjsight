@@ -19,10 +19,9 @@ import { retryStrategy } from './retry-strategy';
   providedIn: 'root'
 })
 export class BackendService {
-  private static readonly deadBackendPingTimeout = 15000; // 15 seconds
-  private static readonly rateTimeout: number    = environment.backend.limits.timeout;
-  private static readonly rateCount: number      = environment.backend.limits.count;
-  private static readonly retryCount: number     = environment.backend.limits.retry;
+  private static readonly rateTimeout: number = environment.backend.limits.timeout;
+  private static readonly rateCount: number   = environment.backend.limits.count;
+  private static readonly retryCount: number  = environment.backend.limits.retry;
 
   public static readonly api = BackendService.getAPIUrl();
 
@@ -66,7 +65,7 @@ export class BackendService {
           this.store.pipe(select(fromRoot.isNetworkBackendPingScheduled))
         ]).pipe(first(), mergeMap(([ isBackendDead, isBackendPingScheduled ]) => {
           if (isBackendDead && !isBackendPingScheduled) {
-            this.store.dispatch(NetworkActions.pingBackendScheduleStart({ timeout: BackendService.deadBackendPingTimeout }));
+            this.store.dispatch(NetworkActions.pingBackendScheduleStart());
           }
           if (isBackendDead) {
             return throwError({ error: 'Server is unavailable now. Please try again later.' } as BackendErrorResponse);

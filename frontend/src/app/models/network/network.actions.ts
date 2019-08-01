@@ -8,7 +8,7 @@ export namespace NetworkActions {
   export const pingBackend                = createAction('[Network] Ping Backend');
   export const pingBackendSuccess         = createAction('[Network] Ping Backend Success');
   export const pingBackendFailed          = createAction('[Network] Ping Backend Failed');
-  export const pingBackendScheduleStart   = createAction('[Network] Ping Backend Schedule Start', props<{ timeout: number }>());
+  export const pingBackendScheduleStart   = createAction('[Network] Ping Backend Schedule Start');
   export const pingBackendScheduleStarted = createAction('[Network] Ping Backend Schedule Started', props<{ pingTimeoutId: number }>());
   export const pingBackendScheduleStop    = createAction('[Network] Ping Backend Schedule Stop');
   export const pingBackendScheduleStopped = createAction('[Network] Ping Backend Schedule Stopped');

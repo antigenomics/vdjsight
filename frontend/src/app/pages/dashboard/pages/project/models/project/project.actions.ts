@@ -4,6 +4,8 @@ import { BackendErrorResponse } from 'services/backend/backend-response';
 
 export namespace CurrentProjectActions {
 
+  export const toProjectURL = createAction('[CurrentProject] To Project URL');
+
   export const select   = createAction('[CurrentProject] Select', props<{ projectLinkUUID: string }>());
   export const deselect = createAction('[CurrentProject] Deselect');
 

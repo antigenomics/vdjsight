@@ -9,6 +9,7 @@ import { BackendService } from 'services/backend/backend.service';
 
 @Injectable()
 export class NetworkEffects implements OnInitEffects {
+  private static readonly deadBackendPingTimeout: number = 15000;
 
   public online$ = createEffect(() => fromEvent(window, 'online').pipe(
     map(() => NetworkActions.GoOnline({ pingBackend: true }))
@@ -42,14 +43,19 @@ export class NetworkEffects implements OnInitEffects {
     map(() => NetworkActions.pingBackendScheduleStop())
   ));
 
+  public pingBackendFailed$ = createEffect(() => this.actions$.pipe(
+    ofType(NetworkActions.pingBackendFailed),
+    map(() => NetworkActions.pingBackendScheduleStart())
+  ));
+
   public pingBackendScheduleStart$ = createEffect(() => this.actions$.pipe(
     ofType(NetworkActions.pingBackendScheduleStart),
     withLatestFrom(this.store.pipe(select(fromRoot.getNetworkBackendPingTimeoutId))),
     filter(([ _, timeoutId ]) => timeoutId === undefined),
-    exhaustMap(([ action, _ ]) => {
+    exhaustMap(() => {
       const timeoutId = window.setInterval(() => {
         this.store.dispatch(NetworkActions.pingBackend());
-      }, action.timeout);
+      }, NetworkEffects.deadBackendPingTimeout);
       return of(NetworkActions.pingBackendScheduleStarted({ pingTimeoutId: timeoutId }));
     })
   ));

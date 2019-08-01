@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
+import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
 import { DashboardProjectUploadModuleState, fromDashboardProjectUploads } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 import { ProjectUploadsActions } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.actions';
@@ -37,8 +37,7 @@ export class ProjectUploadsComponent {
 
   constructor(private readonly store: Store<DashboardProjectUploadModuleState>,
               private readonly files: FilesDialogService,
-              private readonly uploader: UploadsService,
-              private readonly router: Router) {}
+              private readonly uploader: UploadsService) {}
 
   public add(): void {
     this.files.process((files) => this.handleFiles(files));
@@ -95,8 +94,6 @@ export class ProjectUploadsComponent {
   }
 
   public close(): void {
-    const segments = this.router.url.split('/');
-    segments.pop();
-    this.router.navigate(segments);
+    this.store.dispatch(CurrentProjectActions.toProjectURL());
   }
 }

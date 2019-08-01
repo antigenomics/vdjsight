@@ -1,6 +1,6 @@
 <ng-container *ngIf="project.link; else notLoaded">
-    <div class="content" [@content]="state">
-        <div class="project" (click)="onSelect.emit()" [@project]="state" smoothHeight [smoothTrigger]="project.link">
+    <div class="content" [@content]="state | async">
+        <div class="project" (click)="onSelect.emit()" [@project]="state | async" smoothHeight [smoothTrigger]="project.link">
             <a class="header" [@flicker]="project.link.name">{{ project.link.name }}</a>
             <div class="meta" [@flicker]="project.link.description">
                 <span>{{ project.link.description | truncate:100 }}</span>

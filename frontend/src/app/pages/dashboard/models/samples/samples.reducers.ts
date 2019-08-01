@@ -88,8 +88,8 @@ const sampleFilesReducer = createReducer(
       }
     }, state);
   }),
-  on(SamplesActions.forceDeleteSuccess, (state, { entityId }) => {
-    return SamplesStateAdapter.removeOne(entityId, state);
+  on(SamplesActions.forceDeleteSuccess, (state, { entity }) => {
+    return SamplesStateAdapter.removeOne(entity.id, state);
   }),
   on(SamplesActions.forceDeleteFailed, (state, { entityId, error }) => {
     return SamplesStateAdapter.updateOne({

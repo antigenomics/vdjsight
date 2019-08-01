@@ -1,9 +1,16 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnChanges, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { FlickerAnimation } from 'animations/flicker.animation';
-import { ContentAnimation, ProjectAnimation, ProjectSmoothHeightAnimation } from 'pages/dashboard/pages/projects/components/list/item/project-item.animation';
 import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
+import { ContentAnimation, ProjectAnimation, ProjectSmoothHeightAnimation } from 'pages/dashboard/pages/projects/components/list/item/project-item.animation';
+import { ReplaySubject, Subject } from 'rxjs';
 
-type ProjectItemState = 'nothing' | 'highlight' | 'selected' | 'deleting' | 'updating';
+const enum ProjectEntityState {
+  NOTHING   = 'nothing',
+  HIGHLIGHT = 'highlight',
+  SELECTED  = 'selected',
+  DELETING  = 'deleting',
+  UPDATING  = 'updating'
+}
 
 @Component({
   selector:        'div[vs-project-item]',
@@ -12,8 +19,8 @@ type ProjectItemState = 'nothing' | 'highlight' | 'selected' | 'deleting' | 'upd
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations:      [ ContentAnimation, ProjectAnimation, ProjectSmoothHeightAnimation, FlickerAnimation ]
 })
-export class ProjectItemComponent implements OnChanges {
-  public state: ProjectItemState = 'nothing';
+export class ProjectItemComponent implements OnInit, OnChanges {
+  public state: Subject<ProjectEntityState> = new ReplaySubject();
 
   @Input()
   public project: ProjectEntity;
@@ -26,27 +33,34 @@ export class ProjectItemComponent implements OnChanges {
 
   @HostListener('mouseenter')
   public mouseenter(): void {
-    this.state = this._state('highlight');
+    this.updateState(ProjectEntityState.HIGHLIGHT);
   }
 
   @HostListener('mouseleave')
   public mouseleave(): void {
-    this.state = this._state('nothing');
+    this.updateState(ProjectEntityState.NOTHING);
+  }
+
+  public ngOnInit(): void {
+    this.updateState(ProjectEntityState.NOTHING);
   }
 
   public ngOnChanges(): void {
-    this.state = this._state('nothing');
+    this.updateState(ProjectEntityState.NOTHING);
   }
 
-  private _state(fallback: ProjectItemState): ProjectItemState {
-    if (this.project.deleting.active) {
-      return 'deleting';
-    } else if (this.project.updating.active) {
-      return 'updating';
-    } else if (this.isSelected) {
-      return 'selected';
-    } else {
-      return fallback;
-    }
+  private updateState(fallback: ProjectEntityState): void {
+    const s = (() => {
+      if (this.project.deleting.active) {
+        return ProjectEntityState.DELETING;
+      } else if (this.project.updating.active) {
+        return ProjectEntityState.UPDATING;
+      } else if (this.isSelected) {
+        return ProjectEntityState.SELECTED;
+      } else {
+        return fallback;
+      }
+    })();
+    this.state.next(s);
   }
 }

@@ -1,7 +1,8 @@
 <div class="content">
     <ng-container *ngIf="projects.length; else empty">
-        <div class="project item" @list *ngFor="let project of projects; trackBy: trackProjectBy" vs-project-item [project]="project"
-             [ngClass]="{ 'active': project === selected.get }" [isSelected]="project === selected.get"
+        <div class="project item" @list *ngFor="let project of projects; trackBy: trackProjectBy" vs-project-item
+             [project]="project"
+             [isSelected]="project === selected.get"
              (onSelect)="onSelect.emit(project)">
         </div>
         <div class="project filler item"></div>

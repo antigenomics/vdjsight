@@ -11,7 +11,6 @@
 }
 
 .sidebar > .item {
-  padding: 1em;
   border-bottom: 1px solid #d4d4d5;
   cursor: pointer;
   transition: border-left 0.3s ease-in-out, background 0.3s ease-in-out;
@@ -35,7 +34,17 @@
   }
 }
 
+.sidebar > .item.basic.text {
+  padding: 1em;
+}
+
+.sidebar > .item.header {
+  padding: 1em;
+  font-weight: bold;
+}
+
 .sidebar > .item.upload {
+  padding: 1em;
   border-left: 0.5em solid #e6e6e6;
   outline: none;
   width: 100%;

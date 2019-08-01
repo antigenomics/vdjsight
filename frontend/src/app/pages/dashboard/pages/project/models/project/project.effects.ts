@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { ApplicationActions } from 'models/application/application.actions';
@@ -42,7 +43,17 @@ export class ProjectEffects {
     }, this.notifications)
   ));
 
+  public toProjectURL$ = createEffect(() => this.actions$.pipe(
+    ofType(CurrentProjectActions.toProjectURL),
+    withLatestFrom(this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID))),
+    filter(([ _, uuid ]) => uuid !== ''),
+    tap(([ _, uuid ]) => {
+      this.router.navigateByUrl(`/dashboard/p/${uuid}`);
+    })
+  ), { dispatch: false });
+
   constructor(private readonly actions$: Actions, private readonly store: Store<DashboardProjectModuleState>,
-              private readonly projects: ProjectsService, private readonly notifications: NotificationsService) {}
+              private readonly projects: ProjectsService, private readonly router: Router,
+              private readonly notifications: NotificationsService) {}
 
 }

@@ -3,17 +3,19 @@
         <a class="upload item" routerLink="upload" routerLinkActive="active">
             Upload new samples
         </a>
-        <div class="item">
-            <h4 class="ui top pushed header">Samples</h4>
+        <div class="header top pushed item">
+            Samples
         </div>
         <ng-container *ngIf="samples$ | async as samples">
             <ng-container *ngIf="samples.length !== 0; else emptyList">
-                <div class="item" *ngFor="let sample of samples; trackBy: sampleFileTrackBy" (click)="selectSample(sample)">
-                    <vs-sidebar-sample [sample]="sample"></vs-sidebar-sample>
+                <div class="item" @list *ngFor="let sample of samples; trackBy: sampleFileTrackBy">
+                    <vs-sidebar-sample [sample]="sample" (onSelect)="selectSample(sample)" (onDelete)="deleteSample(sample)"
+                                       [isSelected]="(isSelected(sample)) | async">
+                    </vs-sidebar-sample>
                 </div>
             </ng-container>
             <ng-template #emptyList>
-                <div class="item">
+                <div class="basic text item">
                     You don't have any samples yet
                 </div>
             </ng-template>

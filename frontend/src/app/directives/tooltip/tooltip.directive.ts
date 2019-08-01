@@ -32,6 +32,7 @@ export class TooltipDirective<T> implements OnInit, OnDestroy, AfterViewChecked 
       interactive: true,
       animation:   'scale',
       theme:       'light',
+      boundary:    'viewport',
       ...this.options
     });
     this.instance = this.element.nativeElement._tippy;

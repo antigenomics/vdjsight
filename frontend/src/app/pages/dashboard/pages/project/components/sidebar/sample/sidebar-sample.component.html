@@ -1,11 +1,56 @@
 <ng-container *ngIf="sample.link; else notLoaded">
-    {{ sample.link.name }}
+    <div class="content" [@content]="state | async" (click)="onSelect.emit()">
+        <div class="sample" [@sample]="state | async">
+            {{ sample.link.name }}
+            <div class="utils" [@utils]="state | async">
+                <i class="trash alternate outline icon" (click)="$event.stopPropagation()"
+                   [vs-tooltip]="deleteButtonTooltip"
+                   [vs-tooltip-options]="{ placement: 'right', distance: 20, maxWidth: 275 }">
+                </i>
+                <ng-template #deleteButtonTooltip let-hide="hide">
+                    <div class="ui raised card">
+                        <div class="content">
+                            <div class="header">Confirm</div>
+                            <div class="description">
+                                Are you sure you want to delete this sample?
+                            </div>
+                        </div>
+                        <div class="extra content" *ngIf="sample.deleting.error as error" @fade-in>
+                            <div class="ui icon negative small message">
+                                <i class="exclamation triangle red icon"></i>
+                                <div class="content">
+                                    <div class="header">
+                                        Delete failed
+                                    </div>
+                                    <div class="extra">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="extra content">
+                            <div class="ui two buttons" *ngIf="!sample.deleting.active else deleting">
+                                <button class="ui button" (click)="hide()">Cancel</button>
+                                <div class="or"></div>
+                                <button class="ui orange button" [ngClass]="{ 'loading': sample.deleting.active }"
+                                        (click)="onDelete.emit()">Confirm
+                                </button>
+                            </div>
+                            <ng-template #deleting>
+                                <button class="ui fluid disabled loading button">Loading</button>
+                            </ng-template>
+                        </div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </div>
 </ng-container>
 <ng-template #notLoaded>
     <div class="util" smoothHeight [smoothTrigger]="sample">
         <ng-container *ngIf="sample.creating.active else createFailed">
-            <div class="ui active inline teal loader"></div>
-            <span style="padding-left: 1em">Loading new sample</span>
+            <div class="loading">
+                <div class="ui active inline tiny teal loader"></div>
+                <span style="padding-left: 1em">Loading new sample</span>
+            </div>
         </ng-container>
         <ng-template #createFailed>
             <div class="failed">

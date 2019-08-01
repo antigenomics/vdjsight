@@ -21,7 +21,7 @@ export namespace SamplesActions {
   export const updateFailed  = createAction('[Samples] Update Failed', props<{ entityId: number, error: BackendErrorResponse }>());
 
   export const forceDelete        = createAction('[Samples] Force Delete', props<{ entity: SampleEntity }>());
-  export const forceDeleteSuccess = createAction('[Samples] Force Delete Success', props<{ entityId: number }>());
+  export const forceDeleteSuccess = createAction('[Samples] Force Delete Success', props<{ entity: SampleEntity }>());
   export const forceDeleteFailed  = createAction('[Samples] Force Delete Failed', props<{ entityId: number, error: BackendErrorResponse }>());
 
   export const clear = createAction('[Samples] Clear');

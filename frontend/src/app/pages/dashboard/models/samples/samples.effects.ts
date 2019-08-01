@@ -54,7 +54,7 @@ export class SampleFilesEffects {
     ofType(SamplesActions.forceDelete),
     withLatestFrom(this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID))),
     mergeMap(([ action, currentProjectLinkUUID ]) => this.samples.delete(currentProjectLinkUUID, { uuid: action.entity.link.uuid, force: true }).pipe(
-      map(() => SamplesActions.forceDeleteSuccess({ entityId: action.entity.id })),
+      map(() => SamplesActions.forceDeleteSuccess({ entity: action.entity })),
       catchError((error) => of(SamplesActions.forceDeleteFailed({ entityId: action.entity.id, error })))
     )),
     withNotification('Samples', {
