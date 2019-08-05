@@ -38,24 +38,19 @@ object ClonotypeTableAnalysis {
           val parsed                    = new ClonotypeTable(clonotypesStream)
           val table: LiteClonotypeTable = LiteClonotypeTable.from(parsed)
 
-          ec.execute(() => {
-            val data      = Pickle.intoBytes(table)
-            val cachePath = s"${sampleFile.folder}/cache-${ClonotypeTableAnalysis.ANALYSIS_TYPE}-$marker.gz"
-            Using(new GZIPOutputStream(new FileOutputStream(cachePath))) { gz =>
-              gz.write(data.array())
-              BufferPool.release(data)
+          val data      = Pickle.intoBytes(table)
+          val cachePath = s"${sampleFile.folder}/cache-${ClonotypeTableAnalysis.ANALYSIS_TYPE}-$marker.gz"
+          Using(new GZIPOutputStream(new FileOutputStream(cachePath))) { gz =>
+            gz.write(data.array())
+            BufferPool.release(data)
 
-              cache.create(sampleFile.uuid, ClonotypeTableAnalysis.ANALYSIS_TYPE, marker, AnalysisCacheExpiredAction.DELETE_FILE, cachePath) onComplete {
-                case Success(_) =>
-                case Failure(ex) =>
-                  println("Failed to create cache: TODO")
-                  Files.deleteIfExists(Paths.get(cachePath))
-              }
-
+            cache.create(sampleFile.uuid, ClonotypeTableAnalysis.ANALYSIS_TYPE, marker, AnalysisCacheExpiredAction.DELETE_FILE, cachePath) onComplete {
+              case Success(_) =>
+              case Failure(ex) =>
+                println("Failed to create cache: TODO")
+                Files.deleteIfExists(Paths.get(cachePath))
             }
-          })
-
-          Success(table)
+          }.map(_ => table)
       }
 
     a.map {
