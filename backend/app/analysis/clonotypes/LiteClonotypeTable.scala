@@ -5,7 +5,7 @@ import com.antigenomics.mir.clonotype.{Clonotype, ClonotypeCall}
 
 import scala.jdk.CollectionConverters._
 
-case class LiteClonotypeTable(rows: scala.collection.Seq[LiteClonotypeTableRow]) {}
+case class LiteClonotypeTable(rows: scala.collection.Seq[LiteClonotypeTableRow])
 
 object LiteClonotypeTable {
 

@@ -20,7 +20,7 @@ case class SampleFileLinkDTO(
 
 object SampleFileLinkDTO {
   implicit val timestampWriter: Writes[Option[Timestamp]]     = (o: Option[Timestamp]) => Json.toJson(o.map(t => new Date(t.getTime)))
-  implicit val sampleFileDTOFormat: Writes[SampleFileLinkDTO] = Json.writes[SampleFileLinkDTO]
+  implicit val sampleFileDTOWrites: Writes[SampleFileLinkDTO] = Json.writes[SampleFileLinkDTO]
 
   def from(link: SampleFileLink, sample: SampleFile, projectLink: ProjectLink): SampleFileLinkDTO = {
     SampleFileLinkDTO(

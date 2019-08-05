@@ -5,7 +5,7 @@ import play.api.libs.json.{Json, Writes}
 case class LiteClonotypeTablePage(
   page: Long,
   pageSize: Long,
-  rows: Seq[LiteClonotypeTableRow]
+  rows: scala.collection.Seq[LiteClonotypeTableRow]
 )
 
 object LiteClonotypeTablePage {

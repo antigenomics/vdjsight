@@ -81,7 +81,8 @@ export class BackendService {
   }
 
   private next<T, B = T>(request: BackendRequest<T>, options?: BackendRequestOptions): Observable<B> {
-    const url = BackendService.endpointToURL(request.endpoint);
+    const url        = BackendService.endpointToURL(request.endpoint);
+    const timerStart = performance.now();
     return this.limiter.request(request).pipe(backendDebug(), flatMap((r: BackendRequest<T>) => {
       let call: Observable<BackendSuccessResponse<B>>;
       switch (r.type) {
@@ -102,7 +103,10 @@ export class BackendService {
       }
 
       return call.pipe(first(), map((d) => d.data),
-        tap((data) => this.logger.debug('[BackendResponse]', data)),
+        tap((data) => {
+          const timerEnd = performance.now();
+          this.logger.debug(`[BackendResponse] [${(timerEnd - timerStart).toFixed(2)} ms]`, data);
+        }),
         this.retryOnFail()
       );
     }), this.catchErrors());

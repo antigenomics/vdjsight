@@ -2,13 +2,13 @@ package controllers.analysis
 
 import java.io.{FileInputStream, FileOutputStream}
 import java.nio.ByteBuffer
-import java.nio.file.{Files, Paths}
 import java.util.UUID
+import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
 import actions.{SessionRequest, SessionRequestAction}
-import analysis.clonotypes.LiteClonotypeTable
+import analysis.clonotypes.{ClonotypeTableAnalysis, LiteClonotypeTable, LiteClonotypeTablePage}
+import boopickle.BufferPool
 import boopickle.Default._
-import com.antigenomics.mir.clonotype.{Clonotype, ClonotypeCall}
 import com.antigenomics.mir.clonotype.parser.{ClonotypeTableParserUtils, Software}
 import com.antigenomics.mir.clonotype.table.ClonotypeTable
 import com.antigenomics.mir.segment.Gene
@@ -16,6 +16,7 @@ import com.antigenomics.mir.{CommonUtils, Species}
 import com.google.inject.Inject
 import controllers.analysis.dto.{AnalysisClonotypesRequest, AnalysisClonotypesResponse}
 import controllers.{ControllerHelpers, WithRecoverAction}
+import models.cache.{AnalysisCacheExpiredAction, AnalysisCacheProvider}
 import models.project.{ProjectLink, ProjectLinkProvider, ProjectProvider}
 import models.sample.{SampleFileLink, SampleFileLinkProvider, SampleFileProvider}
 import models.user.{UserPermissionsProvider, UserProvider}
@@ -26,7 +27,6 @@ import play.api.mvc._
 import server.ServerResponse
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.jdk.CollectionConverters._
 
 class AnalysisController @Inject()(cc: ControllerComponents, session: SessionRequestAction, messagesAPI: MessagesApi)(
   implicit
@@ -36,7 +36,8 @@ class AnalysisController @Inject()(cc: ControllerComponents, session: SessionReq
   projectsProvider: ProjectProvider,
   projectsLinkProvider: ProjectLinkProvider,
   sampleFileProvider: SampleFileProvider,
-  sampleFileLinkProvider: SampleFileLinkProvider
+  sampleFileLinkProvider: SampleFileLinkProvider,
+  analysisCacheProvider: AnalysisCacheProvider
 ) extends AbstractController(cc)
     with Logging {
 
@@ -76,36 +77,9 @@ class AnalysisController @Inject()(cc: ControllerComponents, session: SessionReq
 
   def clonotypes(pLinkUUID: UUID, sLinkUUID: UUID) = actionWithValidate[AnalysisClonotypesRequest](pLinkUUID, sLinkUUID) { (req, clonotypes, pLink, sLink) =>
     sampleFileProvider.get(sLink.sampleID) flatMap {
-      case Some(sampleFile) =>
-        val clonotypesStream = ClonotypeTableParserUtils.streamFrom(
-          CommonUtils.getFileAsStream(sampleFile.locations.sample, sampleFile.extension == ".gz"),
-          Software.VDJtools,
-          Species.Human,
-          Gene.TRA
-        )
-
-        val parsed = new ClonotypeTable(clonotypesStream)
-        val table = LiteClonotypeTable.from(parsed)
-
-        val data = Pickle.intoBytes(table)
-
-        println(table.rows.headOption.map(_.cdr3aa))
-
-        val fc = new FileOutputStream("/tmp/dump-test").getChannel
-        fc.write(data)
-        fc.close()
-
-        val ic = new FileInputStream("/tmp/dump-test").getChannel
-
-        val bb = ByteBuffer.wrap(Files.readAllBytes(Paths.get("/tmp/dump-test")))
-
-        val d: LiteClonotypeTable = Unpickle[LiteClonotypeTable].fromBytes(bb)
-
-        println(d.rows.headOption.map(_.cdr3aa))
-
-        // BufferPool.release(data)
-
-        Future(Ok(ServerResponse(AnalysisClonotypesResponse(Seq("")))))
+      case Some(sampleFile) => ClonotypeTableAnalysis.clonotypes(sampleFile, "default") map { table =>
+        Ok(ServerResponse(LiteClonotypeTablePage(1, 20, table.rows.slice(0, 20))))
+      }
       case None => Future(BadRequest(ServerResponse("Sample does not exist")))
     }
 

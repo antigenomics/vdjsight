@@ -18,7 +18,7 @@ case class ProjectLinkDTO(
 
 object ProjectLinkDTO {
   implicit val timestampWriter: Writes[Option[Timestamp]] = (o: Option[Timestamp]) => Json.toJson(o.map(t => new Date(t.getTime)))
-  implicit val projectDTOFormat: Writes[ProjectLinkDTO]   = Json.writes[ProjectLinkDTO]
+  implicit val projectDTOWrites: Writes[ProjectLinkDTO]   = Json.writes[ProjectLinkDTO]
 
   def from(link: ProjectLink, project: Project): ProjectLinkDTO = {
     ProjectLinkDTO(
