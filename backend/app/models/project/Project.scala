@@ -29,7 +29,21 @@ object ProjectsConfiguration {
   }
 }
 
-case class Project(uuid: UUID, name: String, description: String, ownerID: UUID, folder: String, isDangling: Boolean)
+// For future needs
+case class ProjectLocations(folder: String)
+
+case class Project(
+  uuid: UUID,
+  name: String,
+  description: String,
+  ownerID: UUID,
+  folder: String,
+  isDangling: Boolean
+) {
+
+  def locations: ProjectLocations = ProjectLocations(folder)
+
+}
 
 class ProjectTable(tag: Tag)(implicit up: UserProvider) extends Table[Project](tag, ProjectTable.TABLE_NAME) {
   def uuid        = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))

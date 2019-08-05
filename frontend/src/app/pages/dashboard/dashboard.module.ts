@@ -6,6 +6,7 @@ import { StoreModule } from '@ngrx/store';
 import { DashboardPageComponent } from 'pages/dashboard/dashboard.component';
 import { DashboardModuleReducers } from 'pages/dashboard/models/dashboard.state';
 import { ProjectsEffects } from 'pages/dashboard/models/projects/projects.effects';
+import { AnalysisService } from 'pages/dashboard/services/analysis/analysis.service';
 import { ProjectsService } from 'pages/dashboard/services/projects/projects.service';
 import { SamplesService } from 'pages/dashboard/services/samples/samples.service';
 
@@ -27,6 +28,6 @@ const DashboardRouting = RouterModule.forChild([
     EffectsModule.forFeature([ ProjectsEffects ])
   ],
   declarations: [ DashboardPageComponent ],
-  providers:    [ ProjectsService, SamplesService ]
+  providers:    [ ProjectsService, SamplesService, AnalysisService ]
 })
 export class DashboardModule {}

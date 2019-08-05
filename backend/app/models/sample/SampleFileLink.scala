@@ -48,7 +48,12 @@ object SampleFileLinksConfiguration {
   }
 }
 
-case class SampleFileLink(uuid: UUID, sampleID: UUID, projectID: UUID, deleteOn: Option[Timestamp])
+case class SampleFileLink(
+  uuid: UUID,
+  sampleID: UUID,
+  projectID: UUID,
+  deleteOn: Option[Timestamp]
+)
 
 class SampleFileLinkTable(tag: Tag)(
   implicit

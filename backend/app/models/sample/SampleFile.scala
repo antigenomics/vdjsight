@@ -33,6 +33,8 @@ object SampleFilesConfiguration {
   }
 }
 
+case class SampleFileLocations(folder: String, sample: String)
+
 case class SampleFile(
   uuid: UUID,
   ownerID: UUID,
@@ -44,7 +46,11 @@ case class SampleFile(
   folder: String,
   isUploaded: Boolean,
   isDangling: Boolean
-)
+) {
+
+  def locations: SampleFileLocations = SampleFileLocations(folder, s"$folder/sample")
+
+}
 
 class SampleFileTable(tag: Tag)(implicit userProvider: UserProvider) extends Table[SampleFile](tag, SampleFileTable.TABLE_NAME) {
   def uuid       = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))

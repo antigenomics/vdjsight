@@ -43,13 +43,9 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
 
   def info(projectLinkUUID: UUID): Action[Unit] = action(parse.empty) { implicit request =>
     projectsLinkProvider.getWithProject(projectLinkUUID) map {
-      case Some(lwp) =>
-        if (lwp._1.userID == request.userID.get) {
-          Ok(ServerResponse(ProjectLinkDTO.from(lwp)))
-        } else {
-          Forbidden(ServerResponseError("You are not allowed to do this"))
-        }
-      case None => BadRequest(ServerResponseError("Invalid request"))
+      case Some(lwp) if lwp._1.userID == request.userID.get => Ok(ServerResponse(ProjectLinkDTO.from(lwp)))
+      case Some(lwp) if lwp._1.userID != request.userID.get => Forbidden(ServerResponseError("You are not allowed to do this"))
+      case None                                             => BadRequest(ServerResponseError("Invalid request"))
     }
   }
 
@@ -69,32 +65,25 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
 
   def update: Action[JsValue] = actionWithValidate[ProjectsUpdateRequest]() { (request, update) =>
     projectsLinkProvider.get(update.uuid) flatMap {
-      case Some(link) =>
-        if (link.userID == request.userID.get && link.isModificationAllowed) {
-          projectsProvider.update(link.projectID, update.name, update.description) map { project =>
-            Ok(ServerResponse(ProjectsUpdateResponse(ProjectLinkDTO.from(link, project))))
-          }
-        } else {
-          Future(Forbidden(ServerResponseError("You are not allowed to do this")))
+      case Some(link) if link.userID == request.userID.get && link.isModificationAllowed =>
+        projectsProvider.update(link.projectID, update.name, update.description) map { project =>
+          Ok(ServerResponse(ProjectsUpdateResponse(ProjectLinkDTO.from(link, project))))
         }
+      case Some(link) if link.userID != request.userID.get || !link.isModificationAllowed =>
+        Future(Forbidden(ServerResponseError("You are not allowed to do this")))
       case None => Future(BadRequest(ServerResponseError("Invalid request")))
     }
   }
 
   def delete: Action[JsValue] = actionWithValidate[ProjectsDeleteRequest]() { (request, delete) =>
     projectsLinkProvider.get(delete.uuid).flatMap {
-      case Some(link) =>
-        if (link.userID == request.userID.get) {
-          if (delete.force) {
-            projectsLinkProvider.delete(link.uuid)
-            Future(Ok(ServerResponse.EMPTY))
-          } else {
-            Future(NotImplemented(ServerResponseError("Scheduled delete not implemented yet")))
-          }
-        } else {
-          Future(Forbidden(ServerResponseError("You are not allowed to do this")))
-        }
-      case _ => Future(BadRequest(ServerResponseError("Invalid request")))
+      case Some(link) if link.userID == request.userID.get && delete.force =>
+        projectsLinkProvider.delete(link.uuid)
+        Future(Ok(ServerResponse.EMPTY))
+      case Some(link) if link.userID == request.userID.get && !delete.force =>
+        Future(NotImplemented(ServerResponseError("Scheduled delete not implemented yet")))
+      case Some(link) if link.userID != request.userID.get => Future(Forbidden(ServerResponseError("You are not allowed to do this")))
+      case _                                               => Future(BadRequest(ServerResponseError("Invalid request")))
     }
   }
 

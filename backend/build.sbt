@@ -24,7 +24,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick" % "3.3.2",
   "com.typesafe.play" %% "play-slick" % "4.0.2",
   "com.typesafe.play" %% "play-slick-evolutions" % "4.0.2",
-  "com.lambdaworks" % "scrypt" % "1.4.0"
+  "com.lambdaworks" % "scrypt" % "1.4.0",
+  "com.antigenomics" % "mir" % "1.0-SNAPSHOT",
+  "io.suzaku" %% "boopickle" % "1.3.1"
 )
 
 scalacOptions ++= Seq(
@@ -35,7 +37,8 @@ scalacOptions ++= Seq(
   "-Ywarn-dead-code",
   "-Ywarn-numeric-widen",
   "-feature",
-  "-Xfatal-warnings"
+  "-Xfatal-warnings",
+  "-language:existentials"
 )
 
 scalacOptions in Universal ++= Seq(

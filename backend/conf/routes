@@ -7,6 +7,7 @@
 ->         /auth                controllers.authorization.AuthorizationRouter
 ->         /projects            controllers.projects.ProjectsRouter
 ->         /samples             controllers.samples.SamplesRouter
+->         /analysis            controllers.analysis.AnalysisRouter
 
 GET        /ping                controllers.CommonController.ping
 

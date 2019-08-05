@@ -26,7 +26,7 @@ trait DatabaseSampleFileLinks extends Matchers with OptionValues with DatabasePr
   private def generateExistingSampleFileLink(sampleFile: TestSampleFile, project: TestProject): TestSampleFileLink = {
     val sampleFileLinkEventProbe = events.probe[SampleFileLinkProviderEvent]
 
-    val link = Await.result(sflp.create(sampleFile.uuid, project.uuid), Duration.Inf)
+    val link = Await.result(sflp.create(sampleFile.uuid, project.uuid, project.user.uuid), Duration.Inf)
 
     sampleFileLinkEventProbe.expectMsgType[SampleFileLinkProviderEvents.SampleFileLinkCreated]
 

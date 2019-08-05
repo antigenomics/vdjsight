@@ -1,0 +1,27 @@
+.controls.segment {
+  padding: 0;
+}
+
+.controls.segment > .menu {
+  border-bottom: none;
+  min-height: 0;
+}
+
+.controls.segment > .menu > .item {
+  padding-left: 2em;
+  padding-right: 2em;
+
+  -webkit-transition: background-color, border-bottom 0.25s ease-out;
+  -moz-transition: background-color, border-bottom 0.25s ease-out;
+  -o-transition: background-color, border-bottom 0.25s ease-out;
+  transition: background-color, border-bottom 0.25s ease-out;
+
+  &:not(.active):hover {
+    background-color: rgba(243, 244, 245, 0.5);
+    border-bottom: 2px solid rgba(150, 150, 150, 1);
+  }
+}
+
+.controls.segment > .menu > .active.item {
+  background-color: rgba(243, 244, 245, 0.5);
+}

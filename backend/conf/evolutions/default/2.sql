@@ -28,6 +28,7 @@ create table "sample_file_link"
     uuid       uuid not null primary key,
     sample_id  uuid not null,
     project_id uuid not null,
+
     delete_on  timestamp default null,
     foreign key (sample_id) references "sample_file" (uuid) on update cascade on delete restrict,
     foreign key (project_id) references "project" (uuid) on update cascade on delete restrict
@@ -42,5 +43,5 @@ drop index sample_file_link_table_project_id_idx;
 drop index sample_file_link_table_sample_id_idx;
 drop table "sample_file_link";
 
-drop index SAMPLE_FILE_TABLE_OWNER_ID_IDX;
+drop index sample_file_table_owner_id_idx;
 drop table "sample_file";

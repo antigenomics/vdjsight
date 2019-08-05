@@ -21,7 +21,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequestAction, messagesAPI: MessagesApi)(
-  implicit ec: ExecutionContext,
+  implicit
+  ec: ExecutionContext,
   userProvider: UserProvider,
   userPermissionsProvider: UserPermissionsProvider,
   projectsProvider: ProjectProvider,
@@ -37,13 +38,9 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
     WithRecoverAction {
       (session andThen session.authorizedOnly)(bodyParser).async { implicit request =>
         projectsLinkProvider.get(projectLinkUUID) flatMap {
-          case Some(link) =>
-            if (link.userID == request.userID.get) {
-              block(request, link)
-            } else {
-              Future(BadRequest(ServerResponse("Bad credentials")))
-            }
-          case None => Future(BadRequest(ServerResponse("Project does not exist")))
+          case Some(link) if link.userID == request.userID.get => block(request, link)
+          case Some(link) if link.userID != request.userID.get => Future(BadRequest(ServerResponse("Bad credentials")))
+          case None                                            => Future(BadRequest(ServerResponse("Project does not exist")))
         }
       }
     }
@@ -51,14 +48,13 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
   private def actionWithValidate[J](
     projectLinkUUID: UUID,
     error: String = "Request validation failed"
-  )(block: (SessionRequest[JsValue], J, ProjectLink) => Future[Result])(implicit reads: Reads[J]) = action(parse.json, projectLinkUUID) { (request, link) =>
-    {
+  )(block: (SessionRequest[JsValue], J, ProjectLink) => Future[Result])(implicit reads: Reads[J]) =
+    action(parse.json, projectLinkUUID) { (request, link) =>
       implicit val rjs: Request[JsValue] = request
       ControllerHelpers.validateRequest[J](error) { value =>
         block(request, value, link)
       }
     }
-  }
 
   private def uploadAction(projectLinkUUID: UUID)(block: (SessionRequest[MultipartFormData[Files.TemporaryFile]], ProjectLink) => Future[Result]) =
     WithRecoverAction {
@@ -66,13 +62,9 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
         parse.multipartFormData(sampleFileProvider.configuration.maxSampleSize)
       ).async { implicit request =>
         projectsLinkProvider.get(projectLinkUUID) flatMap {
-          case Some(link) =>
-            if (link.userID == request.userID.get) {
-              block(request, link)
-            } else {
-              Future(BadRequest(ServerResponse("Bad credentials")))
-            }
-          case None => Future(BadRequest(ServerResponse("Project does not exist")))
+          case Some(link) if link.userID == request.userID.get => block(request, link)
+          case Some(link) if link.userID != request.userID.get => Future(BadRequest(ServerResponse("Bad credentials")))
+          case None                                            => Future(BadRequest(ServerResponse("Project does not exist")))
         }
       }
     }
@@ -84,17 +76,14 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
       projectsLinkProvider.get(projectLinkUUID).map(_.exists(_.isUploadAllowed)).flatMap {
         case true =>
           userPermissionsProvider.findForUser(request.userID.get).flatMap {
-            case Some((permissions, _)) =>
-              if (permissions.maxSamplesCount > 0) {
-                sampleFileProvider.findForOwner(request.userID.get).map { samples =>
-                  if (samples.length >= permissions.maxSamplesCount) {
-                    Some(Forbidden(ServerResponseError("Max files count limit has been exceeded")))
-                  } else {
-                    None
-                  }
+            case Some((permissions, _)) if permissions.maxSamplesCount <= 0 => Future(None)
+            case Some((permissions, _)) if permissions.maxSamplesCount > 0 =>
+              sampleFileProvider.findForOwner(request.userID.get).map { samples =>
+                if (samples.length >= permissions.maxSamplesCount) {
+                  Some(Forbidden(ServerResponseError("Max files count limit has been exceeded")))
+                } else {
+                  None
                 }
-              } else {
-                Future(None)
               }
             case None => Future(Some(Forbidden(ServerResponseError("Internal Server Error"))))
           }
@@ -120,7 +109,7 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
               Future(BadRequest(ServerResponseError("Bad file")))
             } else {
               sampleFileProvider.create(request.userID.get, form.name, form.software, form.size, form.extension, form.hash).flatMap { created =>
-                file.ref.copyTo(Paths.get(s"${created.folder}/sample"), replace = true)
+                file.ref.copyTo(Paths.get(created.locations.sample), replace = true)
                 sampleFileProvider.markAsUploaded(created.uuid) flatMap { uploaded =>
                   sampleFileLinkProvider.create(uploaded.uuid, projectLink.projectID) map { link =>
                     Ok(ServerResponse(SamplesCreateResponse(SampleFileLinkDTO.from(link, uploaded, projectLink))))
@@ -135,14 +124,13 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
   def delete(projectLinkUUID: UUID): Action[JsValue] = actionWithValidate[SamplesDeleteRequest](projectLinkUUID) { (_, delete, projectLink) =>
     if (projectLink.isDeleteAllowed) {
       sampleFileLinkProvider.get(delete.uuid).flatMap {
-        case Some(link) if link.projectID == projectLink.projectID =>
-          if (delete.force) {
-            sampleFileLinkProvider.delete(link.uuid)
-            Future(Ok(ServerResponse.EMPTY))
-          } else {
-            Future(NotImplemented(ServerResponseError("Scheduled delete not implemented yet")))
-          }
-        case _ => Future(BadRequest(ServerResponseError("Invalid request")))
+        case Some(link) if link.projectID == projectLink.projectID && delete.force =>
+          sampleFileLinkProvider.delete(link.uuid)
+          Future(Ok(ServerResponse.EMPTY))
+        case Some(link) if link.projectID == projectLink.projectID && !delete.force =>
+          Future(NotImplemented(ServerResponseError("Scheduled delete not implemented yet")))
+        case Some(link) if link.projectID != projectLink.projectID => Future(BadRequest(ServerResponse("Bad credentials")))
+        case None                                                  => Future(BadRequest(ServerResponseError("Invalid request")))
       }
     } else {
       Future(BadRequest(ServerResponseError("You are not allowed to do this")))

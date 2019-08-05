@@ -1,9 +1,38 @@
-<div class="ui raised blue segment">
-    <h4 class="ui header">
-        <i class="project diagram icon"></i>
-        <div class="content">
-            Sample: {{ sample.link.name }}
-            <div class="sub header">Manage your sample's analysis here</div>
+<div class="ui raised segments">
+    <div class="ui blue segment">
+        <h4 class="ui header">
+            <i class="project diagram icon"></i>
+            <div class="content">
+                Sample: {{ sample.link.name }}
+                <div class="sub header">Manage your sample's analysis here</div>
+            </div>
+        </h4>
+    </div>
+    <div class="ui controls segment">
+        <div class="ui secondary pointing blue menu">
+            <a class="item" routerLink="info" routerLinkActive="active">
+                Info
+            </a>
+            <a class="item" routerLink="clonotypes" routerLinkActive="active">
+                Clonotypes
+            </a>
+            <a class="item">
+                V-J Usage
+            </a>
+            <a class="item" routerLink="spectratype" routerLinkActive="active">
+                Spectratype
+            </a>
+            <a class="item">
+                V Spectratype
+            </a>
+            <a class="item">
+                Quantile plot
+            </a>
+            <div class="right menu">
+                <a class="ui item">
+                    Settings
+                </a>
+            </div>
         </div>
-    </h4>
+    </div>
 </div>

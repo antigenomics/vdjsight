@@ -56,13 +56,9 @@ class AuthorizationController @Inject()(cc: ControllerComponents, session: Sessi
 
   def login: Action[JsValue] = action[AuthorizationLoginRequest](AuthorizationLoginRequest.failedValidationMessage) { (_, login) =>
     userProvider.getByEmailAndPassword(login.email, login.password).map {
-      case None => BadRequest(ServerResponseError(messages("authorization.login.failed.email")))
-      case Some(user) =>
-        if (user.verified) {
-          Ok(ServerResponse.EMPTY).withSession(SessionRequest.SESSION_REQUEST_USER_ID_KEY -> user.uuid.toString)
-        } else {
-          BadRequest(ServerResponseError(messages("authorization.login.failed.unverified")))
-        }
+      case Some(user) if user.verified  => Ok(ServerResponse.EMPTY).withSession(SessionRequest.SESSION_REQUEST_USER_ID_KEY -> user.uuid.toString)
+      case Some(user) if !user.verified => BadRequest(ServerResponseError(messages("authorization.login.failed.unverified")))
+      case None                         => BadRequest(ServerResponseError(messages("authorization.login.failed.email")))
     }
   }
 
