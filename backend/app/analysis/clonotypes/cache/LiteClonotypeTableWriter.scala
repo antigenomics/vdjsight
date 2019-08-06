@@ -22,20 +22,24 @@ case class LiteClonotypeTableWriter(output: OutputStream) {
     val d = if (bd != MissingDiversitySegment.INSTANCE) bd.getId else ""
     val j = if (bj != MissingJoiningSegment.INSTANCE) bj.getId else ""
 
-    val computedSize = 4 + 8 + (4 + cdr3aa.length) + (4 + cdr3nt.length) + (4 + v.length) + (4 + d.length) + (4 + j.length)
+    val computedSize = 4 + 8 + (1 + cdr3aa.length) + (1 + cdr3nt.length) + (1 + v.length) + (1 + d.length) + (1 + j.length)
 
-    writer.write(computedSize)
-    writer.write(index)
-    writer.write(0.0) // Freq: todo
-    writer.write(cdr3aa)
-    writer.write(cdr3nt)
-    writer.write(v)
-    writer.write(d)
-    writer.write(j)
+    writer.writeInt(computedSize)
+    writer.writeInt(index)
+    writer.writeDouble(0.0) // Freq: todo
+    writer.writeSmallString(cdr3aa)
+    writer.writeSmallString(cdr3nt)
+    writer.writeSmallString(v)
+    writer.writeSmallString(d)
+    writer.writeSmallString(j)
   }
 
   def close(): Unit = {
     writer.close()
+  }
+
+  def end(): Unit = {
+    writer.flush()
   }
 
 }

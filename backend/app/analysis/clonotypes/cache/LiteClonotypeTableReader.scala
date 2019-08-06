@@ -13,11 +13,11 @@ case class LiteClonotypeTableReader(input: InputStream) {
     LiteClonotypeTableRow(
       index  = reader.readInt(),
       freq   = reader.readDouble(),
-      cdr3aa = reader.readString(),
-      cdr3nt = reader.readString(),
-      v      = reader.readString(),
-      d      = reader.readString(),
-      j      = reader.readString()
+      cdr3aa = reader.readSmallString(),
+      cdr3nt = reader.readSmallString(),
+      v      = reader.readSmallString(),
+      d      = reader.readSmallString(),
+      j      = reader.readSmallString()
     )
   }
 

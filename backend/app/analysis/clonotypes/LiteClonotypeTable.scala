@@ -16,14 +16,9 @@ case class LiteClonotypeTable(private val reader: LiteClonotypeTableReader) {
   }
 
   def rows(): LazyList[LiteClonotypeTableRow] = {
-    if (reader.available()) {
-      val n = reader.next()
-
-      println(n.index)
-
-      n #:: rows()
-    } else {
-      LazyList.empty
+    reader.safeNext() match {
+      case Some(next) => next #:: rows()
+      case None => LazyList.empty
     }
   }
 

@@ -24,7 +24,7 @@ object ClonotypeTableAnalysis {
           CommonUtils.getFileAsStream(sampleFile.locations.sample, sampleFile.extension == ".gz"),
           Software.VDJtools,
           Species.Human,
-          Gene.TRA
+          Gene.TRB
         )
 
         val parsed = new ClonotypeTable(clonotypesStream)

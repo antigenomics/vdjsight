@@ -73,7 +73,7 @@ class AnalysisController @Inject()(cc: ControllerComponents, session: SessionReq
       case Some(sampleFile) =>
         ClonotypeTableAnalysis.clonotypes(sampleFile, "default") map { table =>
           Using(table) { t =>
-            val rows: Seq[LiteClonotypeTableRow] = t.take(10000).force
+            val rows: Seq[LiteClonotypeTableRow] = t.skip(10000).take(10000).force
 
             ServerResponse(LiteClonotypeTablePage(1, 20, rows))
           } match {

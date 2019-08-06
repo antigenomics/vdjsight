@@ -16,23 +16,23 @@ class BinaryUtilsSpec extends BaseTestSpec {
 
       val writer = BinaryWriter(output)
 
-      writer.write(1)
-      writer.write(-2)
-      writer.write(Int.MaxValue)
-      writer.write(2.0)
-      writer.write(Double.MaxValue)
-      writer.write(Double.MinPositiveValue)
-      writer.write("Hello")
-      writer.write("world!")
-      writer.write(0.0)
-      writer.write(0)
+      writer.writeInt(1)
+      writer.writeInt(-2)
+      writer.writeInt(Int.MaxValue)
+      writer.writeDouble(2.0)
+      writer.writeDouble(Double.MaxValue)
+      writer.writeDouble(Double.MinPositiveValue)
+      writer.writeString("Hello")
+      writer.writeString("world!")
+      writer.writeDouble(0.0)
+      writer.writeInt(0)
 
-      writer.write(0)
-      writer.write(0)
-      writer.write(0)
-      writer.write(1)
+      writer.writeInt(0)
+      writer.writeInt(0)
+      writer.writeInt(0)
+      writer.writeInt(1)
 
-      writer.flush()
+      // writer.close()
 
       val input = new ByteArrayInputStream(output.toByteArray)
 
@@ -51,7 +51,6 @@ class BinaryUtilsSpec extends BaseTestSpec {
 
       reader.skip(12)
       reader.readInt() shouldEqual 1
-
     }
 
   }

@@ -6,21 +6,35 @@ import java.nio.ByteBuffer
 case class BinaryWriter(private val stream: OutputStream, private val capacity: Int = BinaryWriter.BUFFER_CAPACITY) {
   private val buffer: ByteBuffer = ByteBuffer.allocate(capacity)
 
-  def write(value: Int): Unit = {
+  def writeByte(value: Byte): Unit = {
+    if (buffer.remaining() < 1) {
+      flush()
+    }
+    buffer.put(value)
+  }
+
+  def writeChar(value: Char): Unit = {
+    if (buffer.remaining() < 2) {
+      flush()
+    }
+    buffer.putChar(value)
+  }
+
+  def writeInt(value: Int): Unit = {
     if (buffer.remaining() < 4) {
       flush()
     }
     buffer.putInt(value)
   }
 
-  def write(value: Double): Unit = {
+  def writeDouble(value: Double): Unit = {
     if (buffer.remaining() < 8) {
       flush()
     }
     buffer.putDouble(value)
   }
 
-  def write(string: String): Unit = {
+  def writeString(string: String): Unit = {
     if (buffer.remaining() < (4 + string.length)) {
       flush()
     }
@@ -28,8 +42,19 @@ case class BinaryWriter(private val stream: OutputStream, private val capacity: 
     buffer.put(string.getBytes)
   }
 
-  def write(bytes: Array[Byte]): Unit = {
-    if (buffer.remaining() < (5 + bytes.length)) {
+  def writeSmallString(string: String): Unit = {
+    if (buffer.remaining() < (1 + string.length)) {
+      flush()
+    }
+    if (string.length > 256) {
+      throw new RuntimeException("BinaryUtils: String is not small")
+    }
+    buffer.put(string.length.toByte)
+    buffer.put(string.getBytes)
+  }
+
+  def writeBytes(bytes: Array[Byte]): Unit = {
+    if (buffer.remaining() < (4 + bytes.length)) {
       flush()
     }
     buffer.putInt(bytes.length)
@@ -41,9 +66,12 @@ case class BinaryWriter(private val stream: OutputStream, private val capacity: 
     stream.close()
   }
 
-  private def flush(): Unit = {
-    stream.write(buffer.array())
-    buffer.clear()
+  def flush(): Unit = {
+    if (buffer.position() != 0) {
+      stream.write(buffer.array(), 0, buffer.position())
+      stream.flush()
+      buffer.clear()
+    }
   }
 }
 
