@@ -4,13 +4,12 @@ import play.api.libs.json.{Json, Writes}
 
 case class LiteClonotypeTableRow(
   index: Int,
-  frequency: Double,
+  freq: Double,
   cdr3aa: String,
   cdr3nt: String,
-  v: Option[String],
-  d: Option[String],
-  j: Option[String],
-  annotations: Map[String, String]
+  v: String,
+  d: String,
+  j: String
 )
 
 object LiteClonotypeTableRow {

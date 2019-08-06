@@ -1,12 +1,9 @@
 package analysis.clonotypes
 
 import java.io.{FileInputStream, FileOutputStream}
-import java.nio.ByteBuffer
-import java.nio.file.{Files, Paths}
 import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
-import boopickle.BufferPool
-import boopickle.Default._
+import analysis.clonotypes.cache.{LiteClonotypeTableReader, LiteClonotypeTableWriter}
 import com.antigenomics.mir.clonotype.parser.{ClonotypeTableParserUtils, Software}
 import com.antigenomics.mir.clonotype.table.ClonotypeTable
 import com.antigenomics.mir.segment.Gene
@@ -15,47 +12,42 @@ import models.cache.{AnalysisCacheExpiredAction, AnalysisCacheProvider}
 import models.sample.SampleFile
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try, Using}
 
 object ClonotypeTableAnalysis {
   final val ANALYSIS_TYPE: String = "clonotypes"
 
   def clonotypes(sampleFile: SampleFile, marker: String)(implicit cache: AnalysisCacheProvider, ec: ExecutionContext): Future[LiteClonotypeTable] = {
-    val a: Future[Try[LiteClonotypeTable]] = cache.findForSampleForAnalysisWithMarkerAndTouch(sampleFile.uuid, ClonotypeTableAnalysis.ANALYSIS_TYPE, marker) map {
-        case Some(c) =>
-          Using(new GZIPInputStream(new FileInputStream(c.cache))) { gz =>
-            val buffer = ByteBuffer.wrap(gz.readAllBytes())
-            Unpickle[LiteClonotypeTable].fromBytes(buffer)
-          }
-        case None =>
-          val clonotypesStream = ClonotypeTableParserUtils.streamFrom(
-            CommonUtils.getFileAsStream(sampleFile.locations.sample, sampleFile.extension == ".gz"),
-            Software.VDJtools,
-            Species.Human,
-            Gene.TRA
-          )
+    cache.findForSampleForAnalysisWithMarkerAndTouch(sampleFile.uuid, ClonotypeTableAnalysis.ANALYSIS_TYPE, marker) flatMap {
+      case Some(c) => Future(c.cache)
+      case None =>
+        val clonotypesStream = ClonotypeTableParserUtils.streamFrom(
+          CommonUtils.getFileAsStream(sampleFile.locations.sample, sampleFile.extension == ".gz"),
+          Software.VDJtools,
+          Species.Human,
+          Gene.TRA
+        )
 
-          val parsed                    = new ClonotypeTable(clonotypesStream)
-          val table: LiteClonotypeTable = LiteClonotypeTable.from(parsed)
+        val parsed = new ClonotypeTable(clonotypesStream)
 
-          val data      = Pickle.intoBytes(table)
-          val cachePath = s"${sampleFile.folder}/cache-${ClonotypeTableAnalysis.ANALYSIS_TYPE}-$marker.gz"
-          Using(new GZIPOutputStream(new FileOutputStream(cachePath))) { gz =>
-            gz.write(data.array())
-            BufferPool.release(data)
+        val cachePath = s"${sampleFile.folder}/cache-${ClonotypeTableAnalysis.ANALYSIS_TYPE}-$marker.cache"
+        val output    = new GZIPOutputStream(new FileOutputStream(cachePath), 262144)
+        val writer    = LiteClonotypeTableWriter(output)
 
-            cache.create(sampleFile.uuid, ClonotypeTableAnalysis.ANALYSIS_TYPE, marker, AnalysisCacheExpiredAction.DELETE_FILE, cachePath) onComplete {
-              case Success(_) =>
-              case Failure(ex) =>
-                println("Failed to create cache: TODO")
-                Files.deleteIfExists(Paths.get(cachePath))
-            }
-          }.map(_ => table)
-      }
+        var index = 1
+        parsed.getClonotypes.forEach(cc => {
+          writer.write(index, cc)
+          index += 1
+        })
 
-    a.map {
-      case Success(v)  => v
-      case Failure(ex) => throw new RuntimeException("Some error todo", ex)
+        writer.close()
+
+        cache.create(sampleFile.uuid, ClonotypeTableAnalysis.ANALYSIS_TYPE, "default", AnalysisCacheExpiredAction.DELETE_FILE, cachePath) map { _ =>
+          cachePath
+        }
+    } map { cache =>
+      val input  = new GZIPInputStream(new FileInputStream(cache), 262144)
+      val reader = LiteClonotypeTableReader(input)
+      LiteClonotypeTable(reader)
     }
   }
 

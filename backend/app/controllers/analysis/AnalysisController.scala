@@ -1,22 +1,13 @@
 package controllers.analysis
 
-import java.io.{FileInputStream, FileOutputStream}
-import java.nio.ByteBuffer
 import java.util.UUID
-import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
 import actions.{SessionRequest, SessionRequestAction}
-import analysis.clonotypes.{ClonotypeTableAnalysis, LiteClonotypeTable, LiteClonotypeTablePage}
-import boopickle.BufferPool
-import boopickle.Default._
-import com.antigenomics.mir.clonotype.parser.{ClonotypeTableParserUtils, Software}
-import com.antigenomics.mir.clonotype.table.ClonotypeTable
-import com.antigenomics.mir.segment.Gene
-import com.antigenomics.mir.{CommonUtils, Species}
+import analysis.clonotypes.{ClonotypeTableAnalysis, LiteClonotypeTablePage, LiteClonotypeTableRow}
 import com.google.inject.Inject
-import controllers.analysis.dto.{AnalysisClonotypesRequest, AnalysisClonotypesResponse}
+import controllers.analysis.dto.AnalysisClonotypesRequest
 import controllers.{ControllerHelpers, WithRecoverAction}
-import models.cache.{AnalysisCacheExpiredAction, AnalysisCacheProvider}
+import models.cache.AnalysisCacheProvider
 import models.project.{ProjectLink, ProjectLinkProvider, ProjectProvider}
 import models.sample.{SampleFileLink, SampleFileLinkProvider, SampleFileProvider}
 import models.user.{UserPermissionsProvider, UserProvider}
@@ -24,9 +15,10 @@ import play.api.Logging
 import play.api.i18n.{Lang, Messages, MessagesApi}
 import play.api.libs.json.{JsValue, Reads}
 import play.api.mvc._
-import server.ServerResponse
+import server.{ServerResponse, ServerResponseError}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Using}
 
 class AnalysisController @Inject()(cc: ControllerComponents, session: SessionRequestAction, messagesAPI: MessagesApi)(
   implicit
@@ -53,11 +45,12 @@ class AnalysisController @Inject()(cc: ControllerComponents, session: SessionReq
             sampleFileLinkProvider.get(sampleLinkUUID) flatMap {
               case Some(sLink) if sLink.projectID == pLink.projectID => block(request, pLink, sLink)
               case Some(sLink) if sLink.projectID != pLink.projectID =>
-                Future(BadRequest(ServerResponse("Bad credentials: SampleLink does not belong to project")))
-              case None => Future(BadRequest(ServerResponse("Sample does not exist")))
+                Future(BadRequest(ServerResponseError("Bad credentials: SampleLink does not belong to project")))
+              case None => Future(BadRequest(ServerResponseError("Sample does not exist")))
             }
-          case Some(pLink) if pLink.userID != request.userID.get => Future(BadRequest(ServerResponse("Bad credentials: ProjectLink does not belong to user")))
-          case None                                              => Future(BadRequest(ServerResponse("Sample does not exist")))
+          case Some(pLink) if pLink.userID != request.userID.get =>
+            Future(BadRequest(ServerResponseError("Bad credentials: ProjectLink does not belong to user")))
+          case None => Future(BadRequest(ServerResponseError("Sample does not exist")))
         }
 
       }
@@ -77,10 +70,20 @@ class AnalysisController @Inject()(cc: ControllerComponents, session: SessionReq
 
   def clonotypes(pLinkUUID: UUID, sLinkUUID: UUID) = actionWithValidate[AnalysisClonotypesRequest](pLinkUUID, sLinkUUID) { (req, clonotypes, pLink, sLink) =>
     sampleFileProvider.get(sLink.sampleID) flatMap {
-      case Some(sampleFile) => ClonotypeTableAnalysis.clonotypes(sampleFile, "default") map { table =>
-        Ok(ServerResponse(LiteClonotypeTablePage(1, 20, table.rows.slice(0, 20))))
-      }
-      case None => Future(BadRequest(ServerResponse("Sample does not exist")))
+      case Some(sampleFile) =>
+        ClonotypeTableAnalysis.clonotypes(sampleFile, "default") map { table =>
+          Using(table) { t =>
+            val rows: Seq[LiteClonotypeTableRow] = t.take(10000).force
+
+            ServerResponse(LiteClonotypeTablePage(1, 20, rows))
+          } match {
+            case Success(response) => Ok(response)
+            case Failure(ex) =>
+              logger.error("Failed to create clonotype table", ex)
+              BadRequest(ServerResponseError("Failed to create clonotype table"))
+          }
+        }
+      case None => Future(BadRequest(ServerResponseError("Sample does not exist")))
     }
 
   }

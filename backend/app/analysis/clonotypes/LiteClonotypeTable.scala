@@ -1,28 +1,38 @@
 package analysis.clonotypes
 
-import com.antigenomics.mir.clonotype.table.ClonotypeTable
-import com.antigenomics.mir.clonotype.{Clonotype, ClonotypeCall}
+import analysis.clonotypes.cache.LiteClonotypeTableReader
 
-import scala.jdk.CollectionConverters._
+import scala.util.Using.Releasable
 
-case class LiteClonotypeTable(rows: scala.collection.Seq[LiteClonotypeTableRow])
+case class LiteClonotypeTable(private val reader: LiteClonotypeTableReader) {
+
+  def skip(n: Int): LazyList[LiteClonotypeTableRow] = {
+    reader.skip(n)
+    rows()
+  }
+
+  def take(n: Int): LazyList[LiteClonotypeTableRow] = {
+    rows().take(n)
+  }
+
+  def rows(): LazyList[LiteClonotypeTableRow] = {
+    if (reader.available()) {
+      val n = reader.next()
+
+      println(n.index)
+
+      n #:: rows()
+    } else {
+      LazyList.empty
+    }
+  }
+
+  def close(): Unit = {
+    reader.close()
+  }
+
+}
 
 object LiteClonotypeTable {
-
-  def from[C <: Clonotype](table: ClonotypeTable[ClonotypeCall[C]]): LiteClonotypeTable = {
-    val rows = table.getClonotypes.asScala.zipWithIndex.map {
-      case (cc, index) =>
-        LiteClonotypeTableRow(
-          index       = index,
-          frequency   = 0.0,
-          cdr3aa      = cc.getCdr3Aa.toString,
-          cdr3nt      = cc.getCdr3Nt.toString,
-          v           = cc.getVariableSegmentCalls.asScala.headOption.map(_.toString),
-          d           = cc.getDiversitySegmentCalls.asScala.headOption.map(_.toString),
-          j           = cc.getJoiningSegmentCalls.asScala.headOption.map(_.toString),
-          annotations = cc.getAnnotations.asScala.toSeq.toMap
-        )
-    }
-    LiteClonotypeTable(rows)
-  }
+  implicit val liteClonotypeTableReleasable: Releasable[LiteClonotypeTable] = (resource: LiteClonotypeTable) => resource.close()
 }

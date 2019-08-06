@@ -9,4 +9,13 @@ object TimeUtils {
 
   def getCurrentTimestamp: Timestamp = new Timestamp(new java.util.Date().getTime)
 
+  def timing[R, T](name: String)(block: () => T): T = {
+    val start = System.currentTimeMillis
+    println(s"before-$name")
+    val result = block()
+    val end    = System.currentTimeMillis()
+    println(s"after-$name [ ${end - start} ms]")
+    result
+  }
+
 }

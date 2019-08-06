@@ -134,7 +134,7 @@ class SampleFileLinkSpec
       val user       = users.verifiedUser
       val sampleFile = sampleFiles.existingSampleFile(user)
       val project    = projects.notExistingProject(user)
-      sflp.create(sampleFile.uuid, project.uuid, project.user.uuid).map(_ => w.dismiss())
+      sflp.create(sampleFile.uuid, project.uuid).map(_ => w.dismiss())
       assertThrows[Exception] {
         w.await()
       }
@@ -144,7 +144,7 @@ class SampleFileLinkSpec
       val user       = users.verifiedUser
       val sampleFile = sampleFiles.notExistingSampleFile(user)
       val project    = projects.existingProject(user)
-      sflp.create(sampleFile.uuid, project.uuid, project.user.uuid).map(_ => w.dismiss())
+      sflp.create(sampleFile.uuid, project.uuid).map(_ => w.dismiss())
       assertThrows[Exception] {
         w.await()
       }
