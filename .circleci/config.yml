@@ -80,6 +80,9 @@ jobs:
             - backend-cache-4-{{ .Branch }}
             - backend-cache-4
       - run:
+          name: Building dependencies
+          command: ./vdjsight dependencies install mir
+      - run:
           name: Building backend
           command: ./vdjsight.sh backend build
       - run:

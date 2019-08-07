@@ -4,7 +4,7 @@ set -e
 
 scriptDirectory=""
 
-operatingSystemFamily=`uname`
+operatingSystemFamily=$(uname)
 
 case ${operatingSystemFamily} in
     Darwin)
@@ -19,7 +19,7 @@ case ${operatingSystemFamily} in
     ;;
 esac
 
-cd ${scriptDirectory}
+cd "${scriptDirectory}"
 script="${scriptDirectory}/vdjsight.sh"
 
 function script_help() {
@@ -47,7 +47,9 @@ function script_help() {
     echo "     create-ssl                -     :Create    ssl self signed certificates                                                  "
     echo "     remove-ssl                -     :Remove    ssl self signed certificates                                                  "
     echo "                                                                                                                              "
-
+    echo "  dependencies                                                                                                                "
+    echo "     install                   -     :Install   external dependencies                                                         "
+    echo "        mir <dir>              -        :MIR                                                                                  "
 }
 
 function ensure_non_empty_input() {
@@ -64,7 +66,7 @@ ensure_non_empty_input $#
 function frontend() {
     ensure_non_empty_input $#
 
-    cd ${scriptDirectory}/frontend
+    cd "${scriptDirectory}/frontend"
 
     frontend_action=$1
     shift
@@ -96,14 +98,14 @@ function frontend() {
         docker)
             [[ -z "$1" ]] && echo "Tag parameters is required" && exit;
             [[ "$2" == "--fast" ]] && df="Dockerfile.fast" || df="Dockerfile"
-            docker build -f ${df} -t bvdmitri/vdjsight-frontend:$1 .
+            docker build -f ${df} -t "bvdmitri/vdjsight-frontend:$1" .
             ;;
         *)
             script_help;
             ;;
     esac
 
-    cd ${scriptDirectory}
+    cd "${scriptDirectory}"
 }
 
 # General section
@@ -111,7 +113,7 @@ function frontend() {
 function backend() {
     ensure_non_empty_input $#
 
-    cd ${scriptDirectory}/backend
+    cd "${scriptDirectory}/backend"
 
     backend_action=$1
     shift
@@ -134,7 +136,7 @@ function backend() {
             ;;
     esac
 
-    cd ${scriptDirectory}
+    cd "${scriptDirectory}"
 }
 
 # Dev environment section
@@ -142,7 +144,7 @@ function backend() {
 function dev_environment() {
     ensure_non_empty_input $#
 
-    cd ${scriptDirectory}/environment/dev
+    cd "${scriptDirectory}/environment/dev"
 
     dev_environment_action=$1
     shift
@@ -174,7 +176,48 @@ function dev_environment() {
             ;;
     esac
 
-    cd ${scriptDirectory}
+    cd "${scriptDirectory}"
+}
+
+# Dependencies section
+
+function dependencies() {
+  ensure_non_empty_input $#
+
+  dependencies_action=$1
+  shift
+
+  case ${dependencies_action} in
+    install)
+      dependecies_install "$@"
+      ;;
+    *)
+      script_help;
+      ;;
+  esac
+
+  cd "${scriptDirectory}"
+}
+
+function dependecies_install() {
+  ensure_non_empty_input $#
+
+  dependencies_install_action=$1
+  shift
+
+  case ${dependencies_install_action} in
+    mir)
+      clone_directory="/tmp/mir"
+      [ -n "$1" ] && clone_directory="$1"
+      git clone --depth 3 git@github.com:antigenomics/mir.git "${clone_directory}"
+      cd "$clone_directory"
+      mvn clean install -Dmaven.test.skip=true
+      ;;
+    *)
+      script_help;
+      ;;
+  esac
+
 }
 
 action=$1
@@ -182,19 +225,22 @@ shift
 
 case ${action} in
     frontend)
-        frontend $@
+        frontend "$@"
         ;;
     backend)
-        backend $@
+        backend "$@"
         ;;
     dev-environment)
-        dev_environment $@
+        dev_environment "$@"
+        ;;
+    dependencies)
+        dependencies "$@"
         ;;
     *)
         script_help;
         ;;
 esac
 
-cd ${scriptDirectory}
+cd "${scriptDirectory}"
 
 

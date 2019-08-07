@@ -12,6 +12,7 @@ case class LiteClonotypeTableWriter(output: OutputStream) {
   def write[C <: Clonotype](index: Int, cc: ClonotypeCall[C]): Unit = {
     // println(index)
 
+
     val cdr3aa = cc.getCdr3Aa.toString
     val cdr3nt = cc.getCdr3Nt.toString
     val bv     = cc.getBestVariableSegment
