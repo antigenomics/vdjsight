@@ -32,7 +32,7 @@ class BinaryUtilsSpec extends BaseTestSpec {
       writer.writeInt(0)
       writer.writeInt(1)
 
-      // writer.close()
+      writer.flush()
 
       val input = new ByteArrayInputStream(output.toByteArray)
 

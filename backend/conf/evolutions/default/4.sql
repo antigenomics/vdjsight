@@ -6,14 +6,14 @@
 
 create table "analysis_cache"
 (
-    uuid             uuid      not null primary key,
-    sample_file_id   uuid      not null,
-    analysis         text      not null,
-    marker           text      not null,
-    cache            text      not null,
-    expired_at       timestamp not null,
-    last_accessed_at timestamp not null,
-    expired_action   text      not null,
+    uuid             uuid         not null primary key,
+    sample_file_id   uuid         not null,
+    analysis         varchar(32)  not null,
+    marker           varchar(255) not null,
+    cache            text         not null,
+    expired_at       timestamp    not null,
+    last_accessed_at timestamp    not null,
+    expired_action   text         not null,
     foreign key (sample_file_id) references "sample_file" (uuid) on update cascade on delete restrict
 );
 

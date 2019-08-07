@@ -78,8 +78,8 @@ case class AnalysisCache(
 class AnalysisCacheTable(tag: Tag)(implicit sampleFileProvider: SampleFileProvider) extends Table[AnalysisCache](tag, AnalysisCacheTable.TABLE_NAME) {
   def uuid           = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
   def sampleFileID   = column[UUID]("sample_file_id", O.SqlType("uuid"))
-  def analysis       = column[String]("analysis")
-  def marker         = column[String]("marker")
+  def analysis       = column[String]("analysis", O.Length(32))
+  def marker         = column[String]("marker", O.Length(255))
   def cache          = column[String]("cache")
   def expiredAt      = column[Timestamp]("expired_at")
   def lastAccessedAt = column[Timestamp]("last_accessed_at")
