@@ -81,7 +81,7 @@ jobs:
             - backend-cache-4
       - run:
           name: Building dependencies
-          command: ./vdjsight dependencies install mir
+          command: ./vdjsight.sh dependencies install mir
       - run:
           name: Building backend
           command: ./vdjsight.sh backend build
