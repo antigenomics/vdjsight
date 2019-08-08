@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { SampleGeneType, SampleSoftwareType, SampleSpeciesType } from 'pages/dashboard/models/samples/samples';
 import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 import { SamplesService } from 'pages/dashboard/services/samples/samples.service';
 
@@ -25,7 +26,13 @@ export class UploadsEntityComponent {
   public onNameChange = new EventEmitter<string>();
 
   @Output()
-  public onSoftwareChange = new EventEmitter<string>();
+  public onSoftwareChange = new EventEmitter<SampleSoftwareType>();
+
+  @Output()
+  public onSpeciesChange = new EventEmitter<SampleSpeciesType>();
+
+  @Output()
+  public onGeneChange = new EventEmitter<SampleGeneType>();
 
   public get isUploadEntityReady(): boolean {
     return UploadEntity.isEntityReadyForUpload(this.entity);
@@ -39,7 +46,15 @@ export class UploadsEntityComponent {
     return UploadEntity.isEntityWithError(this.entity);
   }
 
-  public get availableSoftwareTypes(): string[] {
+  public get availableSoftwareTypes(): SampleSoftwareType[] {
     return SamplesService.AvailableSoftwareTypes;
+  }
+
+  public get availableSpeciesTypes(): SampleSpeciesType[] {
+    return SamplesService.AvailableSpeciesTypes;
+  }
+
+  public get availableGeneTypes(): SampleGeneType[] {
+    return SamplesService.AvailableGeneTypes;
   }
 }

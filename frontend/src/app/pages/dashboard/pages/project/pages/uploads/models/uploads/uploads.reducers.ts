@@ -5,7 +5,7 @@ import { __fromDashboardProjectUploadsState, __UploadsState, UploadsStateAdapter
 
 const uploadsReducer = createReducer(
   __fromDashboardProjectUploadsState.initial,
-  on(ProjectUploadsActions.add, (state, { entityId, projectLinkUUID, name, extension, software, size }) => {
+  on(ProjectUploadsActions.add, (state, { entityId, projectLinkUUID, name, extension, software, species, gene, size }) => {
     return UploadsStateAdapter.addOne({
       id:              entityId,
       projectLinkUUID: projectLinkUUID,
@@ -13,6 +13,8 @@ const uploadsReducer = createReducer(
       extension:       extension,
       size:            size,
       software:        software,
+      species:         species,
+      gene:            gene,
       uploading:       false,
       progress:        0,
       uploaded:        false

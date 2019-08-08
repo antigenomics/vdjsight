@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 
-export interface FilesDialogEvent {
+export interface UploadsDialogEvent {
   readonly action: (files: File[]) => void;
 }
 
 @Injectable()
-export class FilesDialogService {
-  private readonly _events: Subject<FilesDialogEvent> = new Subject();
+export class UploadsDialogService {
+  private readonly _events: Subject<UploadsDialogEvent> = new Subject();
 
-  public get events(): Observable<FilesDialogEvent> {
+  public get events(): Observable<UploadsDialogEvent> {
     return this._events.asObservable();
   }
 

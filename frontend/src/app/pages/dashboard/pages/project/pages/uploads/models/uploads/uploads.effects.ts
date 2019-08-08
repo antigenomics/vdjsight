@@ -147,6 +147,8 @@ export class UploadsEffects {
           const request: SamplesAPI.CreateRequest = {
             name:      entity.name,
             software:  entity.software,
+            species:   entity.species,
+            gene:      entity.gene,
             extension: entity.extension,
             size:      entity.size,
             hash:      entity.hash

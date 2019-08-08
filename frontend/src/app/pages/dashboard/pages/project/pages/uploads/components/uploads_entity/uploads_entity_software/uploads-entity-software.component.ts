@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { SampleSoftwareType } from 'pages/dashboard/models/samples/samples';
 
 @Component({
   selector:        'vs-uploads-entity-software',
@@ -10,11 +11,11 @@ export class UploadsEntitySoftwareComponent {
   public pending: boolean;
 
   @Input()
-  public software: string;
+  public software: SampleSoftwareType;
 
   @Input()
-  public available: string[];
+  public available: SampleSoftwareType[];
 
   @Output()
-  public onSoftwareChange = new EventEmitter<string>();
+  public onSoftwareChange = new EventEmitter<SampleSoftwareType>();
 }

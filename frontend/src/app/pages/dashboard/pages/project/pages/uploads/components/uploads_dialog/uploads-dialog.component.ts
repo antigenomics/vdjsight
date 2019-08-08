@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FilesDialogService } from 'pages/dashboard/pages/project/pages/uploads/services/files-dialog.service';
+import { UploadsDialogService } from 'pages/dashboard/pages/project/pages/uploads/services/uploads-dialog.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -19,7 +19,7 @@ export class UploadsDialogComponent implements OnInit, OnDestroy {
   @ViewChild('UploadsDialogHandler', { static: true })
   public UploadsDialogHandler: ElementRef;
 
-  constructor(private dialog: FilesDialogService) {}
+  constructor(private dialog: UploadsDialogService) {}
 
   public ngOnInit(): void {
     this.subscription = this.dialog.events.subscribe(({ action }) => {

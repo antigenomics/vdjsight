@@ -1,10 +1,33 @@
 import { EntityStatus } from 'utils/enitity/entity';
 import { IncrementalUUIDGenerator } from 'utils/uuid/incremental-uuid-generator';
 
+export const enum SampleSoftwareType {
+  VDJtools = 'VDJtools',
+  MiXCR    = 'MiXCR'
+}
+
+export const enum SampleSpeciesType {
+  Human  = 'Human',
+  Mouse  = 'Mouse',
+  Monkey = 'Monkey'
+}
+
+export const enum SampleGeneType {
+  TRA = 'TRA',
+  TRB = 'TRB',
+  TRG = 'TRG',
+  TRD = 'TRD',
+  IGK = 'IGK',
+  IGL = 'IGL',
+  IGH = 'IGH'
+}
+
 export interface SampleLink {
   readonly uuid: string;
   readonly name: string;
-  readonly software: string;
+  readonly software: SampleSoftwareType;
+  readonly species: SampleSpeciesType;
+  readonly gene: SampleGeneType;
   readonly size: number;
   readonly hash: string;
   readonly uploaded: boolean;

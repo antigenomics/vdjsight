@@ -1,0 +1,6 @@
+<ng-container *ngIf="pending; else staticGene">
+    <vs-dropdown [value]="gene" [values]="available" (onSelect)="onGeneChange.emit($event)"></vs-dropdown>
+</ng-container>
+<ng-template #staticGene>
+    {{ gene }}
+</ng-template>

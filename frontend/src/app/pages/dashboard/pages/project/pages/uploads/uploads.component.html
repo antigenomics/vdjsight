@@ -47,6 +47,8 @@
                         <vs-uploads-entity [entity]="entity"
                                            (onNameChange)="changeName(entity, $event)"
                                            (onSoftwareChange)="changeSoftware(entity, $event)"
+                                           (onSpeciesChange)="changeSpecies(entity, $event)"
+                                           (onGeneChange)="changeGene(entity, $event)"
                                            (onUpload)="upload(entity)"
                                            (onRemove)="remove(entity)"
                                            [isUploadForbidden]="isGlobalErrorsNotEmpty$ | async">

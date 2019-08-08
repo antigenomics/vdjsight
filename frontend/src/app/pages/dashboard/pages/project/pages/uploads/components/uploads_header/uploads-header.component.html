@@ -1,22 +1,32 @@
-<div class="ui grid" style="padding-top: 2em; padding-bottom: 1em">
-    <div class="four wide header column">
+<div class="ui grid" style="padding-top: 2em;">
+    <div class="three wide header column">
         Name
+    </div>
+    <div class="one wide header column">
+        Size
     </div>
     <div class="two wide header column">
         <div class="software">
-            <vs-dropdown [value]="'Software'" [values]="availableSoftware" (onSelect)="onGlobalSoftwareChange.emit($event)"></vs-dropdown>
+            <vs-dropdown title="Software" [values]="availableSoftware" (onSelect)="onGlobalSoftwareChange.emit($event)"></vs-dropdown>
         </div>
     </div>
     <div class="two wide header column">
-        Size
+        <div class="species">
+            <vs-dropdown title="Species" [values]="availableSpecies" (onSelect)="onGlobalSpeciesChange.emit($event)"></vs-dropdown>
+        </div>
     </div>
-    <div class="four wide header column">
+    <div class="two wide header column">
+        <div class="gene">
+            <vs-dropdown title="Gene" [values]="availableGenes" (onSelect)="onGlobalGeneChange.emit($event)"></vs-dropdown>
+        </div>
+    </div>
+    <div class="three wide header column">
         Status
     </div>
     <div class="two wide column">
-        <div class="ui blue mini fluid button" [ngClass]="{ 'disabled': isUploadForbidden }" (click)="onUploadAll.emit()">Upload all</div>
-    </div>
-    <div class="two wide column">
-        <div class="ui orange mini fluid button" (click)="onRemoveAll.emit()">Remove all</div>
+        <div class="ui fluid buttons">
+            <div class="ui blue mini button" [ngClass]="{ 'disabled': isUploadForbidden }" (click)="onUploadAll.emit()">Upload all</div>
+            <div class="ui orange mini button" (click)="onRemoveAll.emit()">Remove all</div>
+        </div>
     </div>
 </div>

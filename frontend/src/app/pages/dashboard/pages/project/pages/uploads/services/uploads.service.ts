@@ -4,6 +4,7 @@ import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashb
 import { DashboardProjectUploadModuleState } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { ProjectUploadsActions } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.actions';
 import { HashFileWorkerInput, HashFileWorkerOutput } from 'pages/dashboard/pages/project/pages/uploads/workers/hash-file/hash-file';
+import { SamplesService } from 'pages/dashboard/services/samples/samples.service';
 import { first } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
 import { FileUtils } from 'utils/utils';
@@ -32,7 +33,9 @@ export class UploadsService {
           projectLinkUUID: currentProjectUUID,
           name:            FileUtils.eraseExtensions(file.name, UploadsService.AvailableExtensions),
           extension:       FileUtils.getLastExtension(file.name),
-          software:        'VDJtools',
+          software:        SamplesService.DefaultSoftwareType,
+          species:         SamplesService.DefaultSpeciesType,
+          gene:            SamplesService.DefaultGeneType,
           size:            file.size
         }));
         this.hashFileReactiveWorker.next({ file }).subscribe(({ hash }) => {

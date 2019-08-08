@@ -1,0 +1,6 @@
+<ng-container *ngIf="pending; else staticSpecies">
+    <vs-dropdown [value]="species" [values]="available" (onSelect)="onSpeciesChange.emit($event)"></vs-dropdown>
+</ng-container>
+<ng-template #staticSpecies>
+    {{ species }}
+</ng-template>

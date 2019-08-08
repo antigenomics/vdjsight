@@ -1,6 +1,6 @@
 <div class="ui fluid dropdown selection" (click)="switch($event)" [@dropdown]="state | async">
     <i class="dropdown icon" [@icon]="state | async"></i>
-    <div class="text">{{ value }}</div>
+    <div class="text">{{ title !== undefined ? title : value }}</div>
     <div class="menu transition visible" tabindex="-1" style="display: block" [@list]="state | async">
         <div class="item" *ngFor="let item of values" (click)="select(item, $event)">{{ item }}</div>
     </div>

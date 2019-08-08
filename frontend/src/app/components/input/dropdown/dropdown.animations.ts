@@ -38,6 +38,10 @@ export const DropdownIconAnimation = trigger('icon', [
 ]);
 
 export const DropdownListAnimation = trigger('list', [
+  state('void', style({
+    visibility: 'hidden',
+    overflow:   'hidden'
+  })),
   state('inactive', style({
     visibility: 'hidden',
     overflow:   'hidden'

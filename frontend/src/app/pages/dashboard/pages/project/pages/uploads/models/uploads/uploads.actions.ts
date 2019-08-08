@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+import { SampleGeneType, SampleSoftwareType, SampleSpeciesType } from 'pages/dashboard/models/samples/samples';
 import { BackendErrorResponse } from 'services/backend/backend-response';
 
 export namespace ProjectUploadsActions {
@@ -8,7 +9,9 @@ export namespace ProjectUploadsActions {
     projectLinkUUID: string,
     name: string,
     extension: string,
-    software: string;
+    software: SampleSoftwareType,
+    species: SampleSpeciesType,
+    gene: SampleGeneType,
     size: number
   }>());
 
@@ -16,7 +19,9 @@ export namespace ProjectUploadsActions {
     entityId: number,
     changes: {
       name?: string,
-      software?: string,
+      software?: SampleSoftwareType,
+      species?: SampleSpeciesType,
+      gene?: SampleGeneType,
       hash?: string
     },
     check: boolean

@@ -1,26 +1,40 @@
 <div class="content">
     <div class="ui grid">
-        <div class="four wide column">
+        <div class="three wide column">
             <div class="centered">
                 <vs-uploads-entity-name [name]="entity.name" [pending]="isUploadEntityPending"
                                         (onNameChange)="onNameChange.emit($event)">
                 </vs-uploads-entity-name>
             </div>
         </div>
-        <div class="two wide column">
+        <div class="one wide column">
             <div class="centered text">
+                {{ entity.size | vsHumanReadableSize }}
+            </div>
+        </div>
+        <div class="two wide column">
+            <div class="centered padded text">
                 <vs-uploads-entity-software [software]="entity.software" [available]="availableSoftwareTypes" [pending]="isUploadEntityPending"
                                             (onSoftwareChange)="onSoftwareChange.emit($event)">
                 </vs-uploads-entity-software>
             </div>
         </div>
         <div class="two wide column">
-            <div class="centered text">
-                {{ entity.size | vsHumanReadableSize }}
+            <div class="centered padded text">
+                <vs-uploads-entity-species [species]="entity.species" [available]="availableSpeciesTypes" [pending]="isUploadEntityPending"
+                                        (onSpeciesChange)="onSpeciesChange.emit($event)">
+                </vs-uploads-entity-species>
             </div>
         </div>
-        <div class="four wide column">
-            <div class="centered">
+        <div class="two wide column">
+            <div class="centered padded text">
+                <vs-uploads-entity-gene [gene]="entity.gene" [available]="availableGeneTypes" [pending]="isUploadEntityPending"
+                                           (onGeneChange)="onGeneChange.emit($event)">
+                </vs-uploads-entity-gene>
+            </div>
+        </div>
+        <div class="three wide column">
+            <div class="centered padded">
                 <vs-uploads-entity-status [warning]="entity.warning" [error]="entity.error"
                                           [uploaded]="entity.uploaded" [progress]="entity.progress">
                 </vs-uploads-entity-status>
@@ -28,16 +42,16 @@
         </div>
         <ng-container *ngIf="isUploadEntityPending">
             <div class="two wide column">
-                <div class="ui blue mini fluid button" (click)="onUpload.emit()"
-                     [ngClass]="{ 'disabled': !isUploadEntityReady || isUploadForbidden }">Upload
+                <div class="ui fluid buttons">
+                    <div class="ui blue mini button" (click)="onUpload.emit()"
+                         [ngClass]="{ 'disabled': !isUploadEntityReady || isUploadForbidden }">Upload
+                    </div>
+                    <div class="ui orange mini button" (click)="onRemove.emit()">Remove</div>
                 </div>
-            </div>
-            <div class="two wide column">
-                <div class="ui orange mini fluid button" (click)="onRemove.emit()">Remove</div>
+
             </div>
         </ng-container>
         <ng-container *ngIf="isUploadEntityFailed">
-            <div class="two wide column"></div>
             <div class="two wide column">
                 <div class="ui red mini fluid button" (click)="onRemove.emit()">Discard</div>
             </div>

@@ -1,4 +1,4 @@
-import { SampleLink } from 'pages/dashboard/models/samples/samples';
+import { SampleGeneType, SampleLink, SampleSoftwareType, SampleSpeciesType } from 'pages/dashboard/models/samples/samples';
 
 export namespace SamplesAPI {
 
@@ -8,7 +8,9 @@ export namespace SamplesAPI {
 
   export interface CreateRequest {
     readonly name: string;
-    readonly software: string;
+    readonly software: SampleSoftwareType;
+    readonly species: SampleSpeciesType;
+    readonly gene: SampleGeneType;
     readonly extension: string;
     readonly size: number;
     readonly hash: string;

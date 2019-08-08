@@ -15,19 +15,22 @@ export const enum DropdownComponentState {
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations:      [ DropdownAnimation, DropdownListAnimation, DropdownIconAnimation ]
 })
-export class DropdownComponent implements OnInit, OnDestroy {
+export class DropdownComponent<T> implements OnInit, OnDestroy {
   private subscription?: Subscription;
 
   public state = new ReplaySubject<DropdownComponentState>(1);
 
   @Input()
-  public value: string;
+  public title?: string;
 
   @Input()
-  public values: string[];
+  public value: T;
+
+  @Input()
+  public values: T[];
 
   @Output()
-  public onSelect = new EventEmitter<string>();
+  public onSelect = new EventEmitter<T>();
 
   @Input()
   public closeOtherDropdownOnFocus: boolean = true;
@@ -56,7 +59,7 @@ export class DropdownComponent implements OnInit, OnDestroy {
     });
   }
 
-  public select(value: string, event: Event): void {
+  public select(value: T, event: Event): void {
     event.stopPropagation();
     this.onSelect.emit(value);
     this.close();

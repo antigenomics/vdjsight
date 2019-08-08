@@ -1,9 +1,13 @@
+import { SampleSoftwareType, SampleSpeciesType, SampleGeneType } from 'pages/dashboard/models/samples/samples';
+
 export interface UploadEntity {
   readonly id: number;
   readonly projectLinkUUID: string;
   readonly name: string;
   readonly extension: string;
-  readonly software: string;
+  readonly software: SampleSoftwareType;
+  readonly species: SampleSpeciesType;
+  readonly gene: SampleGeneType;
   readonly size: number;
   readonly hash?: string;
 

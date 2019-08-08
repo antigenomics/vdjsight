@@ -12,7 +12,7 @@ import { UploadsHeaderComponent } from 'pages/dashboard/pages/project/pages/uplo
 import { UploadsEntityComponentModule } from 'pages/dashboard/pages/project/pages/uploads/components/uploads_entity/uploads-entity.module';
 import { DashboardProjectUploadModuleReducers } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { UploadsEffects } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.effects';
-import { FilesDialogService } from 'pages/dashboard/pages/project/pages/uploads/services/files-dialog.service';
+import { UploadsDialogService } from 'pages/dashboard/pages/project/pages/uploads/services/uploads-dialog.service';
 import { UploadsService } from 'pages/dashboard/pages/project/pages/uploads/services/uploads.service';
 import { ProjectUploadsComponent } from 'pages/dashboard/pages/project/pages/uploads/uploads.component';
 
@@ -36,6 +36,6 @@ const ProjectUploadRouting = RouterModule.forChild([
     UploadsHeaderComponent
   ],
   exports:      [ ProjectUploadsComponent ],
-  providers:    [ FilesDialogService, UploadsService ]
+  providers:    [ UploadsDialogService, UploadsService ]
 })
 export class ProjectUploadsModule {}
