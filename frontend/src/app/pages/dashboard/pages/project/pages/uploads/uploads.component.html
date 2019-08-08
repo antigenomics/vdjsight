@@ -16,14 +16,14 @@
             <div class="ui tiny teal button" (click)="add()">Add file(s)</div>
         </div>
         <div class="ui segment" *ngIf="isGlobalErrorsNotEmpty$ | async" @errors>
-            <vs-files-errors [errors]="globalErrors$ | async"></vs-files-errors>
+            <vs-uploads-errors [errors]="globalErrors$ | async"></vs-uploads-errors>
         </div>
         <div class="ui segment" *ngIf="isGlobalWarningsNotEmpty$ | async" @warnings>
-            <vs-files-warnings [warnings]="globalWarnings$ | async"></vs-files-warnings>
+            <vs-uploads-warnings [warnings]="globalWarnings$ | async"></vs-uploads-warnings>
         </div>
         <ng-container *ngIf="currentProjectUploads$ | async as uploads">
             <ng-container *ngIf="uploads.length === 0">
-                <div vs-files-drop (onDrop)="handleFiles($event)" class="ui empty segment" @empty>
+                <div vs-uploads-drop (onDrop)="handleFiles($event)" class="ui empty segment" @empty>
                     <div class="ui icon header">
                         <i class="file alternate outline icon"></i>
                         <div class="content">
@@ -37,20 +37,20 @@
             </ng-container>
             <ng-container *ngIf="uploads.length !== 0">
                 <div class="ui segment">
-                    <vs-upload-header [isUploadForbidden]="isGlobalErrorsNotEmpty$ | async"
-                                      (onGlobalSoftwareChange)="changeGlobalSoftware($event)"
-                                      (onUploadAll)="uploadAll()" (onRemoveAll)="removeAll()">
-                    </vs-upload-header>
+                    <vs-uploads-header [isUploadForbidden]="isGlobalErrorsNotEmpty$ | async"
+                                       (onGlobalSoftwareChange)="changeGlobalSoftware($event)"
+                                       (onUploadAll)="uploadAll()" (onRemoveAll)="removeAll()">
+                    </vs-uploads-header>
                 </div>
                 <div class="ui uploads segment" [@uploads]="uploads.length">
                     <div class="upload item" *ngFor="let entity of uploads; trackBy: uploadEntityTrackBy; let isLast = last" [ngClass]="{ 'last': isLast }">
-                        <vs-upload [entity]="entity"
-                                   (onNameChange)="changeName(entity, $event)"
-                                   (onSoftwareChange)="changeSoftware(entity, $event)"
-                                   (onUpload)="upload(entity)"
-                                   (onRemove)="remove(entity)"
-                                   [isUploadForbidden]="isGlobalErrorsNotEmpty$ | async">
-                        </vs-upload>
+                        <vs-uploads-entity [entity]="entity"
+                                           (onNameChange)="changeName(entity, $event)"
+                                           (onSoftwareChange)="changeSoftware(entity, $event)"
+                                           (onUpload)="upload(entity)"
+                                           (onRemove)="remove(entity)"
+                                           [isUploadForbidden]="isGlobalErrorsNotEmpty$ | async">
+                        </vs-uploads-entity>
                     </div>
                 </div>
             </ng-container>
@@ -67,4 +67,4 @@
         </div>
     </ng-template>
 </div>
-<vs-files-dialog [extensions]="extensions"></vs-files-dialog>
+<vs-uploads-dialog [extensions]="extensions"></vs-uploads-dialog>

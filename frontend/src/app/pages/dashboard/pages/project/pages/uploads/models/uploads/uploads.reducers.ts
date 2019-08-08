@@ -24,6 +24,12 @@ const uploadsReducer = createReducer(
       changes: changes
     }, state);
   }),
+  on(ProjectUploadsActions.linkWithSample, (state, { entityId, sampleId }) => {
+    return UploadsStateAdapter.updateOne({
+      id:      entityId,
+      changes: { sampleId }
+    }, state);
+  }),
   on(ProjectUploadsActions.checked, (state, { entityId, warning }) => {
     return UploadsStateAdapter.updateOne({
       id:      entityId,

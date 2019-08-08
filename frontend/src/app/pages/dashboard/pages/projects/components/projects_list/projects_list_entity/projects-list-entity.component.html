@@ -1,0 +1,35 @@
+<ng-container *ngIf="project.link; else notLoaded">
+    <div class="content" [@content]="state | async">
+        <div class="project" (click)="onSelect.emit()" [@project]="state | async" smoothHeight [smoothTrigger]="project.link">
+            <a class="header" [@flicker]="project.link.name">{{ project.link.name }}</a>
+            <div class="meta" [@flicker]="project.link.description">
+                <span>{{ project.link.description | truncate:100 }}</span>
+            </div>
+        </div>
+    </div>
+</ng-container>
+<ng-template #notLoaded>
+    <div class="util" smoothHeight [smoothTrigger]="project">
+        <ng-container *ngIf="project.creating.active else createFailed">
+            <div class="loading">
+                <div class="ui active centered inline violet slow double text loader">
+                    Creating new project
+                </div>
+            </div>
+        </ng-container>
+        <ng-template #createFailed>
+            <div class="failed">
+                <div class="ui icon negative small message">
+                    <i class="close icon" (click)="onFailedDiscard.emit()"></i>
+                    <i class="exclamation triangle red icon"></i>
+                    <div class="content">
+                        <div class="header">
+                            Failed to create new project
+                        </div>
+                        <div class="extra">{{ project.creating.error }}</div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </div>
+</ng-template>

@@ -2,6 +2,7 @@ import { HttpEventType } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
+import { ApplicationActions } from 'models/application/application.actions';
 import { fromRoot } from 'models/root';
 import { fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { CreateEmptySampleFileEntity, SampleEntity } from 'pages/dashboard/models/samples/samples';
@@ -156,6 +157,7 @@ export class UploadsEffects {
             switch (event.type) {
               case HttpEventType.Sent:
                 this.store.dispatch(SamplesActions.create({ entity: sample, request: request }));
+                this.store.dispatch(ProjectUploadsActions.linkWithSample({ entityId: entity.id, sampleId: sample.id }));
                 break;
               case HttpEventType.UploadProgress:
                 this.store.dispatch(ProjectUploadsActions.uploadProgress({ entityId: entityId, progress: event.loaded / event.total }));
@@ -195,6 +197,15 @@ export class UploadsEffects {
       })
     ))
   ), { dispatch: false });
+
+  public failedDiscarded$ = createEffect(() => this.actions$.pipe(
+    ofType(SamplesActions.failedDiscarded),
+    mergeMap(({ entity }) => {
+      return this.store.pipe(select(fromDashboardProjectUploads.getUploadBySampleID, { sampleId: entity.id }), first(), map((upload) => {
+        return upload !== undefined ? ProjectUploadsActions.remove({ entityId: upload.id }) : ApplicationActions.noop();
+      }));
+    })
+  ));
 
   constructor(private readonly actions$: Actions, private readonly store: Store<DashboardProjectUploadModuleState>,
               private readonly samplesAPI: SamplesService, private readonly uploads: UploadsService,

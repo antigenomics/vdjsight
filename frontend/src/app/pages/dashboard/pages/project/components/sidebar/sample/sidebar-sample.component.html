@@ -55,7 +55,7 @@
         <ng-template #createFailed>
             <div class="failed">
                 <div class="ui icon negative small message">
-                    <i class="exclamation triangle red icon"></i>
+                    <i class="close icon" (click)="onFailedDiscard.emit()"></i>
                     <div class="content">
                         <div class="header">
                             Failed to create new sample

@@ -1,6 +1,6 @@
 import { Action, createReducer, on } from '@ngrx/store';
 import produce from 'immer';
-import { CreateProjectEntityFromLink } from 'pages/dashboard/models/projects/projects';
+import { CreateProjectEntityFromLink, ProjectEntity } from 'pages/dashboard/models/projects/projects';
 import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
 import { __fromProjectsState, __ProjectsState, ProjectsStateAdapter } from 'pages/dashboard/models/projects/projects.state';
 
@@ -87,6 +87,11 @@ const projectsReducer = createReducer(
         deleting: { active: false, error: error.error }
       }
     }, state);
+  }),
+
+  /** Failed discard actions */
+  on(ProjectsActions.failedDiscard, (state, { entity }) => {
+    return ProjectEntity.isEntityCreateFailed(entity) ? ProjectsStateAdapter.removeOne(entity.id, state) : state;
   }),
 
   /** Select actions */

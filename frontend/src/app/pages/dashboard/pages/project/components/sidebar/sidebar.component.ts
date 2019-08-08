@@ -34,6 +34,10 @@ export class SidebarComponent {
     this.store.dispatch(SamplesActions.forceDelete({ entity }));
   }
 
+  public discardSample(entity: SampleEntity): void {
+    this.store.dispatch(SamplesActions.failedDiscard({ entity }));
+  }
+
   public isSelected(entity: SampleEntity): Observable<boolean> {
     return concat(of(entity.link ? this.router.url.includes(entity.link.uuid) : false),
       this.router.events.pipe(

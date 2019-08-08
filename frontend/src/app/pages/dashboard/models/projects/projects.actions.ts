@@ -22,6 +22,9 @@ export namespace ProjectsActions {
   export const forceDeleteSuccess = createAction('[Projects] Force Delete Success', props<{ entityId: number }>());
   export const forceDeleteFailed  = createAction('[Projects] Force Delete Failed', props<{ entityId: number, error: BackendErrorResponse }>());
 
+  export const failedDiscard   = createAction('[Projects] Failed Discard', props<{ entity: ProjectEntity }>());
+  export const failedDiscarded = createAction('[Projects] Failed Discarded', props<{ entity: ProjectEntity }>());
+
   export const selectProject         = createAction('[Projects] Select Project', props<{ entityId: number }>());
   export const clearProjectSelection = createAction('[Projects] Clear Project Selection');
 

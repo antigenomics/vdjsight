@@ -2,7 +2,9 @@
     <div class="ui raised violet attached projects segment" [ngClass]="{ 'placeholder': (isLoaded | async) === (false) }">
         <div class="ui projects grid" *ngIf="isLoaded | async; else notLoaded">
             <div class="six wide projects list column right vertically divided">
-                <div vs-projects-list [projects]="projects$ | async" [selected]="selected$ | async" (onSelect)="select($event)"></div>
+                <div vs-projects-list [projects]="projects$ | async" [selected]="selected$ | async"
+                     (onSelect)="select($event)" (onFailedDiscard)="discard($event)">
+                </div>
             </div>
             <div class="ten wide projects list column" *ngIf="isLoaded | async">
                 <div vs-project-selected [selected]="selected$ | async" (onUpdate)="update($event)" (onClose)="deselect()"></div>
@@ -27,7 +29,7 @@
     <div class="ui secondary bottom attached raised segment" *ngIf="(isLoaded | async) && ((isLoadFailed | async) === (false))" @footer>
         <div class="ui grid">
             <div class="six wide column right vertically divided">
-                <vs-projects-list-util-buttons (onCreate)="create()"></vs-projects-list-util-buttons>
+                <vs-projects-list-utils (onCreate)="create()"></vs-projects-list-utils>
             </div>
             <div class="ten wide column">
                 <vs-project-selected-util-buttons [selected]="selected$ | async" (onDelete)="delete($event)"></vs-project-selected-util-buttons>

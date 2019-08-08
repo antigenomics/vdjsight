@@ -23,13 +23,14 @@ export namespace fromDashboardProjectUploads {
   const selectDashboardProjectUploadsModuleListState = createSelector(selectDashboardProjectUploadsModuleState, (state) => state.list);
 
   /** Uploads list selectors */
-  export const getUploadsIDs     = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectIds);
-  export const getUploadEntities = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectEntities);
-  export const getAllUploads     = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectAll);
-  export const getUploadsCount   = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectTotal);
-  export const getUploadByID     = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectByID);
-  export const getGlobalErrors   = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.getGlobalErrors);
-  export const getGlobalWarnings = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.getGlobalWarnings);
+  export const getUploadsIDs       = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectIds);
+  export const getUploadEntities   = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectEntities);
+  export const getAllUploads       = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectAll);
+  export const getUploadsCount     = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectTotal);
+  export const getUploadByID       = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectByID);
+  export const getUploadBySampleID = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectBySampleID);
+  export const getGlobalErrors     = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.getGlobalErrors);
+  export const getGlobalWarnings   = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.getGlobalWarnings);
 
   export const isGlobalErrorsEmpty   = createSelector(getGlobalErrors, (errors) => errors.length === 0);
   export const isGlobalWarningsEmpty = createSelector(getGlobalWarnings, (warnings) => warnings.length === 0);
@@ -103,6 +104,16 @@ export namespace fromDashboardProjectUploads {
   export const getPendingAndValidUploadsForCurrentProject = createSelector(fromDashboardProject.getCurrentProjectUUID, getAllUploads,
     (currentProjectUUID, uploads) =>
       uploads.filter((u) => u.projectLinkUUID === currentProjectUUID && UploadEntity.isEntityPendingAndValid(u))
+  );
+
+  /** Failed Uploads for project */
+  export const getFailedUploadsForProject = createSelector(getUploadsForProject, (uploads) => {
+    return uploads.filter((u) => UploadEntity.isEntityWithError(u));
+  });
+
+  export const getFailedUploadsForCurrentProject = createSelector(fromDashboardProject.getCurrentProjectUUID, getAllUploads,
+    (currentProjectUUID, uploads) =>
+      uploads.filter((u) => u.projectLinkUUID === currentProjectUUID && UploadEntity.isEntityWithError(u))
   );
 
 }

@@ -1,6 +1,6 @@
 import { Action, createReducer, on } from '@ngrx/store';
 import produce from 'immer';
-import { CreateSampleFileEntityFromLink } from 'pages/dashboard/models/samples/samples';
+import { CreateSampleFileEntityFromLink, SampleEntity } from 'pages/dashboard/models/samples/samples';
 import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
 import { __fromDashboardSamplesState, __SamplesState, SamplesStateAdapter } from 'pages/dashboard/models/samples/samples.state';
 import selectForProject = __fromDashboardSamplesState.selectForProject;
@@ -97,6 +97,11 @@ const sampleFilesReducer = createReducer(
         deleting: { active: false, error: error.error }
       }
     }, state);
+  }),
+
+  /** Failed discard actions */
+  on(SamplesActions.failedDiscard, (state, { entity }) => {
+    return SampleEntity.isEntityCreateFailed(entity) ? SamplesStateAdapter.removeOne(entity.id, state) : state;
   }),
 
   /** Clear actions */

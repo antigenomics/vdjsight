@@ -34,13 +34,18 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
 
   implicit final private val messages: Messages = messagesAPI.preferred(Seq(Lang.defaultLang))
 
+  private def checkProject[I, R, L](projectLinkUUID: UUID)(block: ProjectLink => Future[Result])(implicit request: SessionRequest[L]) =
+    projectsLinkProvider.get(projectLinkUUID) flatMap {
+      case Some(link) if link.userID == request.userID.get => block(link)
+      case Some(link) if link.userID != request.userID.get => Future(BadRequest(ServerResponse("Bad credentials")))
+      case None                                            => Future(BadRequest(ServerResponse("Project does not exist")))
+    }
+
   private def action[A](bodyParser: BodyParser[A], projectLinkUUID: UUID)(block: (SessionRequest[A], ProjectLink) => Future[Result]) =
     WithRecoverAction {
       (session andThen session.authorizedOnly)(bodyParser).async { implicit request =>
-        projectsLinkProvider.get(projectLinkUUID) flatMap {
-          case Some(link) if link.userID == request.userID.get => block(request, link)
-          case Some(link) if link.userID != request.userID.get => Future(BadRequest(ServerResponse("Bad credentials")))
-          case None                                            => Future(BadRequest(ServerResponse("Project does not exist")))
+        checkProject(projectLinkUUID) { link =>
+          block(request, link)
         }
       }
     }
@@ -61,10 +66,8 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
       (session andThen session.authorizedOnly andThen checkUploadAllowed(projectLinkUUID))(
         parse.multipartFormData(sampleFileProvider.configuration.maxSampleSize)
       ).async { implicit request =>
-        projectsLinkProvider.get(projectLinkUUID) flatMap {
-          case Some(link) if link.userID == request.userID.get => block(request, link)
-          case Some(link) if link.userID != request.userID.get => Future(BadRequest(ServerResponse("Bad credentials")))
-          case None                                            => Future(BadRequest(ServerResponse("Project does not exist")))
+        checkProject(projectLinkUUID) { link =>
+          block(request, link)
         }
       }
     }
@@ -108,13 +111,14 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
             if (file.fileSize != form.size) {
               Future(BadRequest(ServerResponseError("Bad file")))
             } else {
-              sampleFileProvider.create(request.userID.get, form.name, form.software, form.size, form.extension, form.hash).flatMap { created =>
-                file.ref.copyTo(Paths.get(created.locations.sample), replace = true)
-                sampleFileProvider.markAsUploaded(created.uuid) flatMap { uploaded =>
-                  sampleFileLinkProvider.create(uploaded.uuid, projectLink.projectID) map { link =>
-                    Ok(ServerResponse(SamplesCreateResponse(SampleFileLinkDTO.from(link, uploaded, projectLink))))
+              sampleFileProvider.create(request.userID.get, form.name, form.software, form.species, form.gene, form.size, form.extension, form.hash) flatMap {
+                created =>
+                  file.ref.copyTo(Paths.get(created.locations.sample), replace = true)
+                  sampleFileProvider.markAsUploaded(created.uuid) flatMap { uploaded =>
+                    sampleFileLinkProvider.create(uploaded.uuid, projectLink.projectID) map { link =>
+                      Ok(ServerResponse(SamplesCreateResponse(SampleFileLinkDTO.from(link, uploaded, projectLink))))
+                    }
                   }
-                }
               }
             }
           }

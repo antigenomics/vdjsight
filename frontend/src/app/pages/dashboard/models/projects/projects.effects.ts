@@ -3,6 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { UserActions } from 'models/user/user.actions';
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
+import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
 import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
 import { ProjectsService } from 'pages/dashboard/services/projects/projects.service';
 import { of } from 'rxjs';
@@ -80,6 +81,13 @@ export class ProjectsEffects {
     filter(([ action, selected ]) => selected.isDefined && action.entityId === selected.get.id),
     map(() => ProjectsActions.clearProjectSelection())
   ));
+
+  public errorDiscard$ = createEffect(() => this.actions$.pipe(
+    ofType(ProjectsActions.failedDiscard),
+    filter(({ entity }) => ProjectEntity.isEntityCreateFailed(entity)),
+    map(({ entity }) => ProjectsActions.failedDiscarded({ entity }))
+  ));
+
 
   public logout$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.logout),

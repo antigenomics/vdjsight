@@ -13,6 +13,7 @@ import {
   UploadsListAnimation,
   UploadsWarningsAnimation
 } from 'pages/dashboard/pages/project/pages/uploads/uploads.animations';
+import { combineLatest } from 'rxjs';
 import { first } from 'rxjs/operators';
 
 @Component({
@@ -27,6 +28,7 @@ export class ProjectUploadsComponent {
 
   public readonly currentProjectUploads$           = this.store.pipe(select(fromDashboardProjectUploads.getUploadsForCurrentProject));
   public readonly currentProjectPendingUploads$    = this.store.pipe(select(fromDashboardProjectUploads.getPendingUploadsForCurrentProject));
+  public readonly currentProjectFailedUploads$     = this.store.pipe(select(fromDashboardProjectUploads.getFailedUploadsForCurrentProject));
   public readonly isUploadAllowedForCurrentProject = this.store.pipe(select(fromDashboardProject.isUploadAllowedForCurrentProject));
 
   public readonly isGlobalErrorsNotEmpty$ = this.store.pipe(select(fromDashboardProjectUploads.isGlobalErrorsNotEmpty));
@@ -80,8 +82,11 @@ export class ProjectUploadsComponent {
   }
 
   public removeAll(): void {
-    this.currentProjectPendingUploads$.pipe(first()).subscribe((pending) => {
-      pending.forEach((p) => this.remove(p));
+    combineLatest([
+      this.currentProjectPendingUploads$,
+      this.currentProjectFailedUploads$
+    ]).pipe(first()).subscribe(([ pending, failed ]) => {
+      [ ...pending, ...failed ].forEach((p) => this.remove(p));
     });
   }
 

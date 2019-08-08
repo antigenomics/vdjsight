@@ -34,6 +34,9 @@ export namespace __fromDashboardProjectUploadsState {
   export const selectByID = (state: __UploadsState, props: { id: number }) =>
     selectAll(state).find((u) => u.id === props.id);
 
+  export const selectBySampleID = (state: __UploadsState, props: { sampleId: number }) =>
+    selectAll(state).find((u) => u.sampleId === props.sampleId);
+
   export const selectForProject = (state: __UploadsState, props: { projectLinkUUID: string }) =>
     selectAll(state).filter((u) => u.projectLinkUUID === props.projectLinkUUID);
 

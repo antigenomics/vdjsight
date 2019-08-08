@@ -13,6 +13,8 @@ export interface UploadEntity {
 
   readonly warning?: string;
   readonly error?: string;
+
+  readonly sampleId?: number;
 }
 
 export namespace UploadEntity {

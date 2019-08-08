@@ -9,7 +9,10 @@
         <ng-container *ngIf="samples$ | async as samples">
             <ng-container *ngIf="samples.length !== 0; else emptyList">
                 <div class="item" @list *ngFor="let sample of samples; trackBy: sampleFileTrackBy">
-                    <vs-sidebar-sample [sample]="sample" (onSelect)="selectSample(sample)" (onDelete)="deleteSample(sample)"
+                    <vs-sidebar-sample [sample]="sample"
+                                       (onSelect)="selectSample(sample)"
+                                       (onDelete)="deleteSample(sample)"
+                                       (onFailedDiscard)="discardSample(sample)"
                                        [isSelected]="(isSelected(sample)) | async">
                     </vs-sidebar-sample>
                 </div>

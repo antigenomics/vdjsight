@@ -46,6 +46,10 @@ export class ProjectsComponent implements OnInit {
     this.store.dispatch(ProjectsActions.selectProject({ entityId: project.id }));
   }
 
+  public discard(project: ProjectEntity): void {
+    this.store.dispatch(ProjectsActions.failedDiscard({ entity: project }));
+  }
+
   public deselect(): void {
     this.store.dispatch(ProjectsActions.clearProjectSelection());
   }

@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { FadeInAnimation } from 'animations/fade-in.animation';
 import { SmoothHeightAnimation } from 'directives/smooth_height/smooth-height.animation';
 import { SampleEntity } from 'pages/dashboard/models/samples/samples';
 import { ContentAnimation, SampleAnimation, UtilsAnimation } from 'pages/dashboard/pages/project/components/sidebar/sample/sidebar-sample.animations';
 import { ReplaySubject, Subject } from 'rxjs';
-import { FadeInAnimation } from 'animations/fade-in.animation';
 
 const enum SampleEntityState {
   NOTHING   = 'nothing',
@@ -34,6 +34,9 @@ export class SidebarSampleComponent implements OnInit, OnChanges {
 
   @Output()
   public onDelete = new EventEmitter();
+
+  @Output()
+  public onFailedDiscard = new EventEmitter();
 
   @HostListener('mouseenter')
   public mouseenter(): void {

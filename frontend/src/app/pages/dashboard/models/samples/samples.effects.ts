@@ -3,6 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { ApplicationActions } from 'models/application/application.actions';
 import { UserActions } from 'models/user/user.actions';
+import { SampleEntity } from 'pages/dashboard/models/samples/samples';
 import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
 import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
@@ -50,7 +51,7 @@ export class SampleFilesEffects {
     }, this.notifications)
   ));
 
-  public delete$ = createEffect(() => this.actions$.pipe(
+  public forceDelete$ = createEffect(() => this.actions$.pipe(
     ofType(SamplesActions.forceDelete),
     withLatestFrom(this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID))),
     mergeMap(([ action, currentProjectLinkUUID ]) => this.samples.delete(currentProjectLinkUUID, { uuid: action.entity.link.uuid, force: true }).pipe(
@@ -63,7 +64,13 @@ export class SampleFilesEffects {
     }, this.notifications)
   ));
 
-  public clear$ = createEffect(() => this.actions$.pipe(
+  public errorDiscard$ = createEffect(() => this.actions$.pipe(
+    ofType(SamplesActions.failedDiscard),
+    filter(({ entity }) => SampleEntity.isEntityCreateFailed(entity)),
+    map(({ entity }) => SamplesActions.failedDiscarded({ entity }))
+  ));
+
+  public logout$ = createEffect(() => this.actions$.pipe(
     ofType(UserActions.logout),
     map(() => SamplesActions.clear())
   ));

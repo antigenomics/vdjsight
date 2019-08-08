@@ -40,6 +40,8 @@ case class SampleFile(
   ownerID: UUID,
   name: String,
   software: String,
+  species: String,
+  gene: String,
   size: Long,
   extension: String,
   hash: String,
@@ -57,6 +59,8 @@ class SampleFileTable(tag: Tag)(implicit userProvider: UserProvider) extends Tab
   def ownerID    = column[UUID]("owner_id", O.SqlType("uuid"))
   def name       = column[String]("name", O.Length(255))
   def software   = column[String]("software", O.Length(64))
+  def species    = column[String]("species", O.Length(32))
+  def gene       = column[String]("gene", O.Length(16))
   def size       = column[Long]("size")
   def extension  = column[String]("extension", O.Length(32))
   def hash       = column[String]("hash")
@@ -64,7 +68,7 @@ class SampleFileTable(tag: Tag)(implicit userProvider: UserProvider) extends Tab
   def isUploaded = column[Boolean]("is_uploaded")
   def isDangling = column[Boolean]("is_dangling")
 
-  def * = (uuid, ownerID, name, software, size, extension, hash, folder, isUploaded, isDangling) <> (SampleFile.tupled, SampleFile.unapply)
+  def * = (uuid, ownerID, name, software, species, gene, size, extension, hash, folder, isUploaded, isDangling) <> (SampleFile.tupled, SampleFile.unapply)
 
   def owner = foreignKey("sample_file_table_owner_fk", ownerID, userProvider.table)(
     _.uuid,
@@ -130,6 +134,8 @@ class SampleFileProvider @Inject()(
     userID: UUID,
     name: String,
     software: String,
+    species: String,
+    gene: String,
     size: Long,
     extension: String,
     hash: String,
@@ -150,6 +156,8 @@ class SampleFileProvider @Inject()(
                 ownerID    = userID,
                 name       = name,
                 software   = software,
+                species    = species,
+                gene       = gene,
                 size       = size,
                 extension  = extension,
                 hash       = hash,
@@ -214,9 +222,10 @@ class SampleFileProvider @Inject()(
             case 0 => DBIO.failed(InternalServerErrorException("Cannot delete SampleFile instance in database", "Database error"))
             case _ =>
               Try(Path(sample.folder).deleteRecursively()) match {
-                case Success(deleted) => if (!deleted) {
-                  logger.warn("Exception occurred while deleting SampleFile instance in database")
-                }
+                case Success(deleted) =>
+                  if (!deleted) {
+                    logger.warn("Exception occurred while deleting SampleFile instance in database")
+                  }
                 case Failure(exception) =>
                   logger.warn("Exception occurred while deleting SampleFile instance in database", exception)
               }

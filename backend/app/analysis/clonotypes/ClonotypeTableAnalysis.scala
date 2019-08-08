@@ -22,9 +22,9 @@ object ClonotypeTableAnalysis {
       case None =>
         val clonotypesStream = ClonotypeTableParserUtils.streamFrom(
           CommonUtils.getFileAsStream(sampleFile.locations.sample, sampleFile.extension == ".gz"),
-          Software.VDJtools,
-          Species.Human,
-          Gene.TRB
+          Software.valueOf(sampleFile.software),
+          Species.valueOf(sampleFile.species),
+          Gene.valueOf(sampleFile.gene)
         )
 
         val parsed = new ClonotypeTable(clonotypesStream)

@@ -19,6 +19,22 @@ export interface ProjectEntity {
   readonly link?: ProjectLink;
 }
 
+export namespace ProjectEntity {
+
+  export function isEntityLinked(entity: ProjectEntity): boolean {
+    return entity.link !== undefined;
+  }
+
+  export function isEntityCreating(entity: ProjectEntity): boolean {
+    return entity.creating.active === true && entity.link === undefined;
+  }
+
+  export function isEntityCreateFailed(entity: ProjectEntity): boolean {
+    return entity.creating.error !== undefined;
+  }
+
+}
+
 const ProjectListEntitiesLocalUUIDGenerator = new IncrementalUUIDGenerator();
 
 export function CreateEmptyProjectEntity(): ProjectEntity {
