@@ -65,7 +65,7 @@ class ProjectSpec extends BaseTestSpecWithDatabaseAndApplication with DatabasePr
       val p = events.probe[ProjectProviderEvent]
       for {
         created <- pp.create(users.verifiedUser.uuid, "name", "description", overrideConfiguration = Some(ProjectsConfiguration("path")))
-        _       <- Future(p.expectMsgType[ProjectProviderEvents.ProjectCreated])
+        _       <- Future.successful(p.expectMsgType[ProjectProviderEvents.ProjectCreated])
         _       <- created.ownerID shouldEqual users.verifiedUser.uuid
         _       <- created.name shouldEqual "name"
         _       <- created.description shouldEqual "description"
@@ -87,7 +87,7 @@ class ProjectSpec extends BaseTestSpecWithDatabaseAndApplication with DatabasePr
       val p = events.probe[ProjectProviderEvent]
       for {
         project <- pp.update(projects.existingProject(users.verifiedUser).uuid, "new-name", "new-description")
-        _       <- Future(p.expectMsgType[ProjectProviderEvents.ProjectUpdated])
+        _       <- Future.successful(p.expectMsgType[ProjectProviderEvents.ProjectUpdated])
         _       <- project.uuid shouldEqual projects.existingProject(users.verifiedUser).uuid
         updated <- pp.get(projects.existingProject(users.verifiedUser).uuid)
         _       <- updated should not be empty
@@ -109,7 +109,7 @@ class ProjectSpec extends BaseTestSpecWithDatabaseAndApplication with DatabasePr
       val p = events.probe[ProjectProviderEvent]
       for {
         deleted     <- pp.delete(projects.existingProject(users.verifiedUser).uuid)
-        _           <- Future(p.expectMsgType[ProjectProviderEvents.ProjectDeleted])
+        _           <- Future.successful(p.expectMsgType[ProjectProviderEvents.ProjectDeleted])
         _           <- deleted.uuid shouldEqual projects.existingProject(users.verifiedUser).uuid
         deletedInDB <- pp.get(projects.existingProject(users.verifiedUser).uuid)
         check       <- deletedInDB should be(empty)

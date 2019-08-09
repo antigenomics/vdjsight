@@ -63,7 +63,7 @@ class SampleFileSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
 
     "not be able to create new sample for not existing user" taggedAs ModelsTestTag in {
       val p = events.probe[SampleFileProviderEvent]
-      sfp.create(users.notExistingUser.uuid, "new-sample", "some-software", 1, "txt", "h").map(_ => w.dismiss())
+      sfp.create(users.notExistingUser.uuid, "new-sample", "some-software", "some-species", "some-gene", 1, "txt", "h").map(_ => w.dismiss())
       assertThrows[Exception] {
         p.expectNoMessage(100 milliseconds)
         w.await()
@@ -73,21 +73,31 @@ class SampleFileSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
     "be able to create new sample" taggedAs ModelsTestTag in {
       val p = events.probe[SampleFileProviderEvent]
       for {
-        created <- sfp.create(users.verifiedUser.uuid, "name", "software", 1, "txt", "h", overrideConfiguration = Some(SampleFilesConfiguration("path", 10)))
-        _       <- Future(p.expectMsgType[SampleFileProviderEvents.SampleFileCreated])
-        _       <- created.ownerID shouldEqual users.verifiedUser.uuid
-        _       <- created.name shouldEqual "name"
-        _       <- created.software shouldEqual "software"
-        _       <- created.size shouldEqual 1
-        _       <- created.hash shouldEqual "h"
-        _       <- created.folder should include("path")
-        check   <- created.isDangling should be(false)
+        created <- sfp.create(
+                    users.verifiedUser.uuid,
+                    "name",
+                    "software",
+                    "species",
+                    "gene",
+                    1,
+                    "txt",
+                    "h",
+                    overrideConfiguration = Some(SampleFilesConfiguration("path", 10))
+                  )
+        _     <- Future.successful(p.expectMsgType[SampleFileProviderEvents.SampleFileCreated])
+        _     <- created.ownerID shouldEqual users.verifiedUser.uuid
+        _     <- created.name shouldEqual "name"
+        _     <- created.software shouldEqual "software"
+        _     <- created.size shouldEqual 1
+        _     <- created.hash shouldEqual "h"
+        _     <- created.folder should include("path")
+        check <- created.isDangling should be(false)
       } yield check
     }
 
     "not be able to update not existing project" taggedAs ModelsTestTag in {
       val p = events.probe[SampleFileProviderEvent]
-      sfp.update(sampleFiles.notExistingSampleFile(users.verifiedUser).uuid, "new-name", "new-software").map(_ => w.dismiss())
+      sfp.update(sampleFiles.notExistingSampleFile(users.verifiedUser).uuid, "new-name", "new-software", "new-species", "new-gene").map(_ => w.dismiss())
       assertThrows[Exception] {
         p.expectNoMessage(100 milliseconds)
         w.await()
@@ -97,13 +107,15 @@ class SampleFileSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
     "be able to update existing sample" taggedAs ModelsTestTag in {
       val p = events.probe[SampleFileProviderEvent]
       for {
-        sample  <- sfp.update(sampleFiles.existingSampleFile(users.verifiedUser).uuid, "new-name-1", "new-software-1")
-        _       <- Future(p.expectMsgType[SampleFileProviderEvents.SampleFileUpdated])
+        sample  <- sfp.update(sampleFiles.existingSampleFile(users.verifiedUser).uuid, "new-name-1", "new-software-1", "new-species-1", "new-gene-1")
+        _       <- Future.successful(p.expectMsgType[SampleFileProviderEvents.SampleFileUpdated])
         _       <- sample.uuid shouldEqual sampleFiles.existingSampleFile(users.verifiedUser).uuid
         updated <- sfp.get(sampleFiles.existingSampleFile(users.verifiedUser).uuid)
         _       <- updated should not be empty
         _       <- updated.get.name shouldEqual "new-name-1"
-        check   <- updated.get.software shouldEqual "new-software-1"
+        _       <- updated.get.software shouldEqual "new-software-1"
+        _       <- updated.get.species shouldEqual "new-species-1"
+        check   <- updated.get.gene shouldEqual "new-gene-1"
       } yield check
     }
 
@@ -120,7 +132,7 @@ class SampleFileSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
       val p = events.probe[SampleFileProviderEvent]
       for {
         deleted     <- sfp.delete(sampleFiles.existingSampleFile(users.verifiedUser).uuid)
-        _           <- Future(p.expectMsgType[SampleFileProviderEvents.SampleFileDeleted])
+        _           <- Future.successful(p.expectMsgType[SampleFileProviderEvents.SampleFileDeleted])
         _           <- deleted.uuid shouldEqual sampleFiles.existingSampleFile(users.verifiedUser).uuid
         deletedInDB <- sfp.get(sampleFiles.existingSampleFile(users.verifiedUser).uuid)
         check       <- deletedInDB should be(empty)

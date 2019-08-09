@@ -11,7 +11,7 @@ export class SamplesService {
   public static DefaultSoftwareType    = SampleSoftwareType.VDJtools;
   public static AvailableSoftwareTypes = [
     SampleSoftwareType.VDJtools,
-    SampleSoftwareType.MiXCR
+    SampleSoftwareType.MIXCR
   ];
 
 
@@ -63,12 +63,17 @@ export class SamplesService {
     );
   }
 
+  public update(projectLinkUUID: string, request: SamplesAPI.UpdateRequest): Observable<SamplesAPI.UpdateResponse> {
+    return this.backend.post(SamplesService.SamplesUpdateEndpoint(projectLinkUUID), request);
+  }
+
   public delete(projectLinkUUID: string, request: SamplesAPI.DeleteRequest): Observable<BackendMessageResponse> {
     return this.backend.post(SamplesService.SamplesDeleteEndpoint(projectLinkUUID), request);
   }
 
   private static readonly SamplesListEndpoint   = (uuid: string) => `/samples/${uuid}/list/`;
   private static readonly SamplesCreateEndpoint = (uuid: string) => `/samples/${uuid}/create/`;
+  private static readonly SamplesUpdateEndpoint = (uuid: string) => `/samples/${uuid}/update/`;
   private static readonly SamplesDeleteEndpoint = (uuid: string) => `/samples/${uuid}/delete/`;
 
 }

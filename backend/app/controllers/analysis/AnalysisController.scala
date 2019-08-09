@@ -45,12 +45,12 @@ class AnalysisController @Inject()(cc: ControllerComponents, session: SessionReq
             sampleFileLinkProvider.get(sampleLinkUUID) flatMap {
               case Some(sLink) if sLink.projectID == pLink.projectID => block(request, pLink, sLink)
               case Some(sLink) if sLink.projectID != pLink.projectID =>
-                Future(BadRequest(ServerResponseError("Bad credentials: SampleLink does not belong to project")))
-              case None => Future(BadRequest(ServerResponseError("Sample does not exist")))
+                Future.successful(BadRequest(ServerResponseError("Bad credentials: SampleLink does not belong to project")))
+              case None => Future.successful(BadRequest(ServerResponseError("Sample does not exist")))
             }
           case Some(pLink) if pLink.userID != request.userID.get =>
-            Future(BadRequest(ServerResponseError("Bad credentials: ProjectLink does not belong to user")))
-          case None => Future(BadRequest(ServerResponseError("Sample does not exist")))
+            Future.successful(BadRequest(ServerResponseError("Bad credentials: ProjectLink does not belong to user")))
+          case None => Future.successful(BadRequest(ServerResponseError("Sample does not exist")))
         }
 
       }
@@ -83,7 +83,7 @@ class AnalysisController @Inject()(cc: ControllerComponents, session: SessionReq
               BadRequest(ServerResponseError("Failed to create clonotype table"))
           }
         }
-      case None => Future(BadRequest(ServerResponseError("Sample does not exist")))
+      case None => Future.successful(BadRequest(ServerResponseError("Sample does not exist")))
     }
 
   }

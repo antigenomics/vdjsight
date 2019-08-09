@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
-import { SampleEntity } from 'pages/dashboard/models/samples/samples';
+import { SampleEntity, SampleGeneType, SampleSoftwareType, SampleSpeciesType } from 'pages/dashboard/models/samples/samples';
 import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
 import { LoadFailedLabelAnimation, LoadingLabelAnimation, SamplesListAnimation } from 'pages/dashboard/pages/project/components/sidebar/sidebar.animations';
 import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
@@ -32,6 +32,16 @@ export class SidebarComponent {
 
   public deleteSample(entity: SampleEntity): void {
     this.store.dispatch(SamplesActions.forceDelete({ entity }));
+  }
+
+  public updateSample(entity: SampleEntity, changed: { name: string, software: SampleSoftwareType, species: SampleSpeciesType, gene: SampleGeneType }): void {
+    this.store.dispatch(SamplesActions.update({
+      entity,
+      name:     changed.name,
+      software: changed.software,
+      species:  changed.species,
+      gene:     changed.gene
+    }));
   }
 
   public discardSample(entity: SampleEntity): void {

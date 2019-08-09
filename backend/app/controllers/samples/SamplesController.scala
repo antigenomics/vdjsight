@@ -5,7 +5,7 @@ import java.util.UUID
 
 import actions.{SessionRequest, SessionRequestAction}
 import com.google.inject.{Inject, Singleton}
-import controllers.samples.dto.{SamplesCreateRequest, SamplesCreateResponse, SamplesDeleteRequest, SamplesListResponse}
+import controllers.samples.dto._
 import controllers.{ControllerHelpers, WithRecoverAction}
 import models.project.{ProjectLink, ProjectLinkProvider, ProjectProvider}
 import models.sample.{SampleFileLinkDTO, SampleFileLinkProvider, SampleFileProvider}
@@ -37,8 +37,8 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
   private def checkProject[I, R, L](projectLinkUUID: UUID)(block: ProjectLink => Future[Result])(implicit request: SessionRequest[L]) =
     projectsLinkProvider.get(projectLinkUUID) flatMap {
       case Some(link) if link.userID == request.userID.get => block(link)
-      case Some(link) if link.userID != request.userID.get => Future(BadRequest(ServerResponse("Bad credentials")))
-      case None                                            => Future(BadRequest(ServerResponse("Project does not exist")))
+      case Some(link) if link.userID != request.userID.get => Future.successful(BadRequest(ServerResponse("Bad credentials")))
+      case None                                            => Future.successful(BadRequest(ServerResponse("Project does not exist")))
     }
 
   private def action[A](bodyParser: BodyParser[A], projectLinkUUID: UUID)(block: (SessionRequest[A], ProjectLink) => Future[Result]) =
@@ -79,7 +79,7 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
       projectsLinkProvider.get(projectLinkUUID).map(_.exists(_.isUploadAllowed)).flatMap {
         case true =>
           userPermissionsProvider.findForUser(request.userID.get).flatMap {
-            case Some((permissions, _)) if permissions.maxSamplesCount <= 0 => Future(None)
+            case Some((permissions, _)) if permissions.maxSamplesCount <= 0 => Future.successful(None)
             case Some((permissions, _)) if permissions.maxSamplesCount > 0 =>
               sampleFileProvider.findForOwner(request.userID.get).map { samples =>
                 if (samples.length >= permissions.maxSamplesCount) {
@@ -88,9 +88,9 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
                   None
                 }
               }
-            case None => Future(Some(Forbidden(ServerResponseError("Internal Server Error"))))
+            case None => Future.successful(Some(Forbidden(ServerResponseError("Internal Server Error"))))
           }
-        case false => Future(Some(Forbidden(ServerResponseError("You are not allowed to do this"))))
+        case false => Future.successful(Some(Forbidden(ServerResponseError("You are not allowed to do this"))))
       }
     }
   }
@@ -105,11 +105,12 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
     SamplesCreateRequest.samplesUploadRequestMapping
       .bindFromRequest()(request)
       .fold(
-        formWithErrors => Future(BadRequest(ServerResponseError(s"${formWithErrors.errors.head.key} : ${messages(formWithErrors.errors.head.message)}"))),
+        formWithErrors =>
+          Future.successful(BadRequest(ServerResponseError(s"${formWithErrors.errors.head.key} : ${messages(formWithErrors.errors.head.message)}"))),
         form =>
-          request.body.file("file").fold(Future(BadRequest(ServerResponseError("File is empty")))) { file =>
+          request.body.file("file").fold(Future.successful(BadRequest(ServerResponseError("File is empty")))) { file =>
             if (file.fileSize != form.size) {
-              Future(BadRequest(ServerResponseError("Bad file")))
+              Future.successful(BadRequest(ServerResponseError("Bad file")))
             } else {
               sampleFileProvider.create(request.userID.get, form.name, form.software, form.species, form.gene, form.size, form.extension, form.hash) flatMap {
                 created =>
@@ -125,19 +126,36 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
       )
   }
 
+  def update(projectLinkUUID: UUID): Action[JsValue] = actionWithValidate[SamplesUpdateRequest](projectLinkUUID) { (_, update, projectLink) =>
+    if (projectLink.isModificationAllowed) {
+      sampleFileLinkProvider.get(update.uuid) flatMap {
+        case Some(link) if link.projectID == projectLink.projectID =>
+          sampleFileProvider.update(link.sampleID, update.name, update.software, update.species, update.gene) map { sample =>
+            Ok(ServerResponse(SamplesUpdateResponse(SampleFileLinkDTO.from(link, sample, projectLink))))
+          }
+        case Some(link) if link.projectID != projectLink.projectID => Future.successful(BadRequest(ServerResponse("Bad credentials")))
+        case None                                                  => Future.successful(BadRequest(ServerResponseError("Invalid request")))
+      }
+    } else {
+      Future.successful(BadRequest(ServerResponseError("You are not allowed to do this")))
+    }
+  }
+
   def delete(projectLinkUUID: UUID): Action[JsValue] = actionWithValidate[SamplesDeleteRequest](projectLinkUUID) { (_, delete, projectLink) =>
     if (projectLink.isDeleteAllowed) {
       sampleFileLinkProvider.get(delete.uuid).flatMap {
         case Some(link) if link.projectID == projectLink.projectID && delete.force =>
-          sampleFileLinkProvider.delete(link.uuid)
-          Future(Ok(ServerResponse.EMPTY))
+          sampleFileLinkProvider.delete(link.uuid) map {
+            case true  => Ok(ServerResponse.EMPTY)
+            case false => InternalServerError(ServerResponseError("Internal Server Error"))
+          }
         case Some(link) if link.projectID == projectLink.projectID && !delete.force =>
-          Future(NotImplemented(ServerResponseError("Scheduled delete not implemented yet")))
-        case Some(link) if link.projectID != projectLink.projectID => Future(BadRequest(ServerResponse("Bad credentials")))
-        case None                                                  => Future(BadRequest(ServerResponseError("Invalid request")))
+          Future.successful(NotImplemented(ServerResponseError("Scheduled delete not implemented yet")))
+        case Some(link) if link.projectID != projectLink.projectID => Future.successful(BadRequest(ServerResponse("Bad credentials")))
+        case None                                                  => Future.successful(BadRequest(ServerResponseError("Invalid request")))
       }
     } else {
-      Future(BadRequest(ServerResponseError("You are not allowed to do this")))
+      Future.successful(BadRequest(ServerResponseError("You are not allowed to do this")))
     }
   }
 

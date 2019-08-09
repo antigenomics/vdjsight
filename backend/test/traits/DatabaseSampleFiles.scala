@@ -20,14 +20,16 @@ trait DatabaseSampleFiles extends Matchers with OptionValues with DatabaseProvid
 
     isExistByUUID should be(empty)
 
-    TestSampleFile(uuid, "not-existing-sample-file", "vdjtools", user)
+    TestSampleFile(uuid, "not-existing-sample-file", "VDJtools", user)
   }
 
   private def generateExistingSampleFile(user: TestUser): TestSampleFile = {
     val sampleEventProbe = events.probe[SampleFileProviderEvent]
     val name             = "existing-sample-file"
-    val software         = "vdjtools"
-    val sample           = Await.result(sfp.create(user.uuid, name, software, 1, "txt", "h"), Duration.Inf)
+    val software         = "VDJtools"
+    val species          = "Human"
+    val gene             = "TRB"
+    val sample           = Await.result(sfp.create(user.uuid, name, software, species, gene, 1, "txt", "h"), Duration.Inf)
 
     sampleEventProbe.expectMsgType[SampleFileProviderEvents.SampleFileCreated]
 

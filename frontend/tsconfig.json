@@ -45,7 +45,8 @@
       "services/*"    : [ "src/app/services/*" ],
       "utils/*"       : [ "src/app/utils/*" ],
       "environments/*": [ "src/environments/*" ]
-    }
+    },
+    "incremental": true
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,

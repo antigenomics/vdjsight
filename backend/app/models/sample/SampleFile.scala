@@ -185,8 +185,8 @@ class SampleFileProvider @Inject()(
     }
   }
 
-  def update(sampleID: UUID, name: String, software: String): Future[SampleFile] = {
-    val actions = samples.filter(_.uuid === sampleID).map(s => (s.name, s.software)).update((name, software)) flatMap {
+  def update(sampleID: UUID, name: String, software: String, species: String, gene: String): Future[SampleFile] = {
+    val actions = samples.filter(_.uuid === sampleID).map(s => (s.name, s.software, s.species, s.gene)).update((name, software, species, gene)) flatMap {
         case 0 => DBIO.failed(BadRequestException("Cannot update SampleFile instance in database", "Project does not exist"))
         case _ =>
           samples.filter(_.uuid === sampleID).result.headOption flatMap {

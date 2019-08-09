@@ -70,20 +70,22 @@ class ProjectsController @Inject()(cc: ControllerComponents, session: SessionReq
           Ok(ServerResponse(ProjectsUpdateResponse(ProjectLinkDTO.from(link, project))))
         }
       case Some(link) if link.userID != request.userID.get || !link.isModificationAllowed =>
-        Future(Forbidden(ServerResponseError("You are not allowed to do this")))
-      case None => Future(BadRequest(ServerResponseError("Invalid request")))
+        Future.successful(Forbidden(ServerResponseError("You are not allowed to do this")))
+      case None => Future.successful(BadRequest(ServerResponseError("Invalid request")))
     }
   }
 
   def delete: Action[JsValue] = actionWithValidate[ProjectsDeleteRequest]() { (request, delete) =>
     projectsLinkProvider.get(delete.uuid).flatMap {
       case Some(link) if link.userID == request.userID.get && delete.force =>
-        projectsLinkProvider.delete(link.uuid)
-        Future(Ok(ServerResponse.EMPTY))
+        projectsLinkProvider.delete(link.uuid) map {
+          case true  => Ok(ServerResponse.EMPTY)
+          case false => InternalServerError(ServerResponseError("Internal Server Error"))
+        }
       case Some(link) if link.userID == request.userID.get && !delete.force =>
-        Future(NotImplemented(ServerResponseError("Scheduled delete not implemented yet")))
-      case Some(link) if link.userID != request.userID.get => Future(Forbidden(ServerResponseError("You are not allowed to do this")))
-      case _                                               => Future(BadRequest(ServerResponseError("Invalid request")))
+        Future.successful(NotImplemented(ServerResponseError("Scheduled delete not implemented yet")))
+      case Some(link) if link.userID != request.userID.get => Future.successful(Forbidden(ServerResponseError("You are not allowed to do this")))
+      case _                                               => Future.successful(BadRequest(ServerResponseError("Invalid request")))
     }
   }
 

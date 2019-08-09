@@ -92,7 +92,7 @@ class ProjectLinkTable(tag: Tag)(
     onDelete = ForeignKeyAction.Cascade
   )
 
-  def user = foreignKey("project_link_table_project_fk", userID, userProvider.table)(
+  def user = foreignKey("project_link_table_user_fk", userID, userProvider.table)(
     _.uuid,
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Cascade

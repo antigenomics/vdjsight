@@ -66,9 +66,9 @@ class AuthorizationController @Inject()(cc: ControllerComponents, session: Sessi
     userProvider.isUserWithEmailOrLoginExist(signup.email, signup.login).flatMap {
       case (isExistWithEmail, isExistWithLogin) =>
         if (isExistWithEmail) {
-          Future(BadRequest(ServerResponseError(messages("authorization.signup.validation.email.exist"))))
+          Future.successful(BadRequest(ServerResponseError(messages("authorization.signup.validation.email.exist"))))
         } else if (isExistWithLogin) {
-          Future(BadRequest(ServerResponseError(messages("authorization.signup.validation.login.exist"))))
+          Future.successful(BadRequest(ServerResponseError(messages("authorization.signup.validation.login.exist"))))
         } else {
           userProvider.create(signup.login, signup.email, signup.password1) map { _ =>
             Ok(ServerResponse.MESSAGE(messages("authorization.signup.success")))

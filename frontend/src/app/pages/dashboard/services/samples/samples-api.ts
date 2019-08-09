@@ -23,7 +23,9 @@ export namespace SamplesAPI {
   export interface UpdateRequest {
     readonly uuid: string;
     readonly name: string;
-    readonly software: string;
+    readonly software: SampleSoftwareType;
+    readonly species: SampleSpeciesType;
+    readonly gene: SampleGeneType;
   }
 
   export interface UpdateResponse {

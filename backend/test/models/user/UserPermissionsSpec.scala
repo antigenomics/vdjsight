@@ -44,7 +44,7 @@ class UserPermissionsSpec extends BaseTestSpecWithDatabaseAndApplication with Da
         permissions1 <- upp.create(users.notVerifiedUser.uuid)
         permissions2 <- upp.create(users.notVerifiedUser.uuid)
         check        <- permissions1 shouldEqual permissions2
-        _            <- Future(probe.expectNoMessage(100 milliseconds))
+        _            <- Future.successful(probe.expectNoMessage(100 milliseconds))
       } yield check
     }
 
@@ -53,7 +53,7 @@ class UserPermissionsSpec extends BaseTestSpecWithDatabaseAndApplication with Da
       val c = users.notExistingUser.credentials
       for {
         newUser     <- up.create(c.login, c.email, c.password)
-        _           <- Future(p.expectMsgType[UserPermissionsProviderEvents.UserPermissionsCreated])
+        _           <- Future.successful(p.expectMsgType[UserPermissionsProviderEvents.UserPermissionsCreated])
         permissions <- upp.findForUser(newUser.uuid)
         _           <- permissions should not be empty
         _           <- permissions.get._1.userID shouldEqual newUser.uuid

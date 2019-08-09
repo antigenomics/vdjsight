@@ -51,6 +51,25 @@ export class SampleFilesEffects {
     }, this.notifications)
   ));
 
+  public update$ = createEffect(() => this.actions$.pipe(
+    ofType(SamplesActions.update),
+    withLatestFrom(this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID))),
+    mergeMap(([ action, currentProjectLinkUUID ]) => this.samples.update(currentProjectLinkUUID, {
+      uuid:     action.entity.link.uuid,
+      name:     action.name,
+      software: action.software,
+      species:  action.species,
+      gene:     action.gene
+    }).pipe(
+      map(({ link }) => SamplesActions.updateSuccess({ entityId: action.entity.id, link: link })),
+      catchError((error) => of(SamplesActions.updateFailed({ entityId: action.entity.id, error })))
+    )),
+    withNotification('Samples', {
+      success: { action: SamplesActions.updateSuccess, message: 'Sample has been updated', options: { timeout: 2500 } },
+      error:   { action: SamplesActions.updateFailed, message: 'An error occurred while updating the sample', options: { timeout: 5000 } }
+    }, this.notifications)
+  ));
+
   public forceDelete$ = createEffect(() => this.actions$.pipe(
     ofType(SamplesActions.forceDelete),
     withLatestFrom(this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID))),

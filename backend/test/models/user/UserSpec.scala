@@ -67,7 +67,7 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
       val c = users.notExistingUser.credentials
       for {
         newUser <- up.create(c.login, c.email, c.password)
-        _       <- Future(p.expectMsgType[UserProviderEvents.UserCreated])
+        _       <- Future.successful(p.expectMsgType[UserProviderEvents.UserCreated])
         _       <- newUser.login shouldEqual c.login
         _       <- newUser.verified shouldEqual false
         check   <- newUser.email shouldEqual c.email
@@ -80,7 +80,7 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
       for {
         verificationToken <- vtp.create(u.uuid)
         verified          <- up.verify(verificationToken.token)
-        _                 <- Future(p.expectMsgType[UserProviderEvents.UserVerified])
+        _                 <- Future.successful(p.expectMsgType[UserProviderEvents.UserVerified])
         _                 <- verified should be(true)
         verifiedUser      <- up.get(u.uuid)
         _                 <- verifiedUser.get.login shouldEqual u.credentials.login
@@ -96,7 +96,7 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
           resetTokenForTestUser <- rtp.create(user.uuid)
           testInDBBeforeReset   <- up.get(user.uuid)
           reset                 <- up.reset(resetTokenForTestUser.token, user.credentials.password + "_")
-          _                     <- Future(p.expectMsgType[UserProviderEvents.UserReset])
+          _                     <- Future.successful(p.expectMsgType[UserProviderEvents.UserReset])
           _                     <- reset should be(true)
           resetTestUser         <- up.get(user.uuid)
           _                     <- testInDBBeforeReset should not be empty
@@ -120,7 +120,7 @@ class UserSpec extends BaseTestSpecWithDatabaseAndApplication with DatabaseProvi
       for {
         deleted     <- up.delete(u.uuid)
         _           <- deleted should be(true)
-        _           <- Future(p.expectMsgType[UserProviderEvents.UserDeleted])
+        _           <- Future.successful(p.expectMsgType[UserProviderEvents.UserDeleted])
         deletedUser <- up.get(u.uuid)
       } yield deletedUser should be(empty)
     }

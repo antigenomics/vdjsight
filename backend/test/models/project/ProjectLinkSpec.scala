@@ -177,7 +177,7 @@ class ProjectLinkSpec
       val link    = projectLinks.existingProjectLink(user, project)
       for {
         scheduled            <- plp.scheduleDelete(link.uuid)
-        _                    <- Future(p.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleteScheduled])
+        _                    <- Future.successful(p.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleteScheduled])
         check                <- scheduled should be(true)
         scheduledLink        <- plp.get(link.uuid)
         _                    <- scheduledLink should not be empty
@@ -186,7 +186,7 @@ class ProjectLinkSpec
         _                    <- projectAfterSchedule should not be empty
         _                    <- projectAfterSchedule.get.isDangling should be(true)
         cancelled            <- plp.cancelScheduledDelete(link.uuid)
-        _                    <- Future(p.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleteCancelled])
+        _                    <- Future.successful(p.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleteCancelled])
         _                    <- cancelled should be(true)
         cancelledLink        <- plp.get(link.uuid)
         _                    <- cancelledLink should not be empty
@@ -204,7 +204,7 @@ class ProjectLinkSpec
       val link    = projectLinks.existingProjectLink(user, project)
       for {
         scheduled            <- plp.scheduleDelete(link.uuid)
-        _                    <- Future(p.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleteScheduled])
+        _                    <- Future.successful(p.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleteScheduled])
         check                <- scheduled should be(true)
         scheduledLink        <- plp.get(link.uuid)
         _                    <- scheduledLink should not be empty
@@ -213,7 +213,7 @@ class ProjectLinkSpec
         _                    <- projectAfterSchedule should not be empty
         _                    <- projectAfterSchedule.get.isDangling should be(false)
         cancelled            <- plp.cancelScheduledDelete(link.uuid)
-        _                    <- Future(p.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleteCancelled])
+        _                    <- Future.successful(p.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleteCancelled])
         _                    <- cancelled should be(true)
         cancelledLink        <- plp.get(link.uuid)
         _                    <- cancelledLink should not be empty
@@ -243,8 +243,8 @@ class ProjectLinkSpec
 
       for {
         delete                 <- plp.delete(link.uuid)
-        _                      <- Future(el.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleted])
-        _                      <- Future(ep.expectMsgType[ProjectProviderEvents.ProjectDeleted])
+        _                      <- Future.successful(el.expectMsgType[ProjectLinkProviderEvents.ProjectLinkDeleted])
+        _                      <- Future.successful(ep.expectMsgType[ProjectProviderEvents.ProjectDeleted])
         deletedLinkInDB        <- plp.get(link.uuid)
         _                      <- deletedLinkInDB should be(empty)
         deletedProjectFileInDB <- pp.get(link.project.uuid)

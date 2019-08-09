@@ -219,7 +219,7 @@ class AnalysisCacheProvider @Inject()(
             val deleteExtraCacheEntries = if (config.maxCount > 0 && existingCacheEntriesForAnalysis.size >= config.maxCount) {
               delete(existingCacheEntriesForAnalysis.sortWith((l, r) => l.expiredAt.before(r.expiredAt)).head.uuid).map(_ => 1)
             } else {
-              Future(1)
+              Future.successful(1)
             }
 
             DBIOAction.from(deleteExtraCacheEntries) flatMap {

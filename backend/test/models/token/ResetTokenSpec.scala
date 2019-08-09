@@ -75,7 +75,7 @@ class ResetTokenSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
         token1 <- rtp.create(users.notVerifiedUser.uuid)
         token2 <- rtp.create(users.notVerifiedUser.uuid)
         check  <- token1 shouldEqual token2
-        _      <- Future(probe.expectNoMessage(100 milliseconds))
+        _      <- Future.successful(probe.expectNoMessage(100 milliseconds))
       } yield check
     }
 
@@ -106,7 +106,7 @@ class ResetTokenSpec extends BaseTestSpecWithDatabaseAndApplication with Databas
         createdToken <- rtp.create(users.notVerifiedUser.uuid)
         _            <- rtp.delete(createdToken.token)
         deletedToken <- rtp.get(createdToken.token)
-        _            <- Future(probe.expectMsgType[ResetTokenProviderEvents.TokenDeleted])
+        _            <- Future.successful(probe.expectMsgType[ResetTokenProviderEvents.TokenDeleted])
       } yield deletedToken should be(empty)
     }
 

@@ -11,6 +11,7 @@
                 <div class="item" @list *ngFor="let sample of samples; trackBy: sampleFileTrackBy">
                     <vs-sidebar-sample [sample]="sample"
                                        (onSelect)="selectSample(sample)"
+                                       (onUpdate)="updateSample(sample, $event)"
                                        (onDelete)="deleteSample(sample)"
                                        (onFailedDiscard)="discardSample(sample)"
                                        [isSelected]="(isSelected(sample)) | async">

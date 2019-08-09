@@ -68,7 +68,9 @@ export class DropdownComponent<T> implements OnInit, OnDestroy {
   public open(): void {
     this.state.next(DropdownComponentState.ACTIVE);
     this.subscription = fromEvent(window, 'click').pipe(first()).subscribe(() => {
-      this.close();
+      window.setTimeout(() => {
+        this.close();
+      });
     });
   }
 

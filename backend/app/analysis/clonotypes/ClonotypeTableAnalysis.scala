@@ -18,7 +18,7 @@ object ClonotypeTableAnalysis {
 
   def clonotypes(sampleFile: SampleFile, marker: String)(implicit cache: AnalysisCacheProvider, ec: ExecutionContext): Future[LiteClonotypeTable] = {
     cache.findForSampleForAnalysisWithMarkerAndTouch(sampleFile.uuid, ClonotypeTableAnalysis.ANALYSIS_TYPE, marker) flatMap {
-      case Some(c) => Future(c.cache)
+      case Some(c) => Future.successful(c.cache)
       case None =>
         val clonotypesStream = ClonotypeTableParserUtils.streamFrom(
           CommonUtils.getFileAsStream(sampleFile.locations.sample, sampleFile.extension == ".gz"),

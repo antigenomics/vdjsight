@@ -12,6 +12,7 @@ class SamplesRouter @Inject()(controller: SamplesController) extends SimpleRoute
   override def routes: Routes = {
     case GET(p"/$projectLinkUUID/list")    => controller.list(projectLinkUUID)
     case POST(p"/$projectLinkUUID/create") => controller.create(projectLinkUUID)
+    case POST(p"/$projectLinkUUID/update") => controller.update(projectLinkUUID)
     case POST(p"/$projectLinkUUID/delete") => controller.delete(projectLinkUUID)
   }
 }

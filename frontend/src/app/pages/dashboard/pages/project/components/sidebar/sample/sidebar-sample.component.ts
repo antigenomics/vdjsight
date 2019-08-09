@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output } from '@angular/core';
-import { FadeInAnimation } from 'animations/fade-in.animation';
 import { SmoothHeightAnimation } from 'directives/smooth_height/smooth-height.animation';
-import { SampleEntity } from 'pages/dashboard/models/samples/samples';
+import { SampleEntity, SampleGeneType, SampleSoftwareType, SampleSpeciesType } from 'pages/dashboard/models/samples/samples';
 import { ContentAnimation, SampleAnimation, UtilsAnimation } from 'pages/dashboard/pages/project/components/sidebar/sample/sidebar-sample.animations';
 import { ReplaySubject, Subject } from 'rxjs';
 
@@ -18,7 +17,7 @@ const enum SampleEntityState {
   templateUrl:     './sidebar-sample.component.html',
   styleUrls:       [ './sidebar-sample.component.less' ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations:      [ ContentAnimation, SampleAnimation, UtilsAnimation, SmoothHeightAnimation, FadeInAnimation ]
+  animations:      [ ContentAnimation, SampleAnimation, UtilsAnimation, SmoothHeightAnimation ]
 })
 export class SidebarSampleComponent implements OnInit, OnChanges {
   public state: Subject<SampleEntityState> = new ReplaySubject();
@@ -34,6 +33,9 @@ export class SidebarSampleComponent implements OnInit, OnChanges {
 
   @Output()
   public onDelete = new EventEmitter();
+
+  @Output()
+  public onUpdate = new EventEmitter<{ name: string, software: SampleSoftwareType, species: SampleSpeciesType, gene: SampleGeneType }>();
 
   @Output()
   public onFailedDiscard = new EventEmitter();

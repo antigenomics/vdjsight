@@ -9,7 +9,7 @@ create table "verification_token"
     token      uuid      not null primary key,
     user_id    uuid      not null,
     expired_at timestamp not null,
-    foreign key (user_id) references "user" (uuid) on update cascade on delete cascade
+    constraint verification_token_table_user_fk foreign key (user_id) references "user" (uuid) on update cascade on delete cascade
 );
 
 create table "reset_token"
@@ -17,7 +17,7 @@ create table "reset_token"
     token      uuid      not null primary key,
     user_id    uuid      not null,
     expired_at timestamp not null,
-    foreign key (user_id) references "user" (uuid) on update cascade on delete cascade
+    constraint reset_token_table_user_fk foreign key (user_id) references "user" (uuid) on update cascade on delete cascade
 );
 
 # --- !Downs

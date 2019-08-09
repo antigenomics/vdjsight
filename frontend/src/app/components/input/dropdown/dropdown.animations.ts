@@ -6,13 +6,13 @@ export const DropdownAnimation = trigger('dropdown', [
     'box-shadow':                 '0 2px 3px 0 rgba(34,36,38,.15)',
     'border-bottom-left-radius':  0,
     'border-bottom-right-radius': 0,
-    'z-index':                    2
+    'z-index':                    11
   })),
   state('inactive', style({
     'z-index': 1
   })),
   transition('inactive => active', [
-    style({ 'z-index': 2 }),
+    style({ 'z-index': 11 }),
     group([
       query('@list', animateChild()),
       query('@icon', animateChild()),
@@ -20,12 +20,13 @@ export const DropdownAnimation = trigger('dropdown', [
     ])
   ]),
   transition('active => inactive', [
-    style({ 'z-index': 1 }),
+    style({ 'z-index': 11 }),
     group([
       query('@list', animateChild()),
       query('@icon', animateChild())
     ]),
-    animate('50ms')
+    animate('50ms'),
+    style({ 'z-index': 1 })
   ])
 ]);
 

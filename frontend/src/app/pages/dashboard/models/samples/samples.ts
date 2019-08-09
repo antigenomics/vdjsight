@@ -3,7 +3,7 @@ import { IncrementalUUIDGenerator } from 'utils/uuid/incremental-uuid-generator'
 
 export const enum SampleSoftwareType {
   VDJtools = 'VDJtools',
-  MiXCR    = 'MiXCR'
+  MIXCR    = 'MIXCR'
 }
 
 export const enum SampleSpeciesType {

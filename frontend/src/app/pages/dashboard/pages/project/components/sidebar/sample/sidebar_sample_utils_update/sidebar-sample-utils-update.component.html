@@ -1,0 +1,55 @@
+<i class="pen icon" (click)="init();$event.stopPropagation()"
+   [vs-tooltip]="updateButtonTooltip"
+   [vs-tooltip-options]="{ placement: 'right', distance: 50, maxWidth: 275 }">
+</i>
+<ng-template #updateButtonTooltip let-hide="hide">
+    <div class="ui raised card">
+        <div class="content">
+            <div class="header">Update</div>
+            <div class="description" style="text-align: left">
+                <form class="ui form">
+                    <div class="field" [ngClass]="{ 'disabled': updating.active, 'error': changed.name === '' }">
+                        <label>Sample name</label>
+                        <div class="ui left icon fluid input">
+                            <i class="pen icon"></i>
+                            <input type="text" placeholder="Enter new sample name here..." [(ngModel)]="changed.name" [ngModelOptions]="{ standalone: true }">
+                        </div>
+                    </div>
+                    <div class="field" [ngClass]="{ 'disabled': updating.active }">
+                        <label>Software type</label>
+                        <vs-dropdown [value]="changed.software" [values]="availableSoftwareTypes" (onSelect)="changed.software = $event"></vs-dropdown>
+                    </div>
+                    <div class="field" [ngClass]="{ 'disabled': updating.active }">
+                        <label>Species type</label>
+                        <vs-dropdown [value]="changed.species" [values]="availableSpeciesTypes" (onSelect)="changed.species = $event"></vs-dropdown>
+                    </div>
+                    <div class="field" [ngClass]="{ 'disabled': updating.active }">
+                        <label>Gene type</label>
+                        <vs-dropdown [value]="changed.gene" [values]="availableGeneTypes" (onSelect)="changed.gene = $event"></vs-dropdown>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="extra content" *ngIf="updating.error as error" @fade-in>
+            <div class="ui icon negative small message">
+                <i class="exclamation triangle red icon"></i>
+                <div class="content">
+                    <div class="header">
+                        Update failed
+                    </div>
+                    <div class="extra">{{ error }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="extra content">
+            <div class="ui two buttons" *ngIf="!updating.active else updatingInAction">
+                <button class="ui button" (click)="hide()">Close</button>
+                <div class="or"></div>
+                <button class="ui orange button" [ngClass]="{ 'loading': updating.active }" (click)="update()">Update</button>
+            </div>
+            <ng-template #updatingInAction>
+                <button class="ui fluid disabled loading button">Updating</button>
+            </ng-template>
+        </div>
+    </div>
+</ng-template>

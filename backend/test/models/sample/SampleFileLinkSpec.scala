@@ -169,7 +169,7 @@ class SampleFileLinkSpec
       val link       = sampleFileLinks.existingSampleFileLink(sampleFile, project)
       for {
         scheduled           <- sflp.scheduleDelete(link.uuid)
-        _                   <- Future(p.expectMsgType[SampleFileLinkProviderEvents.SampleFileLinkDeleteScheduled])
+        _                   <- Future.successful(p.expectMsgType[SampleFileLinkProviderEvents.SampleFileLinkDeleteScheduled])
         check               <- scheduled should be(true)
         scheduledLink       <- sflp.get(link.uuid)
         _                   <- scheduledLink should not be empty
@@ -178,7 +178,7 @@ class SampleFileLinkSpec
         _                   <- sampleAfterSchedule should not be empty
         _                   <- sampleAfterSchedule.get.isDangling should be(true)
         cancelled           <- sflp.cancelScheduledDelete(link.uuid)
-        _                   <- Future(p.expectMsgType[SampleFileLinkProviderEvents.SampleFileLinkDeleteCancelled])
+        _                   <- Future.successful(p.expectMsgType[SampleFileLinkProviderEvents.SampleFileLinkDeleteCancelled])
         _                   <- cancelled should be(true)
         cancelledLink       <- sflp.get(link.uuid)
         _                   <- cancelledLink should not be empty
@@ -210,8 +210,8 @@ class SampleFileLinkSpec
 
       for {
         delete                <- sflp.delete(link.uuid)
-        _                     <- Future(el.expectMsgType[SampleFileLinkProviderEvents.SampleFileLinkDeleted])
-        _                     <- Future(ep.expectMsgType[SampleFileProviderEvents.SampleFileDeleted])
+        _                     <- Future.successful(el.expectMsgType[SampleFileLinkProviderEvents.SampleFileLinkDeleted])
+        _                     <- Future.successful(ep.expectMsgType[SampleFileProviderEvents.SampleFileDeleted])
         deletedLinkInDB       <- sflp.get(link.uuid)
         _                     <- deletedLinkInDB should be(empty)
         deletedSampleFileInDB <- sfp.get(link.sampleFile.uuid)

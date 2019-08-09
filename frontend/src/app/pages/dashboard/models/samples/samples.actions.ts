@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { SampleEntity, SampleLink } from 'pages/dashboard/models/samples/samples';
+import { SampleEntity, SampleGeneType, SampleLink, SampleSoftwareType, SampleSpeciesType } from 'pages/dashboard/models/samples/samples';
 import { SamplesAPI } from 'pages/dashboard/services/samples/samples-api';
 import { BackendErrorResponse } from 'services/backend/backend-response';
 
@@ -16,7 +16,13 @@ export namespace SamplesActions {
   export const createSuccess = createAction('[Samples] Create Success', props<{ entityId: number, link: SampleLink }>());
   export const createFailed  = createAction('[Samples] Create Failed', props<{ entityId: number, error: BackendErrorResponse }>());
 
-  export const update        = createAction('[Samples] Update', props<{ entity: SampleEntity, name: string, software: string }>());
+  export const update        = createAction('[Samples] Update', props<{
+    entity: SampleEntity,
+    name: string,
+    software: SampleSoftwareType,
+    species: SampleSpeciesType,
+    gene: SampleGeneType
+  }>());
   export const updateSuccess = createAction('[Samples] Update Success', props<{ entityId: number, link: SampleLink }>());
   export const updateFailed  = createAction('[Samples] Update Failed', props<{ entityId: number, error: BackendErrorResponse }>());
 

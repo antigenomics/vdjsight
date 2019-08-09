@@ -1,0 +1,35 @@
+<i class="trash alternate outline icon" (click)="$event.stopPropagation()"
+   [vs-tooltip]="deleteButtonTooltip"
+   [vs-tooltip-options]="{ placement: 'right', distance: 30, maxWidth: 275 }">
+</i>
+<ng-template #deleteButtonTooltip let-hide="hide">
+    <div class="ui raised card">
+        <div class="content">
+            <div class="header">Confirm</div>
+            <div class="description">
+                Are you sure you want to delete this sample?
+            </div>
+        </div>
+        <div class="extra content" *ngIf="deleting.error as error" @fade-in>
+            <div class="ui icon negative small message">
+                <i class="exclamation triangle red icon"></i>
+                <div class="content">
+                    <div class="header">
+                        Delete failed
+                    </div>
+                    <div class="extra">{{ error }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="extra content">
+            <div class="ui two buttons" *ngIf="!deleting.active else deletingInAction">
+                <button class="ui button" (click)="hide()">Cancel</button>
+                <div class="or"></div>
+                <button class="ui orange button" [ngClass]="{ 'loading': deleting.active }" (click)="onDelete.emit()">Confirm</button>
+            </div>
+            <ng-template #deletingInAction>
+                <button class="ui fluid disabled loading button">Deleting</button>
+            </ng-template>
+        </div>
+    </div>
+</ng-template>
