@@ -77,16 +77,8 @@ class AnalysisController @Inject()(
         case Some(sampleFile) =>
           clonotypesAnalysis.clonotypes(sampleFile, "default") map { table =>
             Using(table) { t =>
-              val pages       = t.pages(clonotypes.page, clonotypes.pageSize)
-              val pageNumbers = pages.map(_.page)
-              val setPageTo = if (clonotypes.page < pageNumbers.min) {
-                pageNumbers.min
-              } else if (clonotypes.page > pageNumbers.max) {
-                pageNumbers.max
-              } else {
-                clonotypes.page
-              }
-              ServerResponse(AnalysisClonotypesResponse(setPageTo, clonotypes.pageSize, pages))
+              val view = t.view(clonotypes.page, clonotypes.pageSize, clonotypes.pagesRegion)
+              ServerResponse(AnalysisClonotypesResponse(view))
             } match {
               case Success(response) => Ok(response)
               case Failure(ex) =>

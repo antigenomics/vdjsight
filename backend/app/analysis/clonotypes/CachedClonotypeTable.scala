@@ -5,23 +5,41 @@ import java.io.{InputStream, OutputStream}
 import analysis.clonotypes.iocache.{CachedClonotypeTableReader, CachedClonotypeTableWriter}
 import com.antigenomics.mir.clonotype.table.ClonotypeTable
 import com.antigenomics.mir.clonotype.{Clonotype, ClonotypeCall}
+import utils.CommonUtils
 import utils.binary.{BinaryReader, BinaryWriter}
 
 import scala.util.Using.Releasable
 
 case class CachedClonotypeTable(size: Int, private val reader: CachedClonotypeTableReader) {
 
+  def view(
+    page: Int,
+    pageSize: Int    = CachedClonotypeTable.TABLE_PAGE_SIZE_DEFAULT,
+    pagesRegion: Int = CachedClonotypeTable.TABLE_PAGES_REGION_SIZE_DEFAULT
+  ): CachedClonotypeTableView = {
+    val safePageSize =
+      CommonUtils.safeBetween(pageSize, (CachedClonotypeTable.TABLE_PAGE_SIZE_MIN, CachedClonotypeTable.TABLE_PAGE_SIZE_MAX))
+    val safePagesRegion =
+      CommonUtils.safeBetween(pagesRegion, (CachedClonotypeTable.TABLE_PAGES_REGION_SIZE_MIN, CachedClonotypeTable.TABLE_PAGES_REGION_SIZE_MAX))
+
+    val pages       = this.pages(page, safePageSize, safePagesRegion)
+    val pageNumbers = pages.map(_.page)
+    val defaultPage = CommonUtils.safeBetween(page, (pageNumbers.min, pageNumbers.max))
+
+    CachedClonotypeTableView((size / safePageSize) + 1, defaultPage, safePageSize, safePagesRegion, pages)
+  }
+
   def pages(
     page: Int,
-    pageSize: Int = CachedClonotypeTable.TABLE_DEFAULT_PAGE_SIZE,
-    region: Int   = CachedClonotypeTable.TABLE_DEFAULT_PAGE_REGION_SIZE
+    pageSize: Int    = CachedClonotypeTable.TABLE_PAGE_SIZE_DEFAULT,
+    pagesRegion: Int = CachedClonotypeTable.TABLE_PAGES_REGION_SIZE_DEFAULT
   ): Seq[CachedClonotypeTablePage] = {
 
     val totalPages: Int = (size / pageSize) + 1
 
     val range: (Int, Int) = {
-      val min = page - region
-      val max = page + region
+      val min = page - pagesRegion
+      val max = page + pagesRegion
 
       if (min < 0) {
         (0, max - min)
@@ -64,9 +82,15 @@ case class CachedClonotypeTable(size: Int, private val reader: CachedClonotypeTa
 }
 
 object CachedClonotypeTable {
-  final val VERSION: Long                       = 1L
-  final val TABLE_DEFAULT_PAGE_SIZE: Int        = 25
-  final val TABLE_DEFAULT_PAGE_REGION_SIZE: Int = 5
+  final val VERSION: Long = 1L
+
+  final val TABLE_PAGE_SIZE_MIN: Int     = 1
+  final val TABLE_PAGE_SIZE_MAX: Int     = 50
+  final val TABLE_PAGE_SIZE_DEFAULT: Int = 25
+
+  final val TABLE_PAGES_REGION_SIZE_MIN: Int     = 0
+  final val TABLE_PAGES_REGION_SIZE_MAX: Int     = 5
+  final val TABLE_PAGES_REGION_SIZE_DEFAULT: Int = 5
 
   implicit val liteClonotypeTableReleasable: Releasable[CachedClonotypeTable] = (resource: CachedClonotypeTable) => resource.close()
 
