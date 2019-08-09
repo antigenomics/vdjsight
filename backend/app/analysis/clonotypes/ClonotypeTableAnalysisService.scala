@@ -21,7 +21,7 @@ class ClonotypeTableAnalysisService @Inject()(analysis: AnalysisService)(implici
       ClonotypeTableAnalysisService.ANALYSIS_TYPE,
       s"$marker-${CachedClonotypeTable.VERSION}",
       AnalysisCacheExpiredAction.DELETE_FILE
-    ) {
+    ) { output =>
       val clonotypesStream = ClonotypeTableParserUtils.streamFrom(
         CommonUtils.getFileAsStream(sampleFile.locations.sample, sampleFile.extension == ".gz"),
         Software.valueOf(sampleFile.software),
@@ -29,7 +29,7 @@ class ClonotypeTableAnalysisService @Inject()(analysis: AnalysisService)(implici
         Gene.valueOf(sampleFile.gene)
       )
       val table = new ClonotypeTable(clonotypesStream)
-      output => CachedClonotypeTable.write(output, table)
+      CachedClonotypeTable.write(output, table)
     } { input =>
       CachedClonotypeTable.read(input)
     }

@@ -3,8 +3,7 @@ package analysis.clonotypes
 import play.api.libs.json.{Json, Writes}
 
 case class CachedClonotypeTablePage(
-  page: Long,
-  pageSize: Long,
+  page: Int,
   rows: Seq[CachedClonotypeTableRow]
 )
 

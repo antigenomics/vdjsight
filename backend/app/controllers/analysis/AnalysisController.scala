@@ -3,9 +3,9 @@ package controllers.analysis
 import java.util.UUID
 
 import actions.{SessionRequest, SessionRequestAction}
-import analysis.clonotypes.{ClonotypeTableAnalysisService, CachedClonotypeTablePage, CachedClonotypeTableRow}
+import analysis.clonotypes.ClonotypeTableAnalysisService
 import com.google.inject.Inject
-import controllers.analysis.dto.AnalysisClonotypesRequest
+import controllers.analysis.dto.{AnalysisClonotypesRequest, AnalysisClonotypesResponse}
 import controllers.{ControllerHelpers, WithRecoverAction}
 import models.project.{ProjectLink, ProjectLinkProvider, ProjectProvider}
 import models.sample.{SampleFileLink, SampleFileLinkProvider, SampleFileProvider}
@@ -71,23 +71,31 @@ class AnalysisController @Inject()(
       }
     }
 
-  def clonotypes(pLinkUUID: UUID, sLinkUUID: UUID) = actionWithValidate[AnalysisClonotypesRequest](pLinkUUID, sLinkUUID) { (req, clonotypes, pLink, sLink) =>
-    sampleFileProvider.get(sLink.sampleID) flatMap {
-      case Some(sampleFile) =>
-        clonotypesAnalysis.clonotypes(sampleFile, "default") map { table =>
-          Using(table) { t =>
-            val rows: Seq[CachedClonotypeTableRow] = t.take(1000).force
-
-            ServerResponse(CachedClonotypeTablePage(1, 20, rows))
-          } match {
-            case Success(response) => Ok(response)
-            case Failure(ex) =>
-              logger.error("Failed to create clonotype table", ex)
-              BadRequest(ServerResponseError("Failed to create clonotype table"))
+  def clonotypes(pLinkUUID: UUID, sLinkUUID: UUID): Action[JsValue] = actionWithValidate[AnalysisClonotypesRequest](pLinkUUID, sLinkUUID) {
+    (req, clonotypes, pLink, sLink) =>
+      sampleFileProvider.get(sLink.sampleID) flatMap {
+        case Some(sampleFile) =>
+          clonotypesAnalysis.clonotypes(sampleFile, "default") map { table =>
+            Using(table) { t =>
+              val pages       = t.pages(clonotypes.page, clonotypes.pageSize)
+              val pageNumbers = pages.map(_.page)
+              val setPageTo = if (clonotypes.page < pageNumbers.min) {
+                pageNumbers.min
+              } else if (clonotypes.page > pageNumbers.max) {
+                pageNumbers.max
+              } else {
+                clonotypes.page
+              }
+              ServerResponse(AnalysisClonotypesResponse(setPageTo, clonotypes.pageSize, pages))
+            } match {
+              case Success(response) => Ok(response)
+              case Failure(ex) =>
+                logger.error("Failed to create clonotype table", ex)
+                BadRequest(ServerResponseError("Failed to create clonotype table"))
+            }
           }
-        }
-      case None => Future.successful(BadRequest(ServerResponseError("Sample does not exist")))
-    }
+        case None => Future.successful(BadRequest(ServerResponseError("Sample does not exist")))
+      }
 
   }
 

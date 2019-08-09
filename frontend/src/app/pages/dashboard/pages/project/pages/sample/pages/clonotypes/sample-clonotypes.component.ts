@@ -20,7 +20,7 @@ export class SampleClonotypesComponent {
       this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID)),
       this.store.pipe(select(fromDashboardSample.getCurrentSampleUUID))
     ]).pipe(first()).subscribe(([ pUUID, sUUID ]) => {
-      this.analysis.clonotypes(pUUID, sUUID, { page: 1, pageSize: 10 }).pipe(first()).subscribe((response) => {
+      this.analysis.clonotypes(pUUID, sUUID, { page: 2000, pageSize: 10 }).pipe(first()).subscribe((response) => {
         console.log(response);
       });
     });

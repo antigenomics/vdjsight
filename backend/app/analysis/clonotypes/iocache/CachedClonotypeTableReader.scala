@@ -31,7 +31,7 @@ case class CachedClonotypeTableReader(reader: BinaryReader) {
   }
 
   def skip(n: Int): Unit = {
-    if (reader.available()) {
+    if (n != 0 && reader.available()) {
       1.to(n).foreach(_ => skip())
     }
   }

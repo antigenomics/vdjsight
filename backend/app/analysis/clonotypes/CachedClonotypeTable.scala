@@ -7,10 +7,41 @@ import com.antigenomics.mir.clonotype.table.ClonotypeTable
 import com.antigenomics.mir.clonotype.{Clonotype, ClonotypeCall}
 import utils.binary.{BinaryReader, BinaryWriter}
 
-import scala.concurrent.ExecutionContext
 import scala.util.Using.Releasable
 
 case class CachedClonotypeTable(size: Int, private val reader: CachedClonotypeTableReader) {
+
+  def pages(
+    page: Int,
+    pageSize: Int = CachedClonotypeTable.TABLE_DEFAULT_PAGE_SIZE,
+    region: Int   = CachedClonotypeTable.TABLE_DEFAULT_PAGE_REGION_SIZE
+  ): Seq[CachedClonotypeTablePage] = {
+
+    val totalPages: Int = (size / pageSize) + 1
+
+    val range: (Int, Int) = {
+      val min = page - region
+      val max = page + region
+
+      if (min < 0) {
+        (0, max - min)
+      } else if (max > totalPages) {
+        (min - (max - totalPages), totalPages)
+      } else {
+        (min, max)
+      }
+    }
+
+    val safeRange: (Int, Int) = {
+      (if (range._1 < 1) 1 else range._1, if (range._2 > totalPages) totalPages else range._2)
+    }
+
+    reader.skip((safeRange._1 - 1) * pageSize)
+
+    (safeRange._1 to safeRange._2).map(p => {
+      CachedClonotypeTablePage(p, take(pageSize).force)
+    })
+  }
 
   def skip(n: Int): LazyList[CachedClonotypeTableRow] = {
     reader.skip(n)
@@ -33,8 +64,9 @@ case class CachedClonotypeTable(size: Int, private val reader: CachedClonotypeTa
 }
 
 object CachedClonotypeTable {
-  final val VERSION: Long = 1L
-  final val TABLE_DEFAULT_PAGE_SIZE = 50;
+  final val VERSION: Long                       = 1L
+  final val TABLE_DEFAULT_PAGE_SIZE: Int        = 25
+  final val TABLE_DEFAULT_PAGE_REGION_SIZE: Int = 5
 
   implicit val liteClonotypeTableReleasable: Releasable[CachedClonotypeTable] = (resource: CachedClonotypeTable) => resource.close()
 
