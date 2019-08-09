@@ -3,11 +3,10 @@ package controllers.analysis
 import java.util.UUID
 
 import actions.{SessionRequest, SessionRequestAction}
-import analysis.clonotypes.{ClonotypeTableAnalysis, LiteClonotypeTablePage, LiteClonotypeTableRow}
+import analysis.clonotypes.{ClonotypeTableAnalysisService, LiteClonotypeTablePage, LiteClonotypeTableRow}
 import com.google.inject.Inject
 import controllers.analysis.dto.AnalysisClonotypesRequest
 import controllers.{ControllerHelpers, WithRecoverAction}
-import models.cache.AnalysisCacheProvider
 import models.project.{ProjectLink, ProjectLinkProvider, ProjectProvider}
 import models.sample.{SampleFileLink, SampleFileLinkProvider, SampleFileProvider}
 import models.user.{UserPermissionsProvider, UserProvider}
@@ -20,7 +19,12 @@ import server.{ServerResponse, ServerResponseError}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Using}
 
-class AnalysisController @Inject()(cc: ControllerComponents, session: SessionRequestAction, messagesAPI: MessagesApi)(
+class AnalysisController @Inject()(
+  cc: ControllerComponents,
+  session: SessionRequestAction,
+  messagesAPI: MessagesApi,
+  clonotypesAnalysis: ClonotypeTableAnalysisService
+)(
   implicit
   ec: ExecutionContext,
   userProvider: UserProvider,
@@ -28,8 +32,7 @@ class AnalysisController @Inject()(cc: ControllerComponents, session: SessionReq
   projectsProvider: ProjectProvider,
   projectsLinkProvider: ProjectLinkProvider,
   sampleFileProvider: SampleFileProvider,
-  sampleFileLinkProvider: SampleFileLinkProvider,
-  analysisCacheProvider: AnalysisCacheProvider
+  sampleFileLinkProvider: SampleFileLinkProvider
 ) extends AbstractController(cc)
     with Logging {
 
@@ -71,7 +74,7 @@ class AnalysisController @Inject()(cc: ControllerComponents, session: SessionReq
   def clonotypes(pLinkUUID: UUID, sLinkUUID: UUID) = actionWithValidate[AnalysisClonotypesRequest](pLinkUUID, sLinkUUID) { (req, clonotypes, pLink, sLink) =>
     sampleFileProvider.get(sLink.sampleID) flatMap {
       case Some(sampleFile) =>
-        ClonotypeTableAnalysis.clonotypes(sampleFile, "default") map { table =>
+        clonotypesAnalysis.clonotypes(sampleFile, "default") map { table =>
           Using(table) { t =>
             val rows: Seq[LiteClonotypeTableRow] = t.skip(10000).take(100).force
 
