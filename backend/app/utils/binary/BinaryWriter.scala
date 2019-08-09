@@ -27,6 +27,13 @@ case class BinaryWriter(private val stream: OutputStream, private val capacity: 
     buffer.putInt(value)
   }
 
+  def writeLong(value: Long): Unit = {
+    if (buffer.remaining() < 8) {
+      flush()
+    }
+    buffer.putLong(value)
+  }
+
   def writeDouble(value: Double): Unit = {
     if (buffer.remaining() < 8) {
       flush()

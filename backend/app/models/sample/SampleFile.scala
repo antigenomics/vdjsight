@@ -75,8 +75,6 @@ class SampleFileTable(tag: Tag)(implicit userProvider: UserProvider) extends Tab
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Restrict
   )
-
-  def owner_id_idx = index("sample_file_table_owner_id_idx", ownerID, unique = false)
 }
 
 object SampleFileTable {

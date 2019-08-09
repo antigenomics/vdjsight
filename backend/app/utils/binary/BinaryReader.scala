@@ -17,6 +17,10 @@ case class BinaryReader(private val stream: InputStream) {
     ByteBuffer.wrap(stream.readNBytes(4)).getInt
   }
 
+  def readLong(): Long = {
+    ByteBuffer.wrap(stream.readNBytes(8)).getLong
+  }
+
   def readDouble(): Double = {
     ByteBuffer.wrap(stream.readNBytes(8)).getDouble
   }
@@ -43,12 +47,20 @@ case class BinaryReader(private val stream: InputStream) {
   def skip(n: Int): Unit = {
     var remainingSkip: Long = n.toLong
     while (remainingSkip != 0) {
-      remainingSkip = remainingSkip - stream.skip(remainingSkip)
+      val skipped = stream.skip(remainingSkip)
+      if (skipped == 0) {
+        throw new RuntimeException("Failed to skip bytes in stream")
+      }
+      remainingSkip = remainingSkip - skipped
     }
   }
 
   def available(): Boolean = {
     stream.available() != 0
+  }
+
+  def close(): Unit = {
+    stream.close()
   }
 
 }

@@ -1,17 +1,15 @@
-package analysis.clonotypes.cache
+package analysis.clonotypes.iocache
 
-import java.io.InputStream
-
-import analysis.clonotypes.LiteClonotypeTableRow
+import analysis.clonotypes.CachedClonotypeTableRow
 import utils.binary.BinaryReader
 
-case class LiteClonotypeTableReader(input: InputStream) {
-  private val reader = BinaryReader(input)
+case class CachedClonotypeTableReader(reader: BinaryReader) {
 
-  def next(): LiteClonotypeTableRow = {
+  def next(): CachedClonotypeTableRow = {
     reader.readInt() // skip size
-    LiteClonotypeTableRow(
+    CachedClonotypeTableRow(
       index  = reader.readInt(),
+      count  = reader.readLong(),
       freq   = reader.readDouble(),
       cdr3aa = reader.readSmallString(),
       cdr3nt = reader.readSmallString(),
@@ -21,7 +19,7 @@ case class LiteClonotypeTableReader(input: InputStream) {
     )
   }
 
-  def safeNext(): Option[LiteClonotypeTableRow] = {
+  def safeNext(): Option[CachedClonotypeTableRow] = {
     if (reader.available()) Some(next()) else None
   }
 
@@ -40,8 +38,6 @@ case class LiteClonotypeTableReader(input: InputStream) {
 
   def available(): Boolean = reader.available()
 
-  def close(): Unit = {
-    input.close()
-  }
+  def close(): Unit = reader.close()
 
 }

@@ -3,7 +3,7 @@ package controllers.analysis
 import java.util.UUID
 
 import actions.{SessionRequest, SessionRequestAction}
-import analysis.clonotypes.{ClonotypeTableAnalysisService, LiteClonotypeTablePage, LiteClonotypeTableRow}
+import analysis.clonotypes.{ClonotypeTableAnalysisService, CachedClonotypeTablePage, CachedClonotypeTableRow}
 import com.google.inject.Inject
 import controllers.analysis.dto.AnalysisClonotypesRequest
 import controllers.{ControllerHelpers, WithRecoverAction}
@@ -76,9 +76,9 @@ class AnalysisController @Inject()(
       case Some(sampleFile) =>
         clonotypesAnalysis.clonotypes(sampleFile, "default") map { table =>
           Using(table) { t =>
-            val rows: Seq[LiteClonotypeTableRow] = t.skip(10000).take(100).force
+            val rows: Seq[CachedClonotypeTableRow] = t.take(1000).force
 
-            ServerResponse(LiteClonotypeTablePage(1, 20, rows))
+            ServerResponse(CachedClonotypeTablePage(1, 20, rows))
           } match {
             case Success(response) => Ok(response)
             case Failure(ex) =>

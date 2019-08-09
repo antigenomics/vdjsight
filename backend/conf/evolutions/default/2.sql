@@ -19,8 +19,6 @@ create table "sample_file"
     constraint sample_file_table_owner_fk foreign key (owner_id) references "user" (uuid) on update cascade on delete restrict
 );
 
-create index sample_file_table_owner_id_idx on "sample_file" (owner_id);
-
 -- noinspection SqlResolve
 
 create table "sample_file_link"
@@ -47,7 +45,4 @@ drop index sample_file_link_table_project_id_idx;
 drop index sample_file_link_table_sample_id_idx;
 drop table "sample_file_link";
 
-alter table "sample_file"
-    drop constraint sample_file_table_owner_fk;
-drop index sample_file_table_owner_id_idx;
 drop table "sample_file";
