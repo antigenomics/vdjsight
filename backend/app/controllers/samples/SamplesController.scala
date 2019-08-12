@@ -34,6 +34,13 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
 
   implicit final private val messages: Messages = messagesAPI.preferred(Seq(Lang.defaultLang))
 
+  private def action[A](bodyParser: BodyParser[A])(block: SessionRequest[A] => Future[Result]) =
+    WithRecoverAction {
+      (session andThen session.authorizedOnly)(bodyParser).async { implicit request =>
+        block(request)
+      }
+    }
+
   private def checkProject[I, R, L](projectLinkUUID: UUID)(block: ProjectLink => Future[Result])(implicit request: SessionRequest[L]) =
     projectsLinkProvider.get(projectLinkUUID) flatMap {
       case Some(link) if link.userID == request.userID.get => block(link)
@@ -91,6 +98,20 @@ class SamplesController @Inject()(cc: ControllerComponents, session: SessionRequ
             case None => Future.successful(Some(Forbidden(ServerResponseError("Internal Server Error"))))
           }
         case false => Future.successful(Some(Forbidden(ServerResponseError("You are not allowed to do this"))))
+      }
+    }
+  }
+
+  def all(): Action[Unit] = action(parse.empty) { request =>
+    projectsLinkProvider.findForUser(request.userID.get) flatMap { projectLinks =>
+      Future.sequence(
+        projectLinks map { p =>
+          sampleFileLinkProvider.findForProjectWithSample(p.projectID) map { samples =>
+            samples.map(lws => SampleFileLinkDTO.from(lws, p))
+          }
+        }
+      ) map { links =>
+        Ok(ServerResponse(SamplesListResponse(links.flatten)))
       }
     }
   }

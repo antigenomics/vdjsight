@@ -10,6 +10,8 @@ export namespace ProjectsActions {
   export const loadSuccess = createAction('[Projects] Load Success', props<{ projects: ProjectLink[] }>());
   export const loadFailed  = createAction('[Projects] Load Failed', props<{ error: BackendErrorResponse }>());
 
+  export const reload = createAction('[Projects] Reload');
+
   export const create        = createAction('[Projects] Create', props<{ entity: ProjectEntity, request: ProjectsAPI.CreateRequest }>());
   export const createSuccess = createAction('[Projects] Create Success', props<{ entityId: number, link: ProjectLink }>());
   export const createFailed  = createAction('[Projects] Create Failed', props<{ entityId: number, error: BackendErrorResponse }>());
@@ -25,11 +27,11 @@ export namespace ProjectsActions {
   export const failedDiscard   = createAction('[Projects] Failed Discard', props<{ entity: ProjectEntity }>());
   export const failedDiscarded = createAction('[Projects] Failed Discarded', props<{ entity: ProjectEntity }>());
 
-  export const previewProject      = createAction('[Projects] Preview Project', props<{ entityId: number }>());
-  export const clearProjectPreview = createAction('[Projects] Clear Project Preview');
+  export const preview      = createAction('[Projects] Preview', props<{ entityId: number }>());
+  export const clearPreview = createAction('[Projects] Clear Preview');
 
-  export const selectProject         = createAction('[Projects] Select Project', props<{ entityId: number }>());
-  export const clearProjectSelection = createAction('[Projects] Clear Project Selection');
+  export const select   = createAction('[Projects] Select', props<{ uuid: string }>());
+  export const unselect = createAction('[Projects] Unselect');
 
   export const clear = createAction('[Projects] Clear');
 }

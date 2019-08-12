@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { LoadingContentAnimation } from 'pages/dashboard/pages/project/components/loaded_check/project-loaded-check.animations';
+import { StateLoadingStatus } from 'utils/state/state';
 
 @Component({
   selector:        'vs-project-loaded-check',
@@ -9,13 +10,7 @@ import { LoadingContentAnimation } from 'pages/dashboard/pages/project/component
 })
 export class ProjectLoadedCheckComponent {
   @Input()
-  public isLoaded: boolean;
-
-  @Input()
-  public isLoading: boolean;
-
-  @Input()
-  public isLoadFailed: boolean;
+  public status: StateLoadingStatus;
 
   @Output()
   public onReload = new EventEmitter();

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { SmoothHeightAnimation } from 'directives/smooth_height/smooth-height.animation';
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
@@ -13,17 +13,13 @@ import { ProjectsFooterAnimation } from 'pages/dashboard/pages/projects/projects
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations:      [ SmoothHeightAnimation, ProjectsFooterAnimation ]
 })
-export class ProjectsComponent implements OnInit {
+export class ProjectsComponent {
 
   public readonly loadingStatus$ = this.store.pipe(select(fromDashboard.getProjectsLoadingStatus));
   public readonly projects$      = this.store.pipe(select(fromDashboard.getAllProjects));
   public readonly preview$       = this.store.pipe(select(fromDashboard.getPreviewingProject));
 
   constructor(private readonly store: Store<DashboardModuleState>) {}
-
-  public ngOnInit(): void {
-    this.store.dispatch(ProjectsActions.load());
-  }
 
   public create(): void {
     this.store.dispatch(ProjectsActions.create({
@@ -45,11 +41,11 @@ export class ProjectsComponent implements OnInit {
   }
 
   public preview(project: ProjectEntity): void {
-    this.store.dispatch(ProjectsActions.previewProject({ entityId: project.id }));
+    this.store.dispatch(ProjectsActions.preview({ entityId: project.id }));
   }
 
   public clearPreview(): void {
-    this.store.dispatch(ProjectsActions.clearProjectPreview());
+    this.store.dispatch(ProjectsActions.clearPreview());
   }
 
   public reload(): void {

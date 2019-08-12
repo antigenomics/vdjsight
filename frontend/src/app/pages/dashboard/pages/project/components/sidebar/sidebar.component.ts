@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
+import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { SampleEntity, SampleGeneType, SampleSoftwareType, SampleSpeciesType } from 'pages/dashboard/models/samples/samples';
 import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
 import { LoadFailedLabelAnimation, LoadingLabelAnimation, SamplesListAnimation } from 'pages/dashboard/pages/project/components/sidebar/sidebar.animations';
-import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { concat, Observable, of } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 
@@ -16,13 +16,14 @@ import { distinctUntilChanged, filter, map } from 'rxjs/operators';
   animations:      [ LoadingLabelAnimation, LoadFailedLabelAnimation, SamplesListAnimation ]
 })
 export class SidebarComponent {
-  public readonly isSamplesLoading$    = this.store.pipe(select(fromDashboardProject.isSamplesLoadingForCurrentProject));
-  public readonly isSamplesLoaded$     = this.store.pipe(select(fromDashboardProject.isSamplesLoadedForCurrentProject));
-  public readonly isSamplesLoadFailed$ = this.store.pipe(select(fromDashboardProject.isSamplesLoadFailedForCurrentProject));
-  public readonly samples$             = this.store.pipe(select(fromDashboardProject.getSamplesForCurrentProject));
+  public readonly loadingStatus$ = this.store.pipe(select(fromDashboard.getSamplesLoadingStatus));
+  public readonly samples$       = this.store.pipe(select(fromDashboard.getSamplesForSelectedProject));
 
-  constructor(private readonly store: Store<DashboardProjectModuleState>,
-              private readonly route: ActivatedRoute, private readonly router: Router) {}
+  constructor(private readonly store: Store<DashboardModuleState>, private readonly route: ActivatedRoute, private readonly router: Router) {}
+
+  public reload(): void {
+    this.store.dispatch(SamplesActions.reload());
+  }
 
   public selectSample(entity: SampleEntity): void {
     if (SampleEntity.isEntityLinked(entity)) {

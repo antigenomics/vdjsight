@@ -90,27 +90,27 @@ const projectsReducer = createReducer(
   }),
 
   /** Preview actions */
-  on(ProjectsActions.previewProject, (state, { entityId }) => produce(state, (draft) => {
+  on(ProjectsActions.preview, (state, { entityId }) => produce(state, (draft) => {
     draft.previewID = entityId;
   })),
-  on(ProjectsActions.clearProjectPreview, (state) => produce(state, (draft) => {
+  on(ProjectsActions.clearPreview, (state) => produce(state, (draft) => {
     draft.previewID = undefined;
   })),
 
   /** Select actions */
-  on(ProjectsActions.selectProject, (state, { entityId }) => produce(state, (draft) => {
-    draft.selectedID = entityId;
+  on(ProjectsActions.select, (state, { uuid }) => produce(state, (draft) => {
+    draft.selectedUUID = uuid;
   })),
-  on(ProjectsActions.clearProjectSelection, (state) => produce(state, (draft) => {
-    draft.selectedID = undefined;
+  on(ProjectsActions.unselect, (state) => produce(state, (draft) => {
+    draft.selectedUUID = undefined;
   })),
 
   /** Clear action */
   on(ProjectsActions.clear, (state) => {
     return ProjectsStateAdapter.removeAll(produce(state, (draft) => {
-      draft.status     = StateLoadingStatus.Initial();
-      draft.previewID  = undefined;
-      draft.selectedID = undefined;
+      draft.status       = StateLoadingStatus.Initial();
+      draft.previewID    = undefined;
+      draft.selectedUUID = undefined;
     }));
   })
 );

@@ -1,9 +1,5 @@
 <div class="project container">
-
-    <vs-project-loaded-check [isLoaded]="isCurrentProjectLoaded$ | async"
-                             [isLoading]="isCurrentProjectLoading$ | async"
-                             [isLoadFailed]="isCurrentProjectLoadFailed$ | async"
-                             (onReload)="reload()">
+    <vs-project-loaded-check [status]="loadingStatus$ | async" (onReload)="reload()">
         <div class="ui grid">
             <div class="three wide sidebar column" @sidebar>
                 <vs-project-sidebar></vs-project-sidebar>

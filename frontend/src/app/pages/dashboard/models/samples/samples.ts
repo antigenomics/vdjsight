@@ -74,10 +74,10 @@ export function CreateEmptySampleFileEntity(projectLinkUUID: string): SampleEnti
   };
 }
 
-export function CreateSampleFileEntityFromLink(projectLinkUUID: string, link: SampleLink) {
+export function CreateSampleFileEntityFromLink(link: SampleLink) {
   return {
     id:              SampleEntitiesLocalUUIDGenerator.next(),
-    projectLinkUUID: projectLinkUUID,
+    projectLinkUUID: link.projectLinkUUID,
 
     updating: { active: false },
     deleting: { active: false },

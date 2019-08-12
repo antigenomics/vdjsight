@@ -5,10 +5,12 @@ import { BackendErrorResponse } from 'services/backend/backend-response';
 
 export namespace SamplesActions {
 
-  export const load        = createAction('[Samples] Load', props<{ projectLinkUUID: string }>());
-  export const loadStart   = createAction('[Samples] Load Start', props<{ projectLinkUUID: string }>());
-  export const loadSuccess = createAction('[Samples] Load Success', props<{ projectLinkUUID: string, samples: SampleLink[] }>());
-  export const loadFailed  = createAction('[Samples] Load Failed', props<{ projectLinkUUID: string, error: BackendErrorResponse }>());
+  export const load        = createAction('[Samples] Load');
+  export const loadStart   = createAction('[Samples] Load Start');
+  export const loadSuccess = createAction('[Samples] Load Success', props<{ samples: SampleLink[] }>());
+  export const loadFailed  = createAction('[Samples] Load Failed', props<{ error: BackendErrorResponse }>());
+
+  export const reload = createAction('[Samples] Reload');
 
   export const create        = createAction('[Samples] Create', props<{ entity: SampleEntity, request: SamplesAPI.CreateRequest }>());
   export const createSuccess = createAction('[Samples] Create Success', props<{ entityId: number, link: SampleLink }>());
@@ -30,6 +32,9 @@ export namespace SamplesActions {
 
   export const failedDiscard   = createAction('[Samples] Failed Discard', props<{ entity: SampleEntity }>());
   export const failedDiscarded = createAction('[Samples] Failed Discarded', props<{ entity: SampleEntity }>());
+
+  export const select   = createAction('[Samples] Select', props<{ uuid: string }>());
+  export const unselect = createAction('[Samples] Unselect');
 
   export const clear = createAction('[Samples] Clear');
 }

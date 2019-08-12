@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { select, Store } from '@ngrx/store';
+import { Actions, createEffect, ofType, OnInitEffects } from '@ngrx/effects';
+import { Action, select, Store } from '@ngrx/store';
 import { UserActions } from 'models/user/user.actions';
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
@@ -12,7 +12,7 @@ import { NotificationsService } from 'services/notifications/notifications.servi
 import { withNotification } from 'utils/effects/effects-helper';
 
 @Injectable()
-export class ProjectsEffects {
+export class ProjectsEffects implements OnInitEffects {
 
   public load$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectsActions.load),
@@ -30,6 +30,13 @@ export class ProjectsEffects {
     withNotification('Projects', {
       error: { action: ProjectsActions.loadFailed, message: 'An error occurred while loading projects', options: { timeout: 5000 } }
     }, this.notifications)
+  ));
+
+  public reload$ = createEffect(() => this.actions$.pipe(
+    ofType(ProjectsActions.reload),
+    withLatestFrom(this.store.pipe(select(fromDashboard.getProjectsLoadingStatus))),
+    filter(([ _, status ]) => !status.loading),
+    map(() => ProjectsActions.loadStart())
   ));
 
   public create$ = createEffect(() => this.actions$.pipe(
@@ -76,7 +83,7 @@ export class ProjectsEffects {
       this.store.pipe(select(fromDashboard.getPreviewingProject))
     ),
     filter(([ action, selected ]) => selected !== undefined && action.entityId === selected.id),
-    map(() => ProjectsActions.clearProjectPreview())
+    map(() => ProjectsActions.clearPreview())
   ));
 
   public errorDiscard$ = createEffect(() => this.actions$.pipe(
@@ -93,5 +100,9 @@ export class ProjectsEffects {
 
   constructor(private readonly actions$: Actions, private readonly store: Store<DashboardModuleState>,
               private readonly projects: ProjectsService, private readonly notifications: NotificationsService) {}
+
+  public ngrxOnInitEffects(): Action {
+    return ProjectsActions.load();
+  }
 
 }

@@ -41,22 +41,32 @@ export namespace fromDashboard {
   export const getProjectsCount         = createSelector(selectDashboardModuleProjectsState, __fromDashboardProjectsState.selectTotal);
   export const isSomeProjectPreviewing  = createSelector(selectDashboardModuleProjectsState, __fromDashboardProjectsState.isSomeProjectPreviewing);
   export const getPreviewingProject     = createSelector(selectDashboardModuleProjectsState, __fromDashboardProjectsState.getPreviewingProject);
-  export const isSomeProjectSelected    = createSelector(selectDashboardModuleProjectsState, __fromDashboardProjectsState.isSomeProjectSelected);
-  export const getSelectedProject       = createSelector(selectDashboardModuleProjectsState, __fromDashboardProjectsState.getSelectedProject);
+  export const isSomeProjectSelected    = createSelector(selectDashboardModuleProjectsState, __fromDashboardProjectsState.isSomeSelected);
+  export const getSelectedProjectUUID   = createSelector(selectDashboardModuleProjectsState, __fromDashboardProjectsState.getSelectedUUID);
+  export const getSelectedProject       = createSelector(selectDashboardModuleProjectsState, __fromDashboardProjectsState.getSelected);
+
+  /** Selected project info selectors */
+  export const getSelectedProjectInfo                  = createSelector(getSelectedProject, (selected) => selected !== undefined ? selected.link : undefined);
+  export const isUploadAllowedForSelectedProject       = createSelector(getSelectedProjectInfo, (info) => info ? info.isUploadAllowed : false);
+  export const isDeleteAllowedForSelectedProject       = createSelector(getSelectedProjectInfo, (info) => info ? info.isDeleteAllowed : false);
+  export const isModificationAllowedForSelectedProject = createSelector(getSelectedProjectInfo, (info) => info ? info.isModificationAllowed : false);
 
   /** Samples selectors */
-  export const getSampleByID                   = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectByID);
-  export const getSampleByLinkUUID             = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectByLinkUUID);
-  export const getSamplesIDs                   = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectIds);
-  export const getSampleEntities               = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectEntities);
-  export const getSamplesCount                 = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectTotal);
-  export const getSamples                      = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectAll);
-  export const getSamplesLoadingInfoForAll     = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.getLoadingInfoForAll);
-  export const getSamplesLoadingInfoForProject = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.getLoadingInfoForProject);
-  export const isSamplesLoadingForProject      = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.isLoadingForProject);
-  export const isSamplesLoadedForProject       = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.isLoadedForProject);
-  export const isSamplesLoadFailedForProject   = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.isLoadFailedProject);
-  export const getSamplesForProject            = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectForProject);
+  export const getSamplesLoadingStatus = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.getLoadingState);
+  export const getSampleByID           = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectByID);
+  export const getSampleByLinkUUID     = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectByLinkUUID);
+  export const getSamplesIDs           = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectIds);
+  export const getSampleEntities       = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectEntities);
+  export const getSamplesCount         = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectTotal);
+  export const getSamples              = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectAll);
+  export const getSamplesForProject    = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.selectForProject);
+  export const isSomeSampleSelected    = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.isSomeSelected);
+  export const getSelectedSampleUUID   = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.getSelectedUUID);
+  export const getSelectedSample       = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.getSelected);
+
+  export const getSamplesForSelectedProject = createSelector(getSelectedProjectUUID, fromDashboard.getSamples,
+    (selectedProjectLinkUUID, samples) => samples.filter((s) => s.projectLinkUUID === selectedProjectLinkUUID)
+  );
 
   /** Analysis selectors */
   export const getAnalysisByID                        = createSelector(selectDashboardAnalysisState, __fromDashboardAnalysisState.selectByID);

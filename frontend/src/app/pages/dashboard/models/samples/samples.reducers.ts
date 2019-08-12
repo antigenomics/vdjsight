@@ -3,37 +3,22 @@ import produce from 'immer';
 import { CreateSampleFileEntityFromLink, SampleEntity } from 'pages/dashboard/models/samples/samples';
 import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
 import { __fromDashboardSamplesState, __SamplesState, SamplesStateAdapter } from 'pages/dashboard/models/samples/samples.state';
-import selectForProject = __fromDashboardSamplesState.selectForProject;
+import { StateLoadingStatus } from 'utils/state/state';
 
 const sampleFilesReducer = createReducer(
   __fromDashboardSamplesState.initial,
 
   /** Load actions */
-  on(SamplesActions.loadStart, (state, { projectLinkUUID }) => {
-    return SamplesStateAdapter.removeMany(selectForProject(state, { projectLinkUUID }).map((s) => s.id), produce(state, (draft) => {
-      draft.loadingInfo[ projectLinkUUID ] = {
-        loading:    true,
-        loaded:     false,
-        loadFailed: false
-      };
+  on(SamplesActions.loadStart, (state) => produce(state, (draft) => {
+    draft.status = StateLoadingStatus.Loading();
+  })),
+  on(SamplesActions.loadSuccess, (state, { samples }) => {
+    return SamplesStateAdapter.addAll(samples.map(CreateSampleFileEntityFromLink), produce(state, (draft) => {
+      draft.status = StateLoadingStatus.Loaded();
     }));
   }),
-  on(SamplesActions.loadSuccess, (state, { samples, projectLinkUUID }) => {
-    return SamplesStateAdapter.addMany(samples.map((s) => CreateSampleFileEntityFromLink(projectLinkUUID, s)
-    ), produce(state, (draft) => {
-      draft.loadingInfo[ projectLinkUUID ] = {
-        loading:    false,
-        loaded:     true,
-        loadFailed: false
-      };
-    }));
-  }),
-  on(SamplesActions.loadFailed, (state, { projectLinkUUID }) => produce(state, (draft) => {
-    draft.loadingInfo[ projectLinkUUID ] = {
-      loading:    false,
-      loaded:     false,
-      loadFailed: true
-    };
+  on(SamplesActions.loadFailed, (state, { error }) => produce(state, (draft) => {
+    draft.status = StateLoadingStatus.LoadFailed(error.error);
   })),
 
   /** Create actions */
@@ -104,10 +89,19 @@ const sampleFilesReducer = createReducer(
     return SampleEntity.isEntityCreateFailed(entity) ? SamplesStateAdapter.removeOne(entity.id, state) : state;
   }),
 
+  /** Select actions */
+  on(SamplesActions.select, (state, { uuid }) => produce(state, (draft) => {
+    draft.selectedUUID = uuid;
+  })),
+  on(SamplesActions.unselect, (state) => produce(state, (draft) => {
+    draft.selectedUUID = undefined;
+  })),
+
   /** Clear actions */
   on(SamplesActions.clear, (state) => {
     return SamplesStateAdapter.removeAll(produce(state, (draft) => {
-      draft.loadingInfo = {};
+      draft.status       = StateLoadingStatus.Initial();
+      draft.selectedUUID = undefined;
     }));
   })
 );

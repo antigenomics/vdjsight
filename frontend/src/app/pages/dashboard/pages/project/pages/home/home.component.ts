@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
+import { fromDashboard } from 'pages/dashboard/models/dashboard.state';
+import { DashboardProjectModuleState } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 
 @Component({
   selector:        'vs-project-home',
@@ -8,7 +9,7 @@ import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboa
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectHomeComponent {
-  public readonly projectInfo$ = this.store.pipe(select(fromDashboardProject.getCurrentProjectInfo));
+  public readonly selected$ = this.store.pipe(select(fromDashboard.getSelectedProject));
 
   constructor(private readonly store: Store<DashboardProjectModuleState>) {}
 

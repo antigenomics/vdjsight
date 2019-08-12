@@ -1,5 +1,5 @@
-<div class="sidebar">
-    <ng-container *ngIf="isSamplesLoaded$ | async; else notLoaded">
+<div class="sidebar" *ngIf="loadingStatus$ | async as loadingStatus">
+    <ng-container *ngIf="loadingStatus.loaded else notLoaded">
         <a class="upload item" routerLink="upload" routerLinkActive="active">
             Upload new samples
         </a>
@@ -26,18 +26,19 @@
         </ng-container>
     </ng-container>
     <ng-template #notLoaded>
-        <ng-container *ngIf="isSamplesLoading$ | async;">
+        <ng-container *ngIf="loadingStatus.loading">
             <div class="item top bottom very pushed" @loading>
                 <div class="ui active centered inline blue loader"></div>
             </div>
         </ng-container>
-        <ng-container *ngIf="isSamplesLoadFailed$ | async">
+        <ng-container *ngIf="loadingStatus.loadFailed">
             <div class="item error" @load-failed>
                 <div class="ui negative message">
                     <div class="header">
                         An error occurred while loading the sample files list
                     </div>
-                    <p>Internal Server Error</p>
+                    <p>{{ loadingStatus.error }}</p>
+                    <button class="ui red basic mini button" (click)="reload()">Reload</button>
                 </div>
             </div>
         </ng-container>

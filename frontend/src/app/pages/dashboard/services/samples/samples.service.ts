@@ -35,8 +35,8 @@ export class SamplesService {
 
   constructor(private readonly backend: BackendService, private readonly http: HttpClient) {}
 
-  public list(projectLinkUUID: string): Observable<SamplesAPI.ListResponse> {
-    return this.backend.get(SamplesService.SamplesListEndpoint(projectLinkUUID));
+  public list(): Observable<SamplesAPI.ListResponse> {
+    return this.backend.get(SamplesService.SamplesListEndpoint());
   }
 
   public create(projectLinkUUID: string, request: SamplesAPI.CreateRequest, file: File):
@@ -71,7 +71,7 @@ export class SamplesService {
     return this.backend.post(SamplesService.SamplesDeleteEndpoint(projectLinkUUID), request);
   }
 
-  private static readonly SamplesListEndpoint   = (uuid: string) => `/samples/${uuid}/list/`;
+  private static readonly SamplesListEndpoint   = () => `/samples/list/`;
   private static readonly SamplesCreateEndpoint = (uuid: string) => `/samples/${uuid}/create/`;
   private static readonly SamplesUpdateEndpoint = (uuid: string) => `/samples/${uuid}/update/`;
   private static readonly SamplesDeleteEndpoint = (uuid: string) => `/samples/${uuid}/delete/`;
