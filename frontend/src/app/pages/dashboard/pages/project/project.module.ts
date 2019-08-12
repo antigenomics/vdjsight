@@ -15,11 +15,11 @@ const ProjectRouting = RouterModule.forChild([
       {
         path:         'upload',
         loadChildren: () => import('pages/dashboard/pages/project/pages/uploads/uploads.module').then((m) => m.ProjectUploadsModule)
+      },
+      {
+        path:         's',
+        loadChildren: () => import('pages/dashboard/pages/project/pages/sample/sample.module').then((m) => m.ProjectSampleModule)
       }
-      // {
-      //   path:         's',
-      //   loadChildren: () => import('pages/dashboard/pages/project/pages/sample/sample.module').then((m) => m.ProjectSampleModule)
-      // }
     ]
   }
 ]);

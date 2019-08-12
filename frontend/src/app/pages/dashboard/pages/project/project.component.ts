@@ -15,14 +15,14 @@ import { map } from 'rxjs/operators';
   animations:      [ SidebarAnimation, ContentAnimation ]
 })
 export class ProjectComponent implements OnInit, OnDestroy {
-  private currentProjectUpdateSubscription: Subscription;
+  private selectedProjectUpdateSubscription: Subscription;
 
   public readonly loadingStatus$ = this.store.pipe(select(fromDashboard.getProjectsLoadingStatus));
 
   constructor(private readonly route: ActivatedRoute, private readonly store: Store<DashboardModuleState>) {}
 
   public ngOnInit(): void {
-    this.currentProjectUpdateSubscription = this.route.params.pipe(map((p) => p.uuid)).subscribe((uuid) => {
+    this.selectedProjectUpdateSubscription = this.route.params.pipe(map((p) => p.uuid)).subscribe((uuid) => {
       this.store.dispatch(ProjectsActions.select({ uuid }));
     });
   }
@@ -32,7 +32,7 @@ export class ProjectComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.currentProjectUpdateSubscription.unsubscribe();
+    this.selectedProjectUpdateSubscription.unsubscribe();
     this.store.dispatch(ProjectsActions.unselect());
   }
 

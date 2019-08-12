@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
-import { DashboardSampleModuleState, fromDashboardSample } from 'pages/dashboard/pages/project/pages/sample/models/dashboard-sample.state';
+import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { AnalysisService } from 'pages/dashboard/services/analysis/analysis.service';
 import { combineLatest } from 'rxjs';
 import { first } from 'rxjs/operators';
@@ -13,14 +12,14 @@ import { first } from 'rxjs/operators';
 })
 export class SampleClonotypesComponent {
 
-  constructor(private readonly store: Store<DashboardSampleModuleState>, private readonly analysis: AnalysisService) {}
+  constructor(private readonly store: Store<DashboardModuleState>, private readonly analysis: AnalysisService) {}
 
   public test(): void {
     combineLatest([
-      this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID)),
-      this.store.pipe(select(fromDashboardSample.getCurrentSampleUUID))
+      this.store.pipe(select(fromDashboard.getSelectedProjectUUID)),
+      this.store.pipe(select(fromDashboard.getSelectedSampleUUID))
     ]).pipe(first()).subscribe(([ pUUID, sUUID ]) => {
-      this.analysis.clonotypes(pUUID, sUUID, { page: 1233, pageSize: 1000, pagesRegion: 1000 }).pipe(first()).subscribe((response) => {
+      this.analysis.clonotypes(pUUID, sUUID, { page: 1, pageSize: 25, pagesRegion: 2 }).pipe(first()).subscribe((response) => {
         console.log(response);
       });
     });

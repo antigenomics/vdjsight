@@ -1,7 +1,4 @@
-<vs-sample-loaded-check [isLoaded]="isSamplesLoadedForCurrentProject$ | async"
-                        [isLoading]="isSamplesLoadingForCurrentProject$ | async"
-                        [isLoadFailed]="isSamplesLoadFailedForCurrentProject$ | async"
-                        (onReload)="reload()">
+<vs-sample-loaded-check [status]="loadingStatus$ | async" (onReload)="reload()">
     <ng-container *ngIf="sample$ | async as sample; else badSample">
         <vs-sample-header [sample]="sample"></vs-sample-header>
         <div class="top pushed">

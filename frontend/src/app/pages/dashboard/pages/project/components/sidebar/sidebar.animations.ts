@@ -17,7 +17,9 @@ export const LoadFailedLabelAnimation = trigger('load-failed', [
 export const SamplesListAnimation = trigger('list', [
   transition(':enter', [
     state('void', style({ opacity: 0.0 })),
-    transition(':enter', [ animate('0.5s ease-in-out') ])
+    transition(':enter', [
+      animate('0.25s ease-in-out')
+    ])
   ]),
   transition(':leave', [
     style({ height: '*', opacity: 1 }),
