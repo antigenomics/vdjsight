@@ -2,8 +2,8 @@
     <ng-container *ngIf="projects.length; else empty">
         <div class="project item" @list *ngFor="let project of projects; trackBy: trackProjectBy" vs-projects-list-entity
              [project]="project"
-             [isSelected]="project === selected.get"
-             (onSelect)="onSelect.emit(project)"
+             [isPreviewing]="project === preview"
+             (onPreview)="onPreview.emit(project)"
              (onFailedDiscard)="onFailedDiscard.emit(project)">
         </div>
         <div class="project filler item"></div>

@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { SmoothHeightModule } from 'directives/smooth_height/smooth-height.module';
 import { ProjectsListModule } from 'pages/dashboard/pages/projects/components/projects_list/projects-list.module';
-import { ProjectSelectedModule } from 'pages/dashboard/pages/projects/components/projects_selected/project-selected.module';
+import { ProjectsListPreviewModule } from 'pages/dashboard/pages/projects/components/projects_preview/projects-list-preview.module';
 import { ProjectsComponent } from 'pages/dashboard/pages/projects/projects.component';
 
 const ProjectsRouting = RouterModule.forChild([
@@ -13,7 +13,7 @@ const ProjectsRouting = RouterModule.forChild([
 @NgModule({
   imports:      [
     CommonModule, ProjectsRouting,
-    ProjectsListModule, ProjectSelectedModule, SmoothHeightModule
+    ProjectsListModule, ProjectsListPreviewModule, SmoothHeightModule
   ],
   declarations: [ ProjectsComponent ],
   exports:      [ ProjectsComponent ]

@@ -3,7 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { SampleEntity } from 'pages/dashboard/models/samples/samples';
-import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
 import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
 import { DashboardSampleModuleState } from 'pages/dashboard/pages/project/pages/sample/models/dashboard-sample.state';
 import { CurrentSampleActions } from 'pages/dashboard/pages/project/pages/sample/models/sample/sample.actions';
@@ -30,7 +29,7 @@ export class ProjectSampleComponent {
   constructor(private readonly route: ActivatedRoute, private readonly store: Store<DashboardSampleModuleState>) {}
 
   public reload(): void {
-    this.store.dispatch(SamplesActions.loadForCurrentProject());
+    // this.store.dispatch(SamplesActions.loadForCurrentProject());
   }
 
 }

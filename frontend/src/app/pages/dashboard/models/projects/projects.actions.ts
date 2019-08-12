@@ -25,6 +25,9 @@ export namespace ProjectsActions {
   export const failedDiscard   = createAction('[Projects] Failed Discard', props<{ entity: ProjectEntity }>());
   export const failedDiscarded = createAction('[Projects] Failed Discarded', props<{ entity: ProjectEntity }>());
 
+  export const previewProject      = createAction('[Projects] Preview Project', props<{ entityId: number }>());
+  export const clearProjectPreview = createAction('[Projects] Clear Project Preview');
+
   export const selectProject         = createAction('[Projects] Select Project', props<{ entityId: number }>());
   export const clearProjectSelection = createAction('[Projects] Clear Project Selection');
 

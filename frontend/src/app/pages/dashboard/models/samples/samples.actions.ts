@@ -5,8 +5,6 @@ import { BackendErrorResponse } from 'services/backend/backend-response';
 
 export namespace SamplesActions {
 
-  export const loadForCurrentProject = createAction('[Samples] Load For Current Project');
-
   export const load        = createAction('[Samples] Load', props<{ projectLinkUUID: string }>());
   export const loadStart   = createAction('[Samples] Load Start', props<{ projectLinkUUID: string }>());
   export const loadSuccess = createAction('[Samples] Load Success', props<{ projectLinkUUID: string, samples: SampleLink[] }>());

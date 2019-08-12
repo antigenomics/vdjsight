@@ -3,17 +3,15 @@ import { FadeInAnimation } from 'animations/fade-in.animation';
 import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
 
 @Component({
-  selector:        'vs-project-selected-util-buttons',
-  templateUrl:     './project-selected-util-buttons.component.html',
+  selector:        'vs-projects-preview-utils-panel',
+  templateUrl:     './projects-preview-utils-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations:      [ FadeInAnimation ]
 })
-export class ProjectSelectedUtilButtonsComponent {
-
+export class ProjectsPreviewUtilsPanelComponent {
   @Input()
-  public selected: { isDefined: boolean, get: ProjectEntity };
+  public preview?: ProjectEntity;
 
   @Output()
   public onDelete = new EventEmitter<ProjectEntity>();
-
 }

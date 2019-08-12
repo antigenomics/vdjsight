@@ -15,11 +15,9 @@ import { ProjectsFooterAnimation } from 'pages/dashboard/pages/projects/projects
 })
 export class ProjectsComponent implements OnInit {
 
-  public readonly isLoading    = this.store.pipe(select(fromDashboard.isProjectsLoading));
-  public readonly isLoaded     = this.store.pipe(select(fromDashboard.isProjectsLoaded));
-  public readonly isLoadFailed = this.store.pipe(select(fromDashboard.isProjectsLoadFailed));
-  public readonly projects$    = this.store.pipe(select(fromDashboard.getAllProjects));
-  public readonly selected$    = this.store.pipe(select(fromDashboard.getSelectedProjectOption));
+  public readonly loadingStatus$ = this.store.pipe(select(fromDashboard.getProjectsLoadingStatus));
+  public readonly projects$      = this.store.pipe(select(fromDashboard.getAllProjects));
+  public readonly preview$       = this.store.pipe(select(fromDashboard.getPreviewingProject));
 
   constructor(private readonly store: Store<DashboardModuleState>) {}
 
@@ -42,16 +40,16 @@ export class ProjectsComponent implements OnInit {
     this.store.dispatch(ProjectsActions.forceDelete({ entity: project }));
   }
 
-  public select(project: ProjectEntity): void {
-    this.store.dispatch(ProjectsActions.selectProject({ entityId: project.id }));
-  }
-
   public discard(project: ProjectEntity): void {
     this.store.dispatch(ProjectsActions.failedDiscard({ entity: project }));
   }
 
-  public deselect(): void {
-    this.store.dispatch(ProjectsActions.clearProjectSelection());
+  public preview(project: ProjectEntity): void {
+    this.store.dispatch(ProjectsActions.previewProject({ entityId: project.id }));
+  }
+
+  public clearPreview(): void {
+    this.store.dispatch(ProjectsActions.clearProjectPreview());
   }
 
   public reload(): void {

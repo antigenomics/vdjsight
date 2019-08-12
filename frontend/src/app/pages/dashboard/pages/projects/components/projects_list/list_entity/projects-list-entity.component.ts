@@ -5,13 +5,13 @@ import {
   ContentAnimation,
   ProjectAnimation,
   ProjectSmoothHeightAnimation
-} from 'pages/dashboard/pages/projects/components/projects_list/projects_list_entity/projects-list-entity.animation';
+} from 'pages/dashboard/pages/projects/components/projects_list/list_entity/projects-list-entity.animation';
 import { ReplaySubject, Subject } from 'rxjs';
 
 const enum ProjectEntityState {
   NOTHING   = 'nothing',
   HIGHLIGHT = 'highlight',
-  SELECTED  = 'selected',
+  PREVIEW   = 'preview',
   DELETING  = 'deleting',
   UPDATING  = 'updating'
 }
@@ -30,10 +30,10 @@ export class ProjectsListEntityComponent implements OnInit, OnChanges {
   public project: ProjectEntity;
 
   @Input()
-  public isSelected: boolean;
+  public isPreviewing: boolean;
 
   @Output()
-  public onSelect = new EventEmitter();
+  public onPreview = new EventEmitter();
 
   @Output()
   public onFailedDiscard = new EventEmitter();
@@ -62,8 +62,8 @@ export class ProjectsListEntityComponent implements OnInit, OnChanges {
         return ProjectEntityState.DELETING;
       } else if (this.project.updating.active) {
         return ProjectEntityState.UPDATING;
-      } else if (this.isSelected) {
-        return ProjectEntityState.SELECTED;
+      } else if (this.isPreviewing) {
+        return ProjectEntityState.PREVIEW;
       } else {
         return fallback;
       }

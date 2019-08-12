@@ -1,4 +1,4 @@
-import { EntityStatus } from 'utils/enitity/entity';
+import { EntityStatus } from 'utils/state/entity';
 import { IncrementalUUIDGenerator } from 'utils/uuid/incremental-uuid-generator';
 
 export const enum SampleSoftwareType {

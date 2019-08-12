@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
-  selector:        'vs-projects-list-utils',
-  templateUrl:     './projects-list-utils.component.html',
+  selector:        'vs-projects-list-utils-panel',
+  templateUrl:     './projects-list-utils-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectsListUtilsComponent {
+export class ProjectsListUtilsPanelComponent {
   @Output()
   public onCreate = new EventEmitter();
 }

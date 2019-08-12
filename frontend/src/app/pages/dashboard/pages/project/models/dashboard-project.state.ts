@@ -1,6 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { RootModuleState } from 'models/root';
-import { fromDashboard } from 'pages/dashboard/models/dashboard.state';
+import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { __fromCurrentProjectReducers } from 'pages/dashboard/pages/project/models/project/project.reducers';
 import { __DashboardCurrentProjectState, __fromDashboardCurrentProjectState } from 'pages/dashboard/pages/project/models/project/project.state';
 
@@ -12,7 +11,7 @@ export const DashboardProjectModuleReducers = {
   current: __fromCurrentProjectReducers.reducer
 };
 
-export interface DashboardProjectModuleState extends RootModuleState {
+export interface DashboardProjectModuleState extends DashboardModuleState {
   project: __DashboardProjectState;
 }
 

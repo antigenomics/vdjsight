@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FadeInAnimation } from 'animations/fade-in.animation';
-import { ProjectsListAnimation } from 'pages/dashboard/pages/projects/components/projects_list/projects-list.animations';
 import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
+import { ProjectsListAnimation } from 'pages/dashboard/pages/projects/components/projects_list/projects-list.animations';
 
 @Component({
   selector:        'div[vs-projects-list]',
@@ -15,10 +15,10 @@ export class ProjectsListComponent {
   public projects: ProjectEntity[];
 
   @Input()
-  public selected: { isDefined: boolean, get?: ProjectEntity };
+  public preview?: ProjectEntity;
 
   @Output()
-  public onSelect = new EventEmitter<ProjectEntity>();
+  public onPreview = new EventEmitter<ProjectEntity>();
 
   @Output()
   public onFailedDiscard = new EventEmitter<ProjectEntity>();

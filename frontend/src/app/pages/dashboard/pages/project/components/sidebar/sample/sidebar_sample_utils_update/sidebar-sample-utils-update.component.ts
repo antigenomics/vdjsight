@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import { FadeInAnimation } from 'animations/fade-in.animation';
 import { SampleGeneType, SampleSoftwareType, SampleSpeciesType } from 'pages/dashboard/models/samples/samples';
 import { SamplesService } from 'pages/dashboard/services/samples/samples.service';
-import { EntityStatus } from 'utils/enitity/entity';
+import { EntityStatus } from 'utils/state/entity';
 
 @Component({
   selector:        'vs-sidebar-sample-utils-update',

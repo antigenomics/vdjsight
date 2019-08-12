@@ -1,6 +1,6 @@
-<ng-container *ngIf="selected.isDefined">
+<ng-container *ngIf="preview">
     <button [vs-tooltip]="deleteButtonTooltip" class="ui left floated orange button"
-            [ngClass]="{ 'loading': selected.get.deleting.active }">Delete
+            [ngClass]="{ 'loading': preview.deleting.active }">Delete
     </button>
     <ng-template #deleteButtonTooltip let-hide="hide">
         <div class="ui raised card">
@@ -10,7 +10,7 @@
                     Are you sure you want to remove this project?
                 </div>
             </div>
-            <div class="extra content" *ngIf="selected.get.deleting.error as error" @fade-in>
+            <div class="extra content" *ngIf="preview.deleting.error as error" @fade-in>
                 <div class="ui icon negative small message">
                     <i class="exclamation triangle red icon"></i>
                     <div class="content">
@@ -22,11 +22,11 @@
                 </div>
             </div>
             <div class="extra content">
-                <div class="ui two buttons" *ngIf="!selected.get.deleting.active else deleting">
+                <div class="ui two buttons" *ngIf="!preview.deleting.active else deleting">
                     <button class="ui button" (click)="hide()">Cancel</button>
                     <div class="or"></div>
-                    <button class="ui orange button" [ngClass]="{ 'loading': selected.get.deleting.active }"
-                            (click)="onDelete.emit(selected.get)">Confirm
+                    <button class="ui orange button" [ngClass]="{ 'loading': preview.deleting.active }"
+                            (click)="onDelete.emit(preview)">Confirm
                     </button>
                 </div>
                 <ng-template #deleting>
@@ -35,5 +35,5 @@
             </div>
         </div>
     </ng-template>
-    <button class="ui right floated violet button" [routerLink]="[ '../../p', selected.get.link.uuid ]">Select</button>
+    <button class="ui right floated violet button" [routerLink]="[ '../../p', preview.link.uuid ]">Select</button>
 </ng-container>

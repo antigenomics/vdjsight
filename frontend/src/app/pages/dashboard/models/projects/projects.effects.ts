@@ -16,11 +16,8 @@ export class ProjectsEffects {
 
   public load$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectsActions.load),
-    withLatestFrom(
-      this.store.pipe(select(fromDashboard.isProjectsLoaded)),
-      this.store.pipe(select(fromDashboard.isProjectsLoading))
-    ),
-    filter(([ _, isLoaded, isLoading ]) => !isLoaded && !isLoading),
+    withLatestFrom(this.store.pipe(select(fromDashboard.getProjectsLoadingStatus))),
+    filter(([ _, status ]) => !status.loaded && !status.loading),
     map(() => ProjectsActions.loadStart())
   ));
 
@@ -76,10 +73,10 @@ export class ProjectsEffects {
   public deleteSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectsActions.forceDeleteSuccess),
     withLatestFrom(
-      this.store.pipe(select(fromDashboard.getSelectedProjectOption))
+      this.store.pipe(select(fromDashboard.getPreviewingProject))
     ),
-    filter(([ action, selected ]) => selected.isDefined && action.entityId === selected.get.id),
-    map(() => ProjectsActions.clearProjectSelection())
+    filter(([ action, selected ]) => selected !== undefined && action.entityId === selected.id),
+    map(() => ProjectsActions.clearProjectPreview())
   ));
 
   public errorDiscard$ = createEffect(() => this.actions$.pipe(

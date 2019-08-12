@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FadeInAnimation } from 'animations/fade-in.animation';
-import { EntityStatus } from 'utils/enitity/entity';
+import { EntityStatus } from 'utils/state/entity';
 
 @Component({
   selector:        'vs-sidebar-sample-utils-delete',

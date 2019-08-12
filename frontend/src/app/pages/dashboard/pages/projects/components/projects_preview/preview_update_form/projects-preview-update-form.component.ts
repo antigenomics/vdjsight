@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FadeInAnimation } from 'animations/fade-in.animation';
-import { ProjectSelectedDescriptionAnimation } from 'pages/dashboard/pages/projects/components/projects_selected/project-form/project-selected-form.animations';
-import { EntityStatus } from 'utils/enitity/entity';
+import { ProjectsListPreviewDescriptionAnimation } from 'pages/dashboard/pages/projects/components/projects_preview/preview_update_form/projects-preview-update-form.animations';
+import { EntityStatus } from 'utils/state/entity';
 
 @Component({
-  selector:        'vs-selected-project-form',
-  templateUrl:     './project-selected-form.component.html',
-  styleUrls:       [ './project-selected-form.component.less' ],
+  selector:        'vs-projects-preview-update-form',
+  templateUrl:     './projects-preview-update-form.component.html',
+  styleUrls:       [ './projects-preview-update-form.component.less' ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations:      [ ProjectSelectedDescriptionAnimation, FadeInAnimation ]
+  animations:      [ ProjectsListPreviewDescriptionAnimation, FadeInAnimation ]
 })
-export class ProjectSelectedFormComponent {
+export class ProjectsPreviewUpdateFormComponent {
   private isDescriptionSelected = false;
 
   @Input()

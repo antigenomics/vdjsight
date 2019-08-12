@@ -1,38 +1,38 @@
-<div class="ui projects container">
-    <div class="ui raised violet attached projects segment" [ngClass]="{ 'placeholder': (isLoaded | async) === (false) }">
-        <div class="ui projects grid" *ngIf="isLoaded | async; else notLoaded">
+<div class="ui projects container" *ngIf="loadingStatus$ | async as loadingStatus">
+    <div class="ui raised violet attached projects segment" [ngClass]="{ 'placeholder': loadingStatus.loaded === false}">
+        <div class="ui projects grid" *ngIf="loadingStatus.loaded; else notLoaded">
             <div class="six wide projects list column right vertically divided">
-                <div vs-projects-list [projects]="projects$ | async" [selected]="selected$ | async"
-                     (onSelect)="select($event)" (onFailedDiscard)="discard($event)">
+                <div vs-projects-list [projects]="projects$ | async" [preview]="preview$ | async"
+                     (onPreview)="preview($event)" (onFailedDiscard)="discard($event)">
                 </div>
             </div>
-            <div class="ten wide projects list column" *ngIf="isLoaded | async">
-                <div vs-project-selected [selected]="selected$ | async" (onUpdate)="update($event)" (onClose)="deselect()"></div>
+            <div class="ten wide projects list column" *ngIf="loadingStatus.loaded">
+                <div vs-projects-list-preview [preview]="preview$ | async" (onUpdate)="update($event)" (onClose)="clearPreview()"></div>
             </div>
         </div>
         <ng-template #notLoaded>
-            <ng-container *ngIf="isLoading | async">
+            <ng-container *ngIf="loadingStatus.loading">
                 <div class="ui active centered inline violet loader"></div>
             </ng-container>
-            <ng-container *ngIf="isLoadFailed | async">
+            <ng-container *ngIf="loadingStatus.loadFailed">
                 <div class="ui icon header">
                     <i class="exclamation triangle icon"></i>
                     <div class="content">
                         An error occurred while loading the projects list
-                        <div class="sub header">Internal Server Error</div>
+                        <div class="sub header">{{ loadingStatus.error }}</div>
                     </div>
                 </div>
                 <div class="ui violet button" (click)="reload()">Reload</div>
             </ng-container>
         </ng-template>
     </div>
-    <div class="ui secondary bottom attached raised segment" *ngIf="(isLoaded | async) && ((isLoadFailed | async) === (false))" @footer>
+    <div class="ui secondary bottom attached raised segment" *ngIf="loadingStatus.loaded && !loadingStatus.loadFailed" @footer>
         <div class="ui grid">
             <div class="six wide column right vertically divided">
-                <vs-projects-list-utils (onCreate)="create()"></vs-projects-list-utils>
+                <vs-projects-list-utils-panel (onCreate)="create()"></vs-projects-list-utils-panel>
             </div>
             <div class="ten wide column">
-                <vs-project-selected-util-buttons [selected]="selected$ | async" (onDelete)="delete($event)"></vs-project-selected-util-buttons>
+                <vs-projects-preview-utils-panel [preview]="preview$ | async" (onDelete)="delete($event)"></vs-projects-preview-utils-panel>
             </div>
         </div>
     </div>

@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { SampleFilesEffects } from 'pages/dashboard/models/samples/samples.effects';
 import { ProjectLoadedCheckComponent } from 'pages/dashboard/pages/project/components/loaded_check/project-loaded-check.component';
 import { SidebarModule } from 'pages/dashboard/pages/project/components/sidebar/sidebar.module';
 import { DashboardProjectModuleReducers } from 'pages/dashboard/pages/project/models/dashboard-project.state';
@@ -33,7 +32,7 @@ const ProjectRouting = RouterModule.forChild([
   imports:      [
     CommonModule, ProjectRouting,
     StoreModule.forFeature('project', DashboardProjectModuleReducers),
-    EffectsModule.forFeature([ ProjectEffects, SampleFilesEffects ]),
+    EffectsModule.forFeature([ ProjectEffects ]),
     SidebarModule, ProjectHomeModule
   ],
   declarations: [ ProjectComponent, ProjectLoadedCheckComponent ],

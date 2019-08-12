@@ -1,12 +1,12 @@
 <div class="content">
-    <ng-container *ngIf="selected.isDefined; else empty">
+    <ng-container *ngIf="preview; else empty">
         <div class="ui grid">
             <div class="fifteen wide column">
-                <vs-selected-project-form
-                        [name]="selected.get.link.name" [description]="selected.get.link.description"
-                        [updating]="selected.get.updating" [deleting]="selected.get.deleting"
+                <vs-projects-preview-update-form
+                        [name]="preview.link.name" [description]="preview.link.description"
+                        [updating]="preview.updating" [deleting]="preview.deleting"
                         (onUpdate)="update($event)">
-                </vs-selected-project-form>
+                </vs-projects-preview-update-form>
             </div>
             <div class="one wide column">
                 <i class="times close icon cursor pointer" (click)="onClose.emit()"></i>
