@@ -1,7 +1,7 @@
 import { animate, animateChild, group, query, state, style, transition, trigger } from '@angular/animations';
 
 export const ContentAnimation = trigger('content', [
-  state('void', style({ transform: 'translateX(-5%)', opacity: 0.0, 'border-left': '0 solid #ffffff' })),
+  // state('void', style({ transform: 'translateX(-5%)', opacity: 0.0, 'border-left': '0 solid #ffffff' })),
   state('nothing', style({ 'border-left': '0px solid #e6e6e6', background: '#ffffff' })),
   state('highlight', style({ 'border-left': '0.5em solid #e6e6e6', background: 'rgba(243, 244, 245, .5)' })),
   state('selected', style({ 'border-left': '0.5em solid #6baed6', background: 'rgba(243, 244, 245, .5)' })),
@@ -18,7 +18,7 @@ export const ContentAnimation = trigger('content', [
 ]);
 
 export const SampleAnimation = trigger('sample', [
-  state('void', style({ opacity: 0.0 })),
+  // state('void', style({ opacity: 0.0 })),
   state('nothing', style({ 'padding-right': '1em' })),
   state('highlight', style({ 'padding-right': '0.5em' })),
   state('selected', style({ 'padding-right': '0.5em' })),
@@ -33,7 +33,7 @@ export const SampleAnimation = trigger('sample', [
 ]);
 
 export const UtilsAnimation = trigger('utils', [
-  state('void', style({ opacity: 0.0 })),
+  // state('void', style({ opacity: 0.0 })),
   state('nothing', style({ 'padding-right': '0em', opacity: 0.0 })),
   state('highlight', style({ 'padding-right': '0.5em', opacity: 1.0 })),
   state('selected', style({ 'padding-right': '0.5em', opacity: 1.0 })),

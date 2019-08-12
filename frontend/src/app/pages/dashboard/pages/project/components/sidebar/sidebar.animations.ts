@@ -1,4 +1,4 @@
-import { animate, group, state, style, transition, trigger } from '@angular/animations';
+import { animate, animateChild, group, query, state, style, transition, trigger } from '@angular/animations';
 
 export const LoadingLabelAnimation = trigger('loading', [
   transition(':enter', [
@@ -18,7 +18,11 @@ export const SamplesListAnimation = trigger('list', [
   transition(':enter', [
     state('void', style({ opacity: 0.0 })),
     transition(':enter', [
-      animate('0.25s ease-in-out')
+      group([
+        query('@content', animateChild(), { optional: true }),
+        query(':self', [ animate('0.25s ease-in-out') ])
+      ])
+
     ])
   ]),
   transition(':leave', [
