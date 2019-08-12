@@ -67,7 +67,7 @@ object AnalysisCacheExpiredAction extends Enumeration {
 case class AnalysisCache(
   uuid: UUID,
   sampleFileID: UUID,
-  analysis: String,
+  analysisType: String,
   marker: String,
   cache: String,
   expiredAt: Timestamp,
@@ -78,14 +78,14 @@ case class AnalysisCache(
 class AnalysisCacheTable(tag: Tag)(implicit sampleFileProvider: SampleFileProvider) extends Table[AnalysisCache](tag, AnalysisCacheTable.TABLE_NAME) {
   def uuid           = column[UUID]("uuid", O.PrimaryKey, O.SqlType("uuid"))
   def sampleFileID   = column[UUID]("sample_file_id", O.SqlType("uuid"))
-  def analysis       = column[String]("analysis", O.Length(32))
+  def analysisType   = column[String]("analysis_type", O.Length(32))
   def marker         = column[String]("marker", O.Length(255))
   def cache          = column[String]("cache")
   def expiredAt      = column[Timestamp]("expired_at")
   def lastAccessedAt = column[Timestamp]("last_accessed_at")
   def expiredAction  = column[AnalysisCacheExpiredAction.Value]("expired_action")
 
-  def * = (uuid, sampleFileID, analysis, marker, cache, expiredAt, lastAccessedAt, expiredAction) <> (AnalysisCache.tupled, AnalysisCache.unapply)
+  def * = (uuid, sampleFileID, analysisType, marker, cache, expiredAt, lastAccessedAt, expiredAction) <> (AnalysisCache.tupled, AnalysisCache.unapply)
 
   def sampleFile = foreignKey("sample_file_table_sample_id_fk", sampleFileID, sampleFileProvider.table)(
     _.uuid,
@@ -93,7 +93,7 @@ class AnalysisCacheTable(tag: Tag)(implicit sampleFileProvider: SampleFileProvid
     onDelete = ForeignKeyAction.Restrict
   )
 
-  def analysis_idx = index("analysis_cache_table_analysis_index", analysis, unique = false)
+  def analysis_idx = index("analysis_cache_table_analysis_index", analysisType, unique = false)
 
   def marker_idx = index("analysis_cache_table_marker_index", marker, unique = false)
 }
@@ -189,11 +189,11 @@ class AnalysisCacheProvider @Inject()(
   }
 
   def findForSampleForAnalysis(sampleFileID: UUID, analysis: String): Future[Option[AnalysisCache]] = {
-    db.run(cacheEntries.filter(e => e.sampleFileID === sampleFileID && e.analysis === analysis).result.headOption)
+    db.run(cacheEntries.filter(e => e.sampleFileID === sampleFileID && e.analysisType === analysis).result.headOption)
   }
 
   def findForSampleForAnalysisWithMarker(sampleFileID: UUID, analysis: String, marker: String): Future[Option[AnalysisCache]] = {
-    db.run(cacheEntries.filter(e => e.sampleFileID === sampleFileID && e.analysis === analysis && e.marker === marker).result.headOption)
+    db.run(cacheEntries.filter(e => e.sampleFileID === sampleFileID && e.analysisType === analysis && e.marker === marker).result.headOption)
   }
 
   def findForSampleForAnalysisWithMarkerAndTouch(sampleFileID: UUID, analysis: String, marker: String): Future[Option[AnalysisCache]] = {
@@ -205,7 +205,7 @@ class AnalysisCacheProvider @Inject()(
 
   def create(
     sampleFileUUID: UUID,
-    analysis: String,
+    analysisType: String,
     marker: String,
     action: AnalysisCacheExpiredAction.Value,
     cache: String,
@@ -213,7 +213,7 @@ class AnalysisCacheProvider @Inject()(
   ): Future[AnalysisCache] = {
     val actions = sampleFileProvider.table.filter(_.uuid === sampleFileUUID).result.headOption flatMap {
         case Some(sampleFile) =>
-          cacheEntries.filter(e => e.sampleFileID === sampleFileUUID && e.analysis === analysis).result flatMap { existingCacheEntriesForAnalysis =>
+          cacheEntries.filter(e => e.sampleFileID === sampleFileUUID && e.analysisType === analysisType).result flatMap { existingCacheEntriesForAnalysis =>
             val config = overrideConfiguration.getOrElse(configuration)
 
             val deleteExtraCacheEntries = if (config.maxCount > 0 && existingCacheEntriesForAnalysis.size >= config.maxCount) {
@@ -229,7 +229,7 @@ class AnalysisCacheProvider @Inject()(
                 val cacheEntity = AnalysisCache(
                   uuid           = cacheID,
                   sampleFileID   = sampleFile.uuid,
-                  analysis       = analysis,
+                  analysisType   = analysisType,
                   marker         = marker,
                   cache          = cache,
                   expiredAt      = TimeUtils.getExpiredAt(config.keep),

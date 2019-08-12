@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
+import { AnalysisType } from 'pages/dashboard/models/analysis/analysis';
+import { AnalysisActions } from 'pages/dashboard/models/analysis/analysis.actions';
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
-import { AnalysisService } from 'pages/dashboard/services/analysis/analysis.service';
-import { combineLatest } from 'rxjs';
 import { first } from 'rxjs/operators';
 
 @Component({
@@ -10,18 +10,21 @@ import { first } from 'rxjs/operators';
   templateUrl:     './sample-clonotypes.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SampleClonotypesComponent {
+export class SampleClonotypesComponent implements OnInit {
 
-  constructor(private readonly store: Store<DashboardModuleState>, private readonly analysis: AnalysisService) {}
+  public clonotypes$ = this.store.select(fromDashboard.getClonotypesAnalysisForSelectedSample);
+
+  constructor(private readonly store: Store<DashboardModuleState>) {}
+
+  public ngOnInit(): void {
+    this.store.pipe(select(fromDashboard.getSelectedSample)).pipe(first()).subscribe((sample) => {
+      this.store.dispatch(AnalysisActions.createIfNotExist({ sample, analysisType: AnalysisType.CLONOTYPES }));
+    });
+  }
 
   public test(): void {
-    combineLatest([
-      this.store.pipe(select(fromDashboard.getSelectedProjectUUID)),
-      this.store.pipe(select(fromDashboard.getSelectedSampleUUID))
-    ]).pipe(first()).subscribe(([ pUUID, sUUID ]) => {
-      this.analysis.clonotypes(pUUID, sUUID, { page: 1, pageSize: 25, pagesRegion: 2 }).pipe(first()).subscribe((response) => {
-        console.log(response);
-      });
+    this.store.select(fromDashboard.getClonotypesAnalysisForSelectedSample).pipe(first()).subscribe((analysis) => {
+      this.store.dispatch(AnalysisActions.clonotypes({ analysis, page: 1, pageSize: 10, pagesRegion: 5 }));
     });
   }
 

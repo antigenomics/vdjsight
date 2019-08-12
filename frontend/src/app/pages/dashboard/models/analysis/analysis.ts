@@ -1,3 +1,4 @@
+import { ClonotypeTableView } from 'pages/dashboard/services/analysis/analysis-clonotypes';
 import { EntityStatus } from 'utils/state/entity';
 import { IncrementalUUIDGenerator } from 'utils/uuid/incremental-uuid-generator';
 
@@ -13,16 +14,16 @@ export interface AnalysisEntityBase<T> {
 
   readonly updating: EntityStatus;
 
-  readonly analysis: AnalysisType;
+  readonly analysisType: AnalysisType;
   readonly data?: T;
 }
 
-export interface AnalysisClonotypesEntity extends AnalysisEntityBase<string> {
-  readonly analysis: AnalysisType.CLONOTYPES;
+export interface AnalysisClonotypesEntity extends AnalysisEntityBase<ClonotypeTableView> {
+  readonly analysisType: AnalysisType.CLONOTYPES;
 }
 
 export interface AnalysisNothingEntity extends AnalysisEntityBase<never> {
-  readonly analysis: AnalysisType.NOTHING;
+  readonly analysisType: AnalysisType.NOTHING;
 }
 
 export type AnalysisEntity = AnalysisClonotypesEntity | AnalysisNothingEntity;
@@ -39,15 +40,15 @@ export namespace AnalysisEntity {
 
 }
 
-const AnalysisEntititesLocalUUIDGenerator = new IncrementalUUIDGenerator();
+const AnalysisEntitiesLocalUUIDGenerator = new IncrementalUUIDGenerator();
 
 export function CreateEmptyAnalysisEntity(projectLinkUUID: string, sampleLinkUUID: string, type: AnalysisType): AnalysisEntity {
   return {
-    id:              AnalysisEntititesLocalUUIDGenerator.next(),
+    id:              AnalysisEntitiesLocalUUIDGenerator.next(),
     projectLinkUUID: projectLinkUUID,
     sampleLinkUUID:  sampleLinkUUID,
     updating:        { active: true },
-    analysis:        type
+    analysisType:    type
   };
 }
 

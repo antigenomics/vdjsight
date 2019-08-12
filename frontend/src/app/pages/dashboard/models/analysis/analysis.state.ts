@@ -26,5 +26,5 @@ export namespace __fromDashboardAnalysisState {
     selectAll(state).filter((a) => a.projectLinkUUID === props.projectLinkUUID && a.sampleLinkUUID === props.sampleLinkUUID);
 
   export const selectForProjectAndSampleWithType = (state: __AnalysisState, props: { projectLinkUUID: string, sampleLinkUUID: string, type: AnalysisType }) =>
-    selectAll(state).filter((a) => a.projectLinkUUID === props.projectLinkUUID && a.sampleLinkUUID === props.sampleLinkUUID && a.analysis === props.type);
+    selectAll(state).find((a) => a.projectLinkUUID === props.projectLinkUUID && a.sampleLinkUUID === props.sampleLinkUUID && a.analysisType === props.type);
 }

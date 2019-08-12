@@ -1,3 +1,8 @@
-<div class="ui raised segment">
-    <button class="ui button blue" (click)="test()">Test</button>
+<div class="ui raised segments">
+    <div class="ui segment">
+        <button class="ui button blue" (click)="test()">Click here</button>
+    </div>
+    <div class="ui segment" *ngIf="clonotypes$ | async as clonotypes">
+        <vs-sample-clonotypes-table [view]="clonotypes.data"></vs-sample-clonotypes-table>
+    </div>
 </div>

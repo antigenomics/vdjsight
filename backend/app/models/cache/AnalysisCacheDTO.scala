@@ -25,7 +25,7 @@ object AnalysisCacheDTO {
     AnalysisCacheDTO(
       uuid               = cache.uuid,
       sampleFileLinkUUID = link.uuid,
-      analysis           = cache.analysis,
+      analysis           = cache.analysisType,
       marker             = cache.marker,
       expiredAt          = cache.expiredAt
     )

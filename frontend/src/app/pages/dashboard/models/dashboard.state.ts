@@ -1,5 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { RootModuleState } from 'models/root';
+import { AnalysisClonotypesEntity, AnalysisEntity, AnalysisType } from 'pages/dashboard/models/analysis/analysis';
 import { __fromAnalysisReducers } from 'pages/dashboard/models/analysis/analysis.reducers';
 import { __AnalysisState, __fromDashboardAnalysisState } from 'pages/dashboard/models/analysis/analysis.state';
 import { __fromProjectsReducers } from 'pages/dashboard/models/projects/projects.reducers';
@@ -64,7 +65,7 @@ export namespace fromDashboard {
   export const getSelectedSampleUUID   = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.getSelectedUUID);
   export const getSelectedSample       = createSelector(selectDashboardSamplesState, __fromDashboardSamplesState.getSelected);
 
-  export const getSamplesForSelectedProject = createSelector(getSelectedProjectUUID, fromDashboard.getSamples,
+  export const getSamplesForSelectedProject = createSelector(getSelectedProjectUUID, getSamples,
     (selectedProjectLinkUUID, samples) => samples.filter((s) => s.projectLinkUUID === selectedProjectLinkUUID)
   );
 
@@ -77,5 +78,17 @@ export namespace fromDashboard {
   export const getAnalysisForProject                  = createSelector(selectDashboardAnalysisState, __fromDashboardAnalysisState.selectForProject);
   export const getAnalysisForProjectAndSample         = createSelector(selectDashboardAnalysisState, __fromDashboardAnalysisState.selectForProjectAndSample);
   export const getAnalysisForProjectAndSampleWithType = createSelector(selectDashboardAnalysisState, __fromDashboardAnalysisState.selectForProjectAndSampleWithType);
+
+  export const getAnalysisForSelectedSampleWithType = createSelector(getSelectedProjectUUID, getSelectedSampleUUID, getAnalysis,
+    (selectedProjectLinkUUID: string, selectedSampleLinkUUID: string, analysis: AnalysisEntity[], props: { type: AnalysisType }) =>
+      analysis.find((a) =>
+        a.projectLinkUUID === selectedProjectLinkUUID && a.sampleLinkUUID === selectedSampleLinkUUID && a.analysisType === props.type
+      ));
+
+  export const getClonotypesAnalysisForSelectedSample = createSelector(getSelectedProjectUUID, getSelectedSampleUUID, getAnalysis,
+    (selectedProjectLinkUUID: string, selectedSampleLinkUUID: string, analysis: AnalysisEntity[]): AnalysisClonotypesEntity =>
+      analysis.find((a) =>
+        a.projectLinkUUID === selectedProjectLinkUUID && a.sampleLinkUUID === selectedSampleLinkUUID && a.analysisType === AnalysisType.CLONOTYPES
+      ) as AnalysisClonotypesEntity | undefined);
 
 }

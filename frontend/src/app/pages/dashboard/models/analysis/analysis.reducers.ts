@@ -4,6 +4,30 @@ import { __AnalysisState, __fromDashboardAnalysisState, AnalysisStateAdapter } f
 
 const analysisReducer = createReducer(
   __fromDashboardAnalysisState.initial,
+  /** Create actions */
+  on(AnalysisActions.create, (state, { analysis }) => {
+    return AnalysisStateAdapter.addOne(analysis, state);
+  }),
+
+  /** Clonotypes actions */
+  on(AnalysisActions.clonotypes, (state, { analysis }) => {
+    return AnalysisStateAdapter.updateOne({
+      id:      analysis.id,
+      changes: { updating: { active: true } }
+    }, state);
+  }),
+  on(AnalysisActions.clonotypesSuccess, (state, { analysisId, view }) => {
+    return AnalysisStateAdapter.updateOne({
+      id:      analysisId,
+      changes: { updating: { active: false }, data: view }
+    }, state);
+  }),
+  on(AnalysisActions.clonotypesFailed, (state, { analysisId, error }) => {
+    return AnalysisStateAdapter.updateOne({
+      id:      analysisId,
+      changes: { updating: { active: false, error: error.error } }
+    }, state);
+  }),
 
   /** Clear actions */
   on(AnalysisActions.clear, (state) => {

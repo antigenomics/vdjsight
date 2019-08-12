@@ -8,4 +8,6 @@ export namespace ApplicationActions {
   export const restoreLastSavedURL = createAction('[Application] Restore Last Saved URL', props<{ fallbackURL: string }>());
   export const clearLastSavedURL   = createAction('[Application] Clear Last Saved URL');
 
+  export const reload = createAction('[Application] Reload');
+
 }

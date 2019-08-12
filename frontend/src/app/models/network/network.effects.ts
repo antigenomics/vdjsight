@@ -4,7 +4,8 @@ import { Action, select, Store } from '@ngrx/store';
 import { NetworkActions } from 'models/network/network.actions';
 import { fromRoot, RootModuleState } from 'models/root';
 import { fromEvent, of } from 'rxjs';
-import { catchError, exhaustMap, filter, map, withLatestFrom } from 'rxjs/operators';
+import { catchError, exhaustMap, filter, first, map, tap, withLatestFrom } from 'rxjs/operators';
+import { AccountService } from 'services/account/account.service';
 import { BackendService } from 'services/backend/backend.service';
 
 @Injectable()
@@ -40,6 +41,14 @@ export class NetworkEffects implements OnInitEffects {
 
   public pingBackendSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(NetworkActions.pingBackendSuccess),
+    tap(() => {
+      this.store.pipe(select(fromRoot.isUserLoggedIn), first()).subscribe((isLoggedIn) => {
+        if (!isLoggedIn) {
+          // TODO
+          // this.account.info().pipe(first()).subscribe(() => this.store.dispatch(ApplicationActions.reload()), () => {});
+        }
+      });
+    }),
     map(() => NetworkActions.pingBackendScheduleStop())
   ));
 

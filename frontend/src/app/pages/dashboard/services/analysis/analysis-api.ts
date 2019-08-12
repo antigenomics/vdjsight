@@ -1,3 +1,5 @@
+import { ClonotypeTableView } from 'pages/dashboard/services/analysis/analysis-clonotypes';
+
 export namespace AnalysisAPI {
 
   export interface ClonotypesRequest {
@@ -7,7 +9,7 @@ export namespace AnalysisAPI {
   }
 
   export interface ClonotypesResponse {
-    entries: string[];
+    view: ClonotypeTableView;
   }
 
 }

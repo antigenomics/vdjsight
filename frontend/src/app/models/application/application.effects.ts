@@ -5,7 +5,7 @@ import { select, Store } from '@ngrx/store';
 import { ApplicationActions } from 'models/application/application.actions';
 import { fromRoot, RootModuleState } from 'models/root';
 import { from } from 'rxjs';
-import { exhaustMap, map, withLatestFrom } from 'rxjs/operators';
+import { exhaustMap, map, tap, withLatestFrom } from 'rxjs/operators';
 
 
 @Injectable()
@@ -21,6 +21,11 @@ export class ApplicationEffects {
       );
     })
   ));
+
+  public reload$ = createEffect(() => this.actions$.pipe(
+    ofType(ApplicationActions.reload),
+    tap(() => location.reload())
+  ), { dispatch: false });
 
   constructor(private readonly actions$: Actions, private readonly store: Store<RootModuleState>,
               private readonly router: Router) {}
