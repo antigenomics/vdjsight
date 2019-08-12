@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { DashboardProjectModuleState, fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
+import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 import { __fromDashboardProjectUploadsReducers } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.reducers';
 import { __fromDashboardProjectUploadsState, __UploadsState } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.state';
@@ -12,11 +12,11 @@ export const DashboardProjectUploadModuleReducers = {
   list: __fromDashboardProjectUploadsReducers.reducer
 };
 
-export interface DashboardProjectUploadModuleState extends DashboardProjectModuleState {
+export interface DashboardProjectUploadModuleState extends DashboardModuleState {
   uploads: __DashboardProjectUploadState;
 }
 
-export namespace fromDashboardProjectUploads {
+export namespace fromDashboardUploads {
 
   /** Main dashboard project uploads module selectors */
   const selectDashboardProjectUploadsModuleState     = createFeatureSelector<__DashboardProjectUploadState>('uploads');
@@ -41,9 +41,9 @@ export namespace fromDashboardProjectUploads {
   /** Uploads for project */
   export const getUploadsForProject = createSelector(selectDashboardProjectUploadsModuleListState, __fromDashboardProjectUploadsState.selectForProject);
 
-  export const getUploadsForCurrentProject = createSelector(fromDashboardProject.getCurrentProjectUUID, getAllUploads,
-    (currentProjectUUID, uploads) =>
-      uploads.filter((u) => u.projectLinkUUID === currentProjectUUID)
+  export const getUploadsForSelectedProject = createSelector(fromDashboard.getSelectedProjectUUID, getAllUploads,
+    (selectedProjectUUID, uploads) =>
+      uploads.filter((u) => u.projectLinkUUID === selectedProjectUUID)
   );
 
   /** Uploading Uploads for project */
@@ -51,9 +51,9 @@ export namespace fromDashboardProjectUploads {
     return uploads.filter((u) => UploadEntity.isEntityUploading(u));
   });
 
-  export const getUploadingUploadsForCurrentProject = createSelector(fromDashboardProject.getCurrentProjectUUID, getAllUploads,
-    (currentProjectUUID, uploads) =>
-      uploads.filter((u) => u.projectLinkUUID === currentProjectUUID && UploadEntity.isEntityUploading(u))
+  export const getUploadingUploadsForCurrentProject = createSelector(fromDashboard.getSelectedProjectUUID, getAllUploads,
+    (selectedProjectUUID, uploads) =>
+      uploads.filter((u) => u.projectLinkUUID === selectedProjectUUID && UploadEntity.isEntityUploading(u))
   );
 
   /** Not Uploading Uploads for project */
@@ -61,9 +61,9 @@ export namespace fromDashboardProjectUploads {
     return uploads.filter((u) => !UploadEntity.isEntityUploading(u));
   });
 
-  export const getNotUploadingUploadsForCurrentProject = createSelector(fromDashboardProject.getCurrentProjectUUID, getAllUploads,
-    (currentProjectUUID, uploads) =>
-      uploads.filter((u) => u.projectLinkUUID === currentProjectUUID && !UploadEntity.isEntityUploading(u))
+  export const getNotUploadingUploadsForCurrentProject = createSelector(fromDashboard.getSelectedProjectUUID, getAllUploads,
+    (selectedProjectUUID, uploads) =>
+      uploads.filter((u) => u.projectLinkUUID === selectedProjectUUID && !UploadEntity.isEntityUploading(u))
   );
 
   /** Uploaded Uploads for project */
@@ -71,9 +71,9 @@ export namespace fromDashboardProjectUploads {
     return uploads.filter((u) => UploadEntity.isEntityUploaded(u));
   });
 
-  export const getUploadedUploadsForCurrentProject = createSelector(fromDashboardProject.getCurrentProjectUUID, getAllUploads,
-    (currentProjectUUID, uploads) =>
-      uploads.filter((u) => u.projectLinkUUID === currentProjectUUID && UploadEntity.isEntityUploaded(u))
+  export const getUploadedUploadsForCurrentProject = createSelector(fromDashboard.getSelectedProjectUUID, getAllUploads,
+    (selectedProjectUUID, uploads) =>
+      uploads.filter((u) => u.projectLinkUUID === selectedProjectUUID && UploadEntity.isEntityUploaded(u))
   );
 
   /** Not Uploaded Uploads for project */
@@ -81,9 +81,9 @@ export namespace fromDashboardProjectUploads {
     return uploads.filter((u) => !UploadEntity.isEntityUploaded(u));
   });
 
-  export const getNotUploadedUploadsForCurrentProject = createSelector(fromDashboardProject.getCurrentProjectUUID, getAllUploads,
-    (currentProjectUUID, uploads) =>
-      uploads.filter((u) => u.projectLinkUUID === currentProjectUUID && !UploadEntity.isEntityUploaded(u))
+  export const getNotUploadedUploadsForCurrentProject = createSelector(fromDashboard.getSelectedProjectUUID, getAllUploads,
+    (selectedProjectUUID, uploads) =>
+      uploads.filter((u) => u.projectLinkUUID === selectedProjectUUID && !UploadEntity.isEntityUploaded(u))
   );
 
   /** Pending Uploads for project */
@@ -91,9 +91,9 @@ export namespace fromDashboardProjectUploads {
     return uploads.filter((u) => UploadEntity.isEntityPending(u));
   });
 
-  export const getPendingUploadsForCurrentProject = createSelector(fromDashboardProject.getCurrentProjectUUID, getAllUploads,
-    (currentProjectUUID, uploads) =>
-      uploads.filter((u) => u.projectLinkUUID === currentProjectUUID && UploadEntity.isEntityPending(u))
+  export const getPendingUploadsForCurrentProject = createSelector(fromDashboard.getSelectedProjectUUID, getAllUploads,
+    (selectedProjectUUID, uploads) =>
+      uploads.filter((u) => u.projectLinkUUID === selectedProjectUUID && UploadEntity.isEntityPending(u))
   );
 
   /** Pending and Valid Uploads for project */
@@ -101,9 +101,9 @@ export namespace fromDashboardProjectUploads {
     return uploads.filter((u) => UploadEntity.isEntityPendingAndValid(u));
   });
 
-  export const getPendingAndValidUploadsForCurrentProject = createSelector(fromDashboardProject.getCurrentProjectUUID, getAllUploads,
-    (currentProjectUUID, uploads) =>
-      uploads.filter((u) => u.projectLinkUUID === currentProjectUUID && UploadEntity.isEntityPendingAndValid(u))
+  export const getPendingAndValidUploadsForCurrentProject = createSelector(fromDashboard.getSelectedProjectUUID, getAllUploads,
+    (selectedProjectUUID, uploads) =>
+      uploads.filter((u) => u.projectLinkUUID === selectedProjectUUID && UploadEntity.isEntityPendingAndValid(u))
   );
 
   /** Failed Uploads for project */
@@ -111,9 +111,9 @@ export namespace fromDashboardProjectUploads {
     return uploads.filter((u) => UploadEntity.isEntityWithError(u));
   });
 
-  export const getFailedUploadsForCurrentProject = createSelector(fromDashboardProject.getCurrentProjectUUID, getAllUploads,
-    (currentProjectUUID, uploads) =>
-      uploads.filter((u) => u.projectLinkUUID === currentProjectUUID && UploadEntity.isEntityWithError(u))
+  export const getFailedUploadsForCurrentProject = createSelector(fromDashboard.getSelectedProjectUUID, getAllUploads,
+    (selectedProjectUUID, uploads) =>
+      uploads.filter((u) => u.projectLinkUUID === selectedProjectUUID && UploadEntity.isEntityWithError(u))
   );
 
 }

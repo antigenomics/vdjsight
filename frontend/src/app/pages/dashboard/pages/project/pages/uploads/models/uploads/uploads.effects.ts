@@ -5,11 +5,10 @@ import { select, Store } from '@ngrx/store';
 import { ApplicationActions } from 'models/application/application.actions';
 import { fromRoot } from 'models/root';
 import { fromDashboard } from 'pages/dashboard/models/dashboard.state';
+import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
 import { CreateEmptySampleFileEntity, SampleEntity } from 'pages/dashboard/models/samples/samples';
 import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
-import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
-import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
-import { DashboardProjectUploadModuleState, fromDashboardProjectUploads } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
+import { DashboardProjectUploadModuleState, fromDashboardUploads } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 import { ProjectUploadsActions } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.actions';
 import { UploadGlobalErrors } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.state';
@@ -29,7 +28,7 @@ export class UploadsEffects {
     ofType(ProjectUploadsActions.update),
     filter(({ check }) => check),
     mergeMap(({ entityId }) => this.store.pipe(
-      select(fromDashboardProjectUploads.getUploadByID, { id: entityId }),
+      select(fromDashboardUploads.getUploadByID, { id: entityId }),
       first(),
       filter((entity) => UploadEntity.isEntityPending(entity)),
       map((entity) => ProjectUploadsActions.check({ entityId: entity.id }))
@@ -39,7 +38,7 @@ export class UploadsEffects {
   public check$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectUploadsActions.check),
     mergeMap(({ entityId }) => this.store.pipe(
-      select(fromDashboardProjectUploads.getUploadByID, { id: entityId }),
+      select(fromDashboardUploads.getUploadByID, { id: entityId }),
       first(),
       withLatestFrom(this.store.select(fromRoot.getUserCredentials)),
       map(([ entity, user ]) => {
@@ -75,16 +74,16 @@ export class UploadsEffects {
       SamplesActions.loadSuccess,
       SamplesActions.forceDeleteSuccess,
       SamplesActions.updateSuccess,
-      CurrentProjectActions.select
+      ProjectsActions.select
     ),
     tap(() => {
-      this.store.pipe(select(fromDashboardProject.getCurrentProjectInfo), first()).subscribe((projectInfo) => {
+      this.store.pipe(select(fromDashboard.getSelectedProjectInfo), first()).subscribe((projectInfo) => {
         if (projectInfo !== undefined) {
           if (projectInfo.isUploadAllowed) {
             combineLatest([
               this.store.pipe(select(fromRoot.getUserCredentials)),
               this.store.pipe(select(fromDashboard.getSamplesForProject, { projectLinkUUID: projectInfo.uuid })),
-              this.store.pipe(select(fromDashboardProjectUploads.getNotUploadedUploadsForProject, { projectLinkUUID: projectInfo.uuid }))
+              this.store.pipe(select(fromDashboardUploads.getNotUploadedUploadsForProject, { projectLinkUUID: projectInfo.uuid }))
             ]).pipe(first()).subscribe(([ user, samples, uploads ]) => {
               const errors: string[]   = [];
               const warnings: string[] = [];
@@ -128,7 +127,7 @@ export class UploadsEffects {
   public upload$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectUploadsActions.upload),
     mergeMap(({ entityId }) => this.store.pipe(
-      select(fromDashboardProjectUploads.getUploadByID, { id: entityId }),
+      select(fromDashboardUploads.getUploadByID, { id: entityId }),
       first(),
       filter((entity) => UploadEntity.isEntityPending(entity)),
       map(() => ProjectUploadsActions.uploadStart({ entityId }))
@@ -138,12 +137,12 @@ export class UploadsEffects {
   public uploadStart$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectUploadsActions.uploadStart),
     mergeMap(({ entityId }) => this.store.pipe(
-      select(fromDashboardProjectUploads.getUploadByID, { id: entityId }),
+      select(fromDashboardUploads.getUploadByID, { id: entityId }),
       first(),
       tap((entity) => {
-        this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), first()).subscribe((projectLinkUUID) => {
+        this.store.pipe(select(fromDashboard.getSelectedProjectUUID), first()).subscribe((selectedProjectLinkUUID) => {
 
-          const sample: SampleEntity              = CreateEmptySampleFileEntity(projectLinkUUID);
+          const sample: SampleEntity              = CreateEmptySampleFileEntity(selectedProjectLinkUUID);
           const request: SamplesAPI.CreateRequest = {
             name:      entity.name,
             software:  entity.software,
@@ -154,7 +153,7 @@ export class UploadsEffects {
             hash:      entity.hash
           };
 
-          this.samplesAPI.create(projectLinkUUID, request, this.uploads.fileFor(entity.id)).subscribe((event) => {
+          this.samplesAPI.create(selectedProjectLinkUUID, request, this.uploads.fileFor(entity.id)).subscribe((event) => {
 
             switch (event.type) {
               case HttpEventType.Sent:
@@ -182,7 +181,7 @@ export class UploadsEffects {
 
   public uploadSuccess$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectUploadsActions.uploadSuccess),
-    mergeMap(({ entityId }) => this.store.pipe(select(fromDashboardProjectUploads.getUploadByID, { id: entityId })).pipe(
+    mergeMap(({ entityId }) => this.store.pipe(select(fromDashboardUploads.getUploadByID, { id: entityId })).pipe(
       first(),
       tap((upload) => {
         this.notifications.success('Uploads', `${upload.name} has been uploaded successfully`, { timeout: 2500 });
@@ -192,7 +191,7 @@ export class UploadsEffects {
 
   public uploadFailed$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectUploadsActions.uploadFailed),
-    mergeMap(({ entityId }) => this.store.pipe(select(fromDashboardProjectUploads.getUploadByID, { id: entityId })).pipe(
+    mergeMap(({ entityId }) => this.store.pipe(select(fromDashboardUploads.getUploadByID, { id: entityId })).pipe(
       first(),
       tap((upload) => {
         this.notifications.error('Uploads', `An error occurred while uploading ${upload.name}`, { timeout: 5000 });
@@ -203,7 +202,7 @@ export class UploadsEffects {
   public failedDiscarded$ = createEffect(() => this.actions$.pipe(
     ofType(SamplesActions.failedDiscarded),
     mergeMap(({ entity }) => {
-      return this.store.pipe(select(fromDashboardProjectUploads.getUploadBySampleID, { sampleId: entity.id }), first(), map((upload) => {
+      return this.store.pipe(select(fromDashboardUploads.getUploadBySampleID, { sampleId: entity.id }), first(), map((upload) => {
         return upload !== undefined ? ProjectUploadsActions.remove({ entityId: upload.id }) : ApplicationActions.noop();
       }));
     })

@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { select, Store } from '@ngrx/store';
+import { fromDashboard } from 'pages/dashboard/models/dashboard.state';
+import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
 import { SampleGeneType, SampleSoftwareType, SampleSpeciesType } from 'pages/dashboard/models/samples/samples';
-import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
-import { CurrentProjectActions } from 'pages/dashboard/pages/project/models/project/project.actions';
-import { DashboardProjectUploadModuleState, fromDashboardProjectUploads } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
+import { DashboardProjectUploadModuleState, fromDashboardUploads } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { UploadEntity } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads';
 import { ProjectUploadsActions } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.actions';
 import { UploadsDialogService } from 'pages/dashboard/pages/project/pages/uploads/services/uploads-dialog.service';
@@ -27,16 +27,16 @@ import { first } from 'rxjs/operators';
 export class ProjectUploadsComponent {
   public readonly extensions = UploadsService.AvailableExtensions;
 
-  public readonly currentProjectUploads$           = this.store.pipe(select(fromDashboardProjectUploads.getUploadsForCurrentProject));
-  public readonly currentProjectPendingUploads$    = this.store.pipe(select(fromDashboardProjectUploads.getPendingUploadsForCurrentProject));
-  public readonly currentProjectFailedUploads$     = this.store.pipe(select(fromDashboardProjectUploads.getFailedUploadsForCurrentProject));
-  public readonly isUploadAllowedForCurrentProject = this.store.pipe(select(fromDashboardProject.isUploadAllowedForCurrentProject));
+  public readonly currentProjectUploads$           = this.store.pipe(select(fromDashboardUploads.getUploadsForSelectedProject));
+  public readonly currentProjectPendingUploads$    = this.store.pipe(select(fromDashboardUploads.getPendingUploadsForCurrentProject));
+  public readonly currentProjectFailedUploads$     = this.store.pipe(select(fromDashboardUploads.getFailedUploadsForCurrentProject));
+  public readonly isUploadAllowedForCurrentProject = this.store.pipe(select(fromDashboard.isUploadAllowedForSelectedProject));
 
-  public readonly isGlobalErrorsNotEmpty$ = this.store.pipe(select(fromDashboardProjectUploads.isGlobalErrorsNotEmpty));
-  public readonly globalErrors$           = this.store.pipe(select(fromDashboardProjectUploads.getGlobalErrors));
+  public readonly isGlobalErrorsNotEmpty$ = this.store.pipe(select(fromDashboardUploads.isGlobalErrorsNotEmpty));
+  public readonly globalErrors$           = this.store.pipe(select(fromDashboardUploads.getGlobalErrors));
 
-  public readonly isGlobalWarningsNotEmpty$ = this.store.pipe(select(fromDashboardProjectUploads.isGlobalWarningsNotEmpty));
-  public readonly globalWarnings$           = this.store.pipe(select(fromDashboardProjectUploads.getGlobalWarnings));
+  public readonly isGlobalWarningsNotEmpty$ = this.store.pipe(select(fromDashboardUploads.isGlobalWarningsNotEmpty));
+  public readonly globalWarnings$           = this.store.pipe(select(fromDashboardUploads.getGlobalWarnings));
 
   constructor(private readonly store: Store<DashboardProjectUploadModuleState>,
               private readonly files: UploadsDialogService,
@@ -128,6 +128,6 @@ export class ProjectUploadsComponent {
   }
 
   public close(): void {
-    this.store.dispatch(CurrentProjectActions.toProjectURL());
+    this.store.dispatch(ProjectsActions.toSelectedProjectHome());
   }
 }

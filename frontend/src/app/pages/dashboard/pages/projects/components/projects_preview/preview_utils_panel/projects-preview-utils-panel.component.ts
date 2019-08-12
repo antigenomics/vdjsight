@@ -14,4 +14,19 @@ export class ProjectsPreviewUtilsPanelComponent {
 
   @Output()
   public onDelete = new EventEmitter<ProjectEntity>();
+
+  @Output()
+  public onSelect = new EventEmitter<ProjectEntity>();
+
+  public delete(): void {
+    if (this.preview !== undefined) {
+      this.onDelete.emit(this.preview);
+    }
+  }
+
+  public select(): void {
+    if (this.preview !== undefined) {
+      this.onSelect.emit(this.preview);
+    }
+  }
 }

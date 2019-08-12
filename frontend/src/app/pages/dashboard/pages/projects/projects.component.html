@@ -32,7 +32,9 @@
                 <vs-projects-list-utils-panel (onCreate)="create()"></vs-projects-list-utils-panel>
             </div>
             <div class="ten wide column">
-                <vs-projects-preview-utils-panel [preview]="preview$ | async" (onDelete)="delete($event)"></vs-projects-preview-utils-panel>
+                <vs-projects-preview-utils-panel [preview]="preview$ | async" (onDelete)="delete($event)"
+                                                 (onSelect)="select($event)">
+                </vs-projects-preview-utils-panel>
             </div>
         </div>
     </div>

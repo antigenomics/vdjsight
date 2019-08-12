@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { fromDashboardProject } from 'pages/dashboard/pages/project/models/dashboard-project.state';
+import { fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { DashboardProjectUploadModuleState } from 'pages/dashboard/pages/project/pages/uploads/models/upload-module.state';
 import { ProjectUploadsActions } from 'pages/dashboard/pages/project/pages/uploads/models/uploads/uploads.actions';
 import { HashFileWorkerInput, HashFileWorkerOutput } from 'pages/dashboard/pages/project/pages/uploads/workers/hash-file/hash-file';
@@ -26,11 +26,11 @@ export class UploadsService {
 
   public add(file: File): void {
     if (UploadsService.AvailableExtensions.some((v) => file.name.endsWith(v))) {
-      this.store.pipe(select(fromDashboardProject.getCurrentProjectUUID), first()).subscribe((currentProjectUUID) => {
+      this.store.pipe(select(fromDashboard.getSelectedProjectUUID), first()).subscribe((selectedProjectUUID) => {
         const entityId = this.uploadEntitiesLocalUUIDGenerator.next();
         this.store.dispatch(ProjectUploadsActions.add({
           entityId:        entityId,
-          projectLinkUUID: currentProjectUUID,
+          projectLinkUUID: selectedProjectUUID,
           name:            FileUtils.eraseExtensions(file.name, UploadsService.AvailableExtensions),
           extension:       FileUtils.getLastExtension(file.name),
           software:        SamplesService.DefaultSoftwareType,

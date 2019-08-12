@@ -36,6 +36,10 @@ export class ProjectsComponent {
     this.store.dispatch(ProjectsActions.forceDelete({ entity: project }));
   }
 
+  public select(project: ProjectEntity): void {
+    this.store.dispatch(ProjectsActions.toProjectHome({ uuid: project.link.uuid }));
+  }
+
   public discard(project: ProjectEntity): void {
     this.store.dispatch(ProjectsActions.failedDiscard({ entity: project }));
   }

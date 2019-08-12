@@ -26,7 +26,7 @@
                     <button class="ui button" (click)="hide()">Cancel</button>
                     <div class="or"></div>
                     <button class="ui orange button" [ngClass]="{ 'loading': preview.deleting.active }"
-                            (click)="onDelete.emit(preview)">Confirm
+                            (click)="delete()">Confirm
                     </button>
                 </div>
                 <ng-template #deleting>
@@ -35,5 +35,5 @@
             </div>
         </div>
     </ng-template>
-    <button class="ui right floated violet button" [routerLink]="[ '../../p', preview.link.uuid ]">Select</button>
+    <button class="ui right floated violet button" (click)="select()">Select</button>
 </ng-container>

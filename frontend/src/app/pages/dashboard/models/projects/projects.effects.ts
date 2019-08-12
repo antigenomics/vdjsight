@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType, OnInitEffects } from '@ngrx/effects';
 import { Action, select, Store } from '@ngrx/store';
 import { UserActions } from 'models/user/user.actions';
@@ -7,7 +8,7 @@ import { ProjectEntity } from 'pages/dashboard/models/projects/projects';
 import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
 import { ProjectsService } from 'pages/dashboard/services/projects/projects.service';
 import { of } from 'rxjs';
-import { catchError, filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
 import { withNotification } from 'utils/effects/effects-helper';
 
@@ -98,8 +99,20 @@ export class ProjectsEffects implements OnInitEffects {
     map(() => ProjectsActions.clear())
   ));
 
+  public toProjectHome$ = createEffect(() => this.actions$.pipe(
+    ofType(ProjectsActions.toProjectHome),
+    tap(({ uuid }) => this.router.navigateByUrl(`/dashboard/p/${uuid}`))
+  ), { dispatch: false });
+
+  public toSelectedProjectHome$ = createEffect(() => this.actions$.pipe(
+    ofType(ProjectsActions.toSelectedProjectHome),
+    withLatestFrom(this.store.pipe(select(fromDashboard.getSelectedProjectUUID))),
+    map(([ _, uuid ]) => ProjectsActions.toProjectHome({ uuid }))
+  ));
+
   constructor(private readonly actions$: Actions, private readonly store: Store<DashboardModuleState>,
-              private readonly projects: ProjectsService, private readonly notifications: NotificationsService) {}
+              private readonly projects: ProjectsService, private readonly router: Router,
+              private readonly notifications: NotificationsService) {}
 
   public ngrxOnInitEffects(): Action {
     return ProjectsActions.load();

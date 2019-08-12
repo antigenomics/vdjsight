@@ -34,4 +34,7 @@ export namespace ProjectsActions {
   export const unselect = createAction('[Projects] Unselect');
 
   export const clear = createAction('[Projects] Clear');
+
+  export const toProjectHome         = createAction('[Projects] To Project Home', props<{ uuid: string }>());
+  export const toSelectedProjectHome = createAction('[Projects] To Selected Project Home');
 }
