@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { SampleEntity, SampleGeneType, SampleSoftwareType, SampleSpeciesType } from 'pages/dashboard/models/samples/samples';
 import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
 import { LoadFailedLabelAnimation, LoadingLabelAnimation, SamplesListAnimation } from 'pages/dashboard/pages/project/components/sidebar/sidebar.animations';
 import { concat, Observable, of } from 'rxjs';
-import { distinctUntilChanged, filter, map } from 'rxjs/operators';
+import { distinctUntilChanged, filter, first, map } from 'rxjs/operators';
 
 @Component({
   selector:        'vs-project-sidebar',
@@ -19,7 +19,7 @@ export class SidebarComponent {
   public readonly loadingStatus$ = this.store.pipe(select(fromDashboard.getSamplesLoadingStatus));
   public readonly samples$       = this.store.pipe(select(fromDashboard.getSamplesForSelectedProject));
 
-  constructor(private readonly store: Store<DashboardModuleState>, private readonly route: ActivatedRoute, private readonly router: Router) {}
+  constructor(private readonly store: Store<DashboardModuleState>, private readonly router: Router) {}
 
   public reload(): void {
     this.store.dispatch(SamplesActions.reload());
@@ -27,7 +27,13 @@ export class SidebarComponent {
 
   public selectSample(entity: SampleEntity): void {
     if (SampleEntity.isEntityLinked(entity)) {
-      this.router.navigate([ 's', entity.link.uuid ], { relativeTo: this.route });
+      this.store.pipe(select(fromDashboard.getSelectedSampleUUID), first()).subscribe((selectedUUID) => {
+        if (selectedUUID !== undefined) {
+          this.router.navigateByUrl(this.router.url.replace(selectedUUID, entity.link.uuid));
+        } else {
+          this.store.dispatch(SamplesActions.toSampleHome({ uuid: entity.link.uuid }));
+        }
+      });
     }
   }
 

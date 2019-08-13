@@ -5,7 +5,6 @@ import { NetworkActions } from 'models/network/network.actions';
 import { fromRoot, RootModuleState } from 'models/root';
 import { fromEvent, of } from 'rxjs';
 import { catchError, exhaustMap, filter, first, map, tap, withLatestFrom } from 'rxjs/operators';
-import { AccountService } from 'services/account/account.service';
 import { BackendService } from 'services/backend/backend.service';
 
 @Injectable()

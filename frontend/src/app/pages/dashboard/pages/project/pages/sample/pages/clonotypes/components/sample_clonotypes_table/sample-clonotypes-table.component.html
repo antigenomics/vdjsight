@@ -1,1 +1,16 @@
-{{ view | json }}
+<table class="ui table" *ngIf="page">
+    <thead>
+    <tr>
+        <th>Index</th>
+        <th>cdr3aa</th>
+        <th>cdr3nt</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let row of page.rows">
+        <td>{{ row.index }}</td>
+        <td>{{ row.cdr3aa }}</td>
+        <td>{{ row.cdr3nt }}</td>
+    </tr>
+    </tbody>
+</table>

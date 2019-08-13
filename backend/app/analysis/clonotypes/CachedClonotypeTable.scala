@@ -41,8 +41,8 @@ case class CachedClonotypeTable(size: Int, private val reader: CachedClonotypeTa
       val min = page - pagesRegion
       val max = page + pagesRegion
 
-      if (min < 0) {
-        (0, max - min)
+      if (min < 1) {
+        (1, max - min)
       } else if (max > totalPages) {
         (min - (max - totalPages), totalPages)
       } else {
@@ -56,8 +56,10 @@ case class CachedClonotypeTable(size: Int, private val reader: CachedClonotypeTa
 
     reader.skip((safeRange._1 - 1) * pageSize)
 
+    val rows = take((safeRange._2 - safeRange._1 + 1) * pageSize)
+
     (safeRange._1 to safeRange._2).map(p => {
-      CachedClonotypeTablePage(p, take(pageSize).force)
+      CachedClonotypeTablePage(p, rows.slice((p - safeRange._1) * pageSize, (p - safeRange._1) * pageSize + pageSize).force)
     })
   }
 

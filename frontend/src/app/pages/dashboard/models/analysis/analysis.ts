@@ -1,4 +1,4 @@
-import { ClonotypeTableView } from 'pages/dashboard/services/analysis/analysis-clonotypes';
+import { ClonotypeTablePage, ClonotypeTableView } from 'pages/dashboard/services/analysis/analysis-clonotypes';
 import { EntityStatus } from 'utils/state/entity';
 import { IncrementalUUIDGenerator } from 'utils/uuid/incremental-uuid-generator';
 
@@ -18,7 +18,12 @@ export interface AnalysisEntityBase<T> {
   readonly data?: T;
 }
 
-export interface AnalysisClonotypesEntity extends AnalysisEntityBase<ClonotypeTableView> {
+export interface AnalysisClonotypesEntityData {
+  view: ClonotypeTableView;
+  selectedPage: ClonotypeTablePage;
+}
+
+export interface AnalysisClonotypesEntity extends AnalysisEntityBase<AnalysisClonotypesEntityData> {
   readonly analysisType: AnalysisType.CLONOTYPES;
 }
 
@@ -47,7 +52,7 @@ export function CreateEmptyAnalysisEntity(projectLinkUUID: string, sampleLinkUUI
     id:              AnalysisEntitiesLocalUUIDGenerator.next(),
     projectLinkUUID: projectLinkUUID,
     sampleLinkUUID:  sampleLinkUUID,
-    updating:        { active: true },
+    updating:        { active: false },
     analysisType:    type
   };
 }

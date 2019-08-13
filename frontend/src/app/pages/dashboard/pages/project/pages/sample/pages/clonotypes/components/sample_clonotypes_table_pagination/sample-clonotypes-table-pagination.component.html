@@ -1,0 +1,17 @@
+<div class="ui pagination blue menu">
+    <a class="item" (click)="first()">
+        First
+    </a>
+    <a class="item" (click)="previous()">
+        Previous
+    </a>
+    <a class="item" *ngFor="let page of (pages | async)" [ngClass]="{ 'active': page === current }" (click)="onPageChange.emit(page)">
+        {{ page }}
+    </a>
+    <a class="item" (click)="next()">
+        Next
+    </a>
+    <a class="item" (click)="last()">
+        Last
+    </a>
+</div>

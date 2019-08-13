@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { ActivatedRoute } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
+import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
 import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
 import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -23,6 +24,10 @@ export class ProjectSampleComponent implements OnInit, OnDestroy {
     this.selectedSampleUpdateSubscription = this.route.params.pipe(map((p) => p.uuid)).subscribe((uuid) => {
       this.store.dispatch(SamplesActions.select({ uuid }));
     });
+  }
+
+  public close(): void {
+    this.store.dispatch(ProjectsActions.toSelectedProjectHome());
   }
 
   public reload(): void {

@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType, OnInitEffects } from '@ngrx/effects';
 import { Action, select, Store } from '@ngrx/store';
 import { UserActions } from 'models/user/user.actions';
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
+import { ProjectsActions } from 'pages/dashboard/models/projects/projects.actions';
 import { SampleEntity } from 'pages/dashboard/models/samples/samples';
 import { SamplesActions } from 'pages/dashboard/models/samples/samples.actions';
 import { SamplesService } from 'pages/dashboard/services/samples/samples.service';
 import { of } from 'rxjs';
-import { catchError, filter, map, mergeMap, switchMap, withLatestFrom } from 'rxjs/operators';
+import { catchError, filter, first, map, mergeMap, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { NotificationsService } from 'services/notifications/notifications.service';
 import { withNotification } from 'utils/effects/effects-helper';
 
@@ -69,6 +71,16 @@ export class SampleFilesEffects implements OnInitEffects {
     }, this.notifications)
   ));
 
+  public forceDeleteSuccess = createEffect(() => this.actions$.pipe(
+    ofType(SamplesActions.forceDeleteSuccess),
+    withLatestFrom(this.store.pipe(select(fromDashboard.getSelectedSampleUUID))),
+    filter(([ { entity }, selectedUUID ]) => entity.link.uuid === selectedUUID),
+    switchMap(() => [
+      ProjectsActions.toSelectedProjectHome(),
+      SamplesActions.unselect()
+    ])
+  ));
+
   public errorDiscard$ = createEffect(() => this.actions$.pipe(
     ofType(SamplesActions.failedDiscard),
     filter(({ entity }) => SampleEntity.isEntityCreateFailed(entity)),
@@ -80,8 +92,24 @@ export class SampleFilesEffects implements OnInitEffects {
     map(() => SamplesActions.clear())
   ));
 
+  public toSampleHome$ = createEffect(() => this.actions$.pipe(
+    ofType(SamplesActions.toSampleHome),
+    tap(({ uuid }) => {
+      this.store.pipe(select(fromDashboard.getSampleByLinkUUID, { linkUUID: uuid }), first()).subscribe((sample) => {
+        this.router.navigateByUrl(`/dashboard/p/${sample.projectLinkUUID}/s/${sample.link.uuid}`);
+      });
+    })
+  ), { dispatch: false });
+
+  public toSelectedSampleHome$ = createEffect(() => this.actions$.pipe(
+    ofType(SamplesActions.toSelectedSampleHome),
+    withLatestFrom(this.store.pipe(select(fromDashboard.getSelectedSampleUUID))),
+    map(([ _, uuid ]) => SamplesActions.toSampleHome({ uuid }))
+  ));
+
   constructor(private readonly actions$: Actions, private readonly store: Store<DashboardModuleState>,
-              private readonly samples: SamplesService, private readonly notifications: NotificationsService) {}
+              private readonly samples: SamplesService, private readonly router: Router,
+              private readonly notifications: NotificationsService) {}
 
   public ngrxOnInitEffects(): Action {
     return SamplesActions.load();

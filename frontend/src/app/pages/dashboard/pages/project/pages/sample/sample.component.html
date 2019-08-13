@@ -1,6 +1,6 @@
 <vs-sample-loaded-check [status]="loadingStatus$ | async" (onReload)="reload()">
     <ng-container *ngIf="sample$ | async as sample; else badSample">
-        <vs-sample-header [sample]="sample"></vs-sample-header>
+        <vs-sample-header [sample]="sample" (onClose)="close()"></vs-sample-header>
         <div class="top pushed">
             <router-outlet></router-outlet>
         </div>

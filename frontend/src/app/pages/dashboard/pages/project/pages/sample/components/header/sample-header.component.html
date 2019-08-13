@@ -1,6 +1,6 @@
 <div class="ui raised segments">
-    <div class="ui blue segment">
-        <h4 class="ui header">
+    <div class="ui blue clearing segment">
+        <h4 class="ui left floated header">
             <i class="project diagram icon"></i>
             <div class="content">
                 {{ sample.link.name }}
@@ -9,6 +9,9 @@
                 </div>
             </div>
         </h4>
+        <div class="ui right floated close header" (click)="onClose.emit()">
+            <i class="small times icon"></i>
+        </div>
     </div>
     <div class="ui controls segment">
         <div class="ui secondary pointing blue menu">

@@ -37,4 +37,7 @@ export namespace SamplesActions {
   export const unselect = createAction('[Samples] Unselect');
 
   export const clear = createAction('[Samples] Clear');
+
+  export const toSampleHome         = createAction('[Samples] To Sample Home', props<{ uuid: string }>());
+  export const toSelectedSampleHome = createAction('[Samples] To Selected Sample Home');
 }

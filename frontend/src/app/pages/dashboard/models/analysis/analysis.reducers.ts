@@ -10,19 +10,25 @@ const analysisReducer = createReducer(
   }),
 
   /** Clonotypes actions */
-  on(AnalysisActions.clonotypes, (state, { analysis }) => {
+  on(AnalysisActions.clonotypesLocalPageFound, (state, { analysis, page }) => {
+    return AnalysisStateAdapter.updateOne({
+      id:      analysis.id,
+      changes: { data: { view: analysis.data.view, selectedPage: page } }
+    }, state);
+  }),
+  on(AnalysisActions.clonotypesUpdate, (state, { analysis }) => {
     return AnalysisStateAdapter.updateOne({
       id:      analysis.id,
       changes: { updating: { active: true } }
     }, state);
   }),
-  on(AnalysisActions.clonotypesSuccess, (state, { analysisId, view }) => {
+  on(AnalysisActions.clonotypesUpdateSuccess, (state, { analysisId, view }) => {
     return AnalysisStateAdapter.updateOne({
       id:      analysisId,
-      changes: { updating: { active: false }, data: view }
+      changes: { updating: { active: false }, data: { view, selectedPage: view.pages.find((p) => p.page === view.defaultPage) } }
     }, state);
   }),
-  on(AnalysisActions.clonotypesFailed, (state, { analysisId, error }) => {
+  on(AnalysisActions.clonotypesUpdateFailed, (state, { analysisId, error }) => {
     return AnalysisStateAdapter.updateOne({
       id:      analysisId,
       changes: { updating: { active: false, error: error.error } }
