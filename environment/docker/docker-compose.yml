@@ -1,0 +1,42 @@
+version: '3.5'
+services:
+  database:
+    image: postgres:11.5
+    environment:
+      - POSTGRES_DB=vdjsight-docker
+      - POSTGRES_USER=vdjsight-docker
+      - POSTGRES_PASSWORD=docker
+    networks:
+      database-backend:
+    restart: always
+
+  backend:
+    image: bvdmitri/vdjsight-backend:develop
+    volumes:
+      - ./backend.conf:/home/vdjsight/environment/application.conf:ro
+    networks:
+      database-backend:
+      proxy-network:
+    links:
+      - database:dbserver
+    restart: always
+
+  proxy:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      proxy-network:
+    links:
+      - backend:backend
+    ports:
+      - 8080:80
+    restart: always
+
+
+networks:
+  database-backend:
+  proxy-network:
+
+
+

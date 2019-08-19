@@ -1,3 +1,5 @@
+import com.typesafe.sbt.packager.docker._
+
 name := """vdjsight-backend"""
 organization := "com.antigenomics"
 maintainer := "bvdmitri@gmail.com"
@@ -97,5 +99,10 @@ dockerExposedPorts := Seq(9000)
 dockerExposedVolumes := Seq("/home/vdjsight/environment")
 
 dockerUsername := Some("bvdmitri")
+
+dockerCommands := dockerCommands.value.flatMap {
+  case cmd@Cmd("FROM", _) => List(cmd, ExecCmd("RUN", "apk", "add", "--no-cache", "bash"))
+  case other => List(other)
+}
 
 // Ends.
