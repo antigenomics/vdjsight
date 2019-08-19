@@ -100,7 +100,7 @@ dockerEntrypoint := Seq(
   "-Dlogger.file=/home/vdjsight/environment/logback.xml",
   "-Dpidfile.path=/dev/null")
 dockerExposedPorts := Seq(9000)
-dockerExposedVolumes := Seq("/home/vdjsight/environment")
+dockerExposedVolumes := Seq("/home/vdjsight/environment", "/home/vdjsight/logs")
 
 dockerUsername := Some("bvdmitri")
 

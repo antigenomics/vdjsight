@@ -10,10 +10,18 @@ services:
       database-backend:
     restart: always
 
+  frontend:
+    image: bvdmitri/vdjsight-frontend:develop
+    networks:
+      proxy-network:
+    restart: always
+
   backend:
     image: bvdmitri/vdjsight-backend:develop
     volumes:
       - ./backend.conf:/home/vdjsight/environment/application.conf:ro
+      - ./backend-logs.xml:/home/vdjsight/environment/logback.xml:ro
+      - backend-logs:/home/vdjsight/logs
     networks:
       database-backend:
       proxy-network:
@@ -31,6 +39,7 @@ services:
       proxy-network:
     links:
       - backend:backend
+      - frontend:frontend
     ports:
       - 8080:80
     restart: always
@@ -39,6 +48,11 @@ services:
 networks:
   database-backend:
   proxy-network:
+
+volumes:
+  backend-logs:
+    external: false
+
 
 
 
