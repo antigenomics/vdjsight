@@ -16,5 +16,6 @@ export interface ApplicationEnvironment {
   readonly version: string;
   readonly revision: string;
   readonly production: boolean;
+  readonly loggerDebug: boolean;
   readonly backend: BackendConfiguration;
 }

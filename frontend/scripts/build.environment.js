@@ -5,6 +5,7 @@ env.config();
 
 const schematics = [
     { name: 'FRONTEND_BUILD_MODE',                     default: 'production' },
+    { name: 'FRONTEND_LOGGER_DEBUG',                   default: 'empty'      },
     { name: 'FRONTEND_REVISION',                       default: 'empty'      },
     { name: 'FRONTEND_BACKEND_API_PROTOCOL',           default: 'auto'       },
     { name: 'FRONTEND_BACKEND_API_HOST',               default: 'auto'       },
@@ -14,6 +15,7 @@ const schematics = [
     { name: 'FRONTEND_BACKEND_RATE_LIMIT_COUNT',       default: '25'         },
     { name: 'FRONTEND_BACKEND_REQUEST_RETRY_COUNT',    default: '3'          },
     { name: 'CIRCLE_SHA1',                             default: 'empty'      },
+    { name: 'CIRCLE_BRANCH',                           default: 'empty'      },
     { name: 'FRONTEND_CONFIGURATION_TAG',              default: 'prod' }
 ];
 
@@ -36,6 +38,7 @@ export const environment: ApplicationEnvironment = {
     version:    '${ version }',
     revision:   '${ environment['FRONTEND_REVISION'] !== 'empty' ? environment['FRONTEND_REVISION'] : environment['CIRCLE_SHA1'] }',
     production:  ${ environment['FRONTEND_BUILD_MODE'] === 'production' },
+    loggerDebug: ${ environment['FRONTEND_LOGGER_DEBUG'] !== 'empty' ? environment['FRONTEND_LOGGER_DEBUG'] === 'true' : environment['CIRCLE_BRANCH'] === 'develop' },
     backend: {
         protocol: '${ environment['FRONTEND_BACKEND_API_PROTOCOL'] }',
         host:     '${ environment['FRONTEND_BACKEND_API_HOST']     }',

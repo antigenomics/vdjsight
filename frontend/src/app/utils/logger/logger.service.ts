@@ -24,7 +24,7 @@ export class LoggerService {
 
   // noinspection JSMethodCanBeStatic
   public debug(title: any, ...messages: any[]): void {
-    if (!environment.production) {
+    if (environment.loggerDebug) {
       console.info(`[Debug] ${title}:`, ...messages);
     }
   }

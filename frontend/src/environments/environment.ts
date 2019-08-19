@@ -3,10 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment: ApplicationEnvironment = {
-  version:    'dev',
-  revision:   'dev',
-  production: false,
-  backend:    {
+  version:     'dev',
+  revision:    'dev',
+  production:  false,
+  loggerDebug: true,
+  backend:     {
     protocol: 'auto',
     host:     'localhost:9443',
     prefix:   '',
