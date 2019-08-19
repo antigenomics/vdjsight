@@ -15,15 +15,16 @@ import { UploadGlobalErrors } from 'pages/dashboard/pages/project/pages/uploads/
 import { UploadsService } from 'pages/dashboard/pages/project/pages/uploads/services/uploads.service';
 import { SamplesAPI } from 'pages/dashboard/services/samples/samples-api';
 import { SamplesService } from 'pages/dashboard/services/samples/samples.service';
-import { combineLatest } from 'rxjs';
-import { filter, first, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
+import { combineLatest, Subject } from 'rxjs';
+import { debounceTime, filter, first, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
 import { BackendErrorResponse } from 'services/backend/backend-response';
 import { NotificationsService } from 'services/notifications/notifications.service';
 import { ArrayUtils, StringUtils } from 'utils/utils';
 
 @Injectable()
 export class UploadsEffects {
-  private static readonly UploadProgressMax: number = 100;
+  private static readonly UploadProgressDebounceTime: number = 150; // 100 ms
+  private static readonly UploadProgressMax: number          = 100;
 
   public update$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectUploadsActions.update),
@@ -154,6 +155,12 @@ export class UploadsEffects {
             hash:      entity.hash
           };
 
+          const progress = new Subject<number>();
+
+          progress.pipe(debounceTime(UploadsEffects.UploadProgressDebounceTime)).subscribe((p) => {
+            this.store.dispatch(ProjectUploadsActions.uploadProgress({ entityId: entityId, progress: p }));
+          });
+
           this.samplesAPI.create(selectedProjectLinkUUID, request, this.uploads.fileFor(entity.id)).subscribe((event) => {
 
             switch (event.type) {
@@ -162,10 +169,7 @@ export class UploadsEffects {
                 this.store.dispatch(ProjectUploadsActions.linkWithSample({ entityId: entity.id, sampleId: sample.id }));
                 break;
               case HttpEventType.UploadProgress:
-                this.store.dispatch(ProjectUploadsActions.uploadProgress({
-                  entityId: entityId,
-                  progress: (event.loaded / event.total) * UploadsEffects.UploadProgressMax
-                }));
+                progress.next((event.loaded / event.total) * UploadsEffects.UploadProgressMax);
                 break;
               case HttpEventType.Response:
                 this.store.dispatch(SamplesActions.createSuccess({ entityId: sample.id, link: event.body.data.link }));

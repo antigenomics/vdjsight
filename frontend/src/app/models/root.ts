@@ -36,7 +36,7 @@ export function LoggerDebugReducer(reducer: ActionReducer<any>): ActionReducer<a
   };
 }
 
-export const metaReducers: MetaReducer[] = environment.production ? [] : [ LoggerDebugReducer ];
+export const metaReducers: MetaReducer[] = environment.loggerDebug ? [ LoggerDebugReducer ] : [];
 
 export namespace fromRoot {
 
