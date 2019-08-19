@@ -22,7 +22,7 @@ function fromDir(startPath, filter, callback) {
 }
 
 fromDir('./dist', /\.css/, function (filename) {
-    const content = ['./dist/*.js', './dist/*.html'];
+    const content = ['./dist/frontend/*.js', './dist/frontend/*.html'];
     const css = [filename];
 
     const options = {
