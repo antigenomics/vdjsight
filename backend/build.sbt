@@ -27,8 +27,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-slick" % "4.0.2",
   "com.typesafe.play" %% "play-slick-evolutions" % "4.0.2",
   "com.lambdaworks" % "scrypt" % "1.4.0",
-  "com.antigenomics" % "mir" % "1.0-SNAPSHOT",
-  "io.suzaku" %% "boopickle" % "1.3.1"
+  "com.antigenomics" % "mir" % "1.0-SNAPSHOT"
 )
 
 scalacOptions ++= Seq(
