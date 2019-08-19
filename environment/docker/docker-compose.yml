@@ -1,11 +1,13 @@
 version: '3.5'
 services:
   database:
-    image: postgres:11.5
+    build: ./database
     environment:
       - POSTGRES_DB=vdjsight-docker
       - POSTGRES_USER=vdjsight-docker
       - POSTGRES_PASSWORD=docker
+    volumes:
+      - ./backups:/pg_backups
     networks:
       database-backend:
     restart: always
@@ -19,9 +21,9 @@ services:
   backend:
     image: bvdmitri/vdjsight-backend:develop
     volumes:
-      - ./backend.conf:/home/vdjsight/environment/application.conf:ro
-      - ./backend-logs.xml:/home/vdjsight/environment/logback.xml:ro
-      - backend-logs:/home/vdjsight/logs
+      - ./backend/backend.conf:/home/vdjsight/environment/application.conf:ro
+      - ./backend/backend-logs.xml:/home/vdjsight/environment/logback.xml:ro
+      - ./backend/logs:/home/vdjsight/logs
     networks:
       database-backend:
       proxy-network:
@@ -32,7 +34,7 @@ services:
       - database
 
   proxy:
-    image: nginx
+    image: nginx:alpine
     volumes:
       - ./conf.nginx:/etc/nginx/conf.d/default.conf:ro
     networks:
@@ -49,9 +51,6 @@ networks:
   database-backend:
   proxy-network:
 
-volumes:
-  backend-logs:
-    external: false
 
 
 
