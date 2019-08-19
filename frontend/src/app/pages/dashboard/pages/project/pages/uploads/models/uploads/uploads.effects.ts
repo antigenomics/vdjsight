@@ -16,14 +16,14 @@ import { UploadsService } from 'pages/dashboard/pages/project/pages/uploads/serv
 import { SamplesAPI } from 'pages/dashboard/services/samples/samples-api';
 import { SamplesService } from 'pages/dashboard/services/samples/samples.service';
 import { combineLatest, Subject } from 'rxjs';
-import { debounceTime, filter, first, map, mergeMap, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, first, map, mergeMap, tap, throttleTime, withLatestFrom } from 'rxjs/operators';
 import { BackendErrorResponse } from 'services/backend/backend-response';
 import { NotificationsService } from 'services/notifications/notifications.service';
 import { ArrayUtils, StringUtils } from 'utils/utils';
 
 @Injectable()
 export class UploadsEffects {
-  private static readonly UploadProgressDebounceTime: number = 150; // 100 ms
+  private static readonly UploadProgressThrottleTime: number = 150; // 100 ms
   private static readonly UploadProgressMax: number          = 100;
 
   public update$ = createEffect(() => this.actions$.pipe(
@@ -157,16 +157,15 @@ export class UploadsEffects {
 
           const progress = new Subject<number>();
 
-          progress.pipe(debounceTime(UploadsEffects.UploadProgressDebounceTime)).subscribe((p) => {
+          progress.pipe(throttleTime(UploadsEffects.UploadProgressThrottleTime)).subscribe((p) => {
             this.store.dispatch(ProjectUploadsActions.uploadProgress({ entityId: entityId, progress: p }));
           });
 
           this.samplesAPI.create(selectedProjectLinkUUID, request, this.uploads.fileFor(entity.id)).subscribe((event) => {
-
             switch (event.type) {
               case HttpEventType.Sent:
-                this.store.dispatch(SamplesActions.create({ entity: sample, request: request }));
                 this.store.dispatch(ProjectUploadsActions.linkWithSample({ entityId: entity.id, sampleId: sample.id }));
+                this.store.dispatch(SamplesActions.create({ entity: sample, request: request }));
                 break;
               case HttpEventType.UploadProgress:
                 progress.next((event.loaded / event.total) * UploadsEffects.UploadProgressMax);
