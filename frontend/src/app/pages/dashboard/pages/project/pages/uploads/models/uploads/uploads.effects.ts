@@ -155,10 +155,13 @@ export class UploadsEffects {
             hash:      entity.hash
           };
 
-          const progress = new Subject<number>();
+          let loading = true;
 
+          const progress = new Subject<number>();
           progress.pipe(throttleTime(UploadsEffects.UploadProgressThrottleTime)).subscribe((p) => {
-            this.store.dispatch(ProjectUploadsActions.uploadProgress({ entityId: entityId, progress: p }));
+            if (loading) {
+              this.store.dispatch(ProjectUploadsActions.uploadProgress({ entityId: entityId, progress: p }));
+            }
           });
 
           this.samplesAPI.create(selectedProjectLinkUUID, request, this.uploads.fileFor(entity.id)).subscribe((event) => {
@@ -171,6 +174,8 @@ export class UploadsEffects {
                 progress.next((event.loaded / event.total) * UploadsEffects.UploadProgressMax);
                 break;
               case HttpEventType.Response:
+                progress.complete();
+                loading = false;
                 this.store.dispatch(SamplesActions.createSuccess({ entityId: sample.id, link: event.body.data.link }));
                 this.store.dispatch(ProjectUploadsActions.uploadSuccess({ entityId: entityId }));
                 break;
