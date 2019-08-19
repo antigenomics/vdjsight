@@ -20,6 +20,8 @@ services:
     links:
       - database:dbserver
     restart: always
+    depends_on:
+      - database
 
   proxy:
     image: nginx
