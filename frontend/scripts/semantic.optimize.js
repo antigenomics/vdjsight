@@ -25,9 +25,9 @@ fromDir('./dist', /\.css/, function (filename) {
     const content = [
         './dist/frontend/*.js',
         './dist/frontend/*.html',
-        './src/**/*.less',
-        './src/**/*.ts',
-        './src/**/*.html'
+        './src/app/**/*.less',
+        './src/app/**/*.ts',
+        './src/app/**/*.html'
     ];
     const css = [filename];
 
@@ -35,6 +35,7 @@ fromDir('./dist', /\.css/, function (filename) {
         output: filename,
         minify: true,
         info: true,
+        whitelist: [ 'menu' ]
     };
 
     console.log('-- found: ', filename);

@@ -26,7 +26,7 @@
     </div>
 </ng-container>
 <ng-container *ngIf="!warning && !error && !uploaded">
-    <div class="ui small progress indicating centered" @progress [attr.data-percent]="progress">
-        <div class="bar" [ngStyle]="{ width: progress + '%' }"></div>
+    <div class="ui small progress indicating centered" [attr.data-percent]="progress">
+        <div class="bar" [@progress-bar]="progressBarState" [ngStyle]="{ width: progress + '%' }"></div>
     </div>
 </ng-container>

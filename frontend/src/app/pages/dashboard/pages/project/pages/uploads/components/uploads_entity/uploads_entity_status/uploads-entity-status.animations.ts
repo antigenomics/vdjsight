@@ -23,6 +23,7 @@ export const ProgressAnimation = trigger('progress', [
 
 export const ProgressBarAnimation = trigger('progress-bar', [
   transition('* => *', [
-    animate('100ms', style({ width: '{{ width }}% ' }))
+    animate('100ms', style({ width: '{{ width }}% ' })),
+    style({ width: '{{ width }}%' })
   ])
 ]);

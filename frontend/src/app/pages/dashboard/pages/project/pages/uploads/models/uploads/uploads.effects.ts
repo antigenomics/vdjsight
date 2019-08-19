@@ -23,6 +23,7 @@ import { ArrayUtils, StringUtils } from 'utils/utils';
 
 @Injectable()
 export class UploadsEffects {
+  private static readonly UploadProgressMax: number = 100;
 
   public update$ = createEffect(() => this.actions$.pipe(
     ofType(ProjectUploadsActions.update),
@@ -161,7 +162,10 @@ export class UploadsEffects {
                 this.store.dispatch(ProjectUploadsActions.linkWithSample({ entityId: entity.id, sampleId: sample.id }));
                 break;
               case HttpEventType.UploadProgress:
-                this.store.dispatch(ProjectUploadsActions.uploadProgress({ entityId: entityId, progress: event.loaded / event.total }));
+                this.store.dispatch(ProjectUploadsActions.uploadProgress({
+                  entityId: entityId,
+                  progress: (event.loaded / event.total) * UploadsEffects.UploadProgressMax
+                }));
                 break;
               case HttpEventType.Response:
                 this.store.dispatch(SamplesActions.createSuccess({ entityId: sample.id, link: event.body.data.link }));

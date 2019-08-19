@@ -57,7 +57,7 @@ const uploadsReducer = createReducer(
   on(ProjectUploadsActions.uploadSuccess, (state, { entityId }) => {
     return UploadsStateAdapter.updateOne({
       id:      entityId,
-      changes: { uploading: false, uploaded: true, progress: 100 }
+      changes: { uploading: false, uploaded: true, progress: 99.9 }
     }, state);
   }),
   on(ProjectUploadsActions.uploadFailed, (state, { entityId, error }) => {
