@@ -3,7 +3,6 @@ package analysis.clonotypes
 import java.io.{InputStream, OutputStream}
 
 import analysis.clonotypes.iocache.{CachedClonotypeTableReader, CachedClonotypeTableWriter}
-import com.antigenomics.mir.clonotype.table.ClonotypeTable
 import com.antigenomics.mir.clonotype.{Clonotype, ClonotypeCall}
 import utils.CommonUtils
 import utils.binary.{BinaryReader, BinaryWriter}
@@ -96,21 +95,19 @@ object CachedClonotypeTable {
 
   implicit val liteClonotypeTableReleasable: Releasable[CachedClonotypeTable] = (resource: CachedClonotypeTable) => resource.close()
 
-  def write[C <: Clonotype](output: OutputStream, table: ClonotypeTable[ClonotypeCall[C]]): Unit = {
+  def write[C <: Clonotype](output: OutputStream, clonotypes: java.util.List[ClonotypeCall[C]]): Unit = {
     val binaryOutput = BinaryWriter(output)
 
     binaryOutput.writeLong(CachedClonotypeTable.VERSION)
-    binaryOutput.writeInt(table.size())
+    binaryOutput.writeInt(clonotypes.size())
 
     val clonotypeBinaryWriter = CachedClonotypeTableWriter(binaryOutput)
 
     var index = 1
-    table
-      .stream()
-      .forEach(cc => {
-        clonotypeBinaryWriter.write(index, cc)
-        index += 1
-      })
+    clonotypes.forEach(cc => {
+      clonotypeBinaryWriter.write(index, cc)
+      index += 1
+    })
 
     clonotypeBinaryWriter.flush()
   }

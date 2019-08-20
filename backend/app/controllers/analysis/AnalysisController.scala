@@ -75,7 +75,7 @@ class AnalysisController @Inject()(
     (req, clonotypes, pLink, sLink) =>
       sampleFileProvider.get(sLink.sampleID) flatMap {
         case Some(sampleFile) =>
-          clonotypesAnalysis.clonotypes(sampleFile, "default") map { table =>
+          clonotypesAnalysis.clonotypes(sampleFile, clonotypes.marker, clonotypes.options) map { table =>
             Using(table) { t =>
               val view = t.view(clonotypes.page, clonotypes.pageSize, clonotypes.pagesRegion)
               ServerResponse(AnalysisClonotypesResponse(view))

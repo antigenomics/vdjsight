@@ -1,5 +1,7 @@
 package analysis.clonotypes
 
+import java.util.stream.Collectors
+
 import analysis.{AnalysisCacheHelper, AnalysisService}
 import com.antigenomics.mir.clonotype.parser.{ClonotypeTableParserUtils, Software}
 import com.antigenomics.mir.clonotype.table.ClonotypeTable
@@ -15,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ClonotypeTableAnalysisService @Inject()(analysis: AnalysisService)(implicit cache: AnalysisCacheProvider) {
   implicit val ec: ExecutionContext = analysis.executionContext
 
-  def clonotypes(sampleFile: SampleFile, marker: String): Future[CachedClonotypeTable] = {
+  def clonotypes(sampleFile: SampleFile, marker: String, options: ClonotypeTableAnalysisOptions): Future[CachedClonotypeTable] = {
     AnalysisCacheHelper.validateCache(
       sampleFile,
       ClonotypeTableAnalysisService.ANALYSIS_TYPE,
@@ -28,8 +30,37 @@ class ClonotypeTableAnalysisService @Inject()(analysis: AnalysisService)(implici
         Species.valueOf(sampleFile.species),
         Gene.valueOf(sampleFile.gene)
       )
+
       val table = new ClonotypeTable(clonotypesStream)
-      CachedClonotypeTable.write(output, table)
+
+      val clonotypes = if (options.sort != "none") {
+        val s"$column:$direction" = options.sort
+        table
+          .stream()
+          .sorted((left, right) => {
+            val check = column match {
+              case "count"  => left.getCount.compareTo(right.getCount)
+              case "freq"   => left.getFrequency.compareTo(right.getCount)
+              case "cdr3aa" => left.getCdr3Aa.compareTo(right.getCdr3Aa)
+              case "v"      => left.getBestVariableSegment.toString.compareTo(right.getBestVariableSegment.toString)
+              case "d"      => left.getBestDiversitySegment.toString.compareTo(right.getBestDiversitySegment.toString)
+              case "j"      => left.getBestJoiningSegment.toString.compareTo(right.getBestJoiningSegment.toString)
+              case _        => 0
+            }
+
+            direction match {
+              case "asc"  => check
+              case "desc" => -check
+              case _      => 0
+            }
+
+          })
+          .collect(Collectors.toList())
+      } else {
+        table.getClonotypes
+      }
+
+      CachedClonotypeTable.write(output, clonotypes)
     } { input =>
       CachedClonotypeTable.read(input)
     }

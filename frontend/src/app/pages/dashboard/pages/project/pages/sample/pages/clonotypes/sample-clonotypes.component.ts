@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { AnalysisType } from 'pages/dashboard/models/analysis/analysis';
+import { CreateClonotypesAnalysisEntity } from 'pages/dashboard/models/analysis/analysis';
 import { AnalysisActions } from 'pages/dashboard/models/analysis/analysis.actions';
 import { DashboardModuleState, fromDashboard } from 'pages/dashboard/models/dashboard.state';
 import { Subscription } from 'rxjs';
@@ -21,7 +21,8 @@ export class SampleClonotypesComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.subscription = this.sample$.subscribe((sample) => {
-      this.store.dispatch(AnalysisActions.createIfNotExist({ sample, analysisType: AnalysisType.CLONOTYPES }));
+      const analysis = CreateClonotypesAnalysisEntity(sample.projectLinkUUID, sample.link.uuid);
+      this.store.dispatch(AnalysisActions.createIfNotExist({ sample, analysis: analysis }));
     });
   }
 
@@ -29,9 +30,15 @@ export class SampleClonotypesComponent implements OnInit, OnDestroy {
     this.page(1);
   }
 
+  public test_sort(): void {
+    this.clonotypes$.pipe(first()).subscribe((analysis) => {
+      this.store.dispatch(AnalysisActions.clonotypesChangeOptions({ analysisId: analysis.id, options: { sort: 'j:desc' }, forceUpdate: true }));
+    });
+  }
+
   public page(p: number): void {
     this.clonotypes$.pipe(first()).subscribe((analysis) => {
-      this.store.dispatch(AnalysisActions.clonotypesSelectPage({ analysis, page: p, pageSize: 10, pagesRegion: 5 }));
+      this.store.dispatch(AnalysisActions.clonotypesSelectPage({ analysisId: analysis.id, page: p, pageSize: 10, pagesRegion: 5 }));
     });
   }
 

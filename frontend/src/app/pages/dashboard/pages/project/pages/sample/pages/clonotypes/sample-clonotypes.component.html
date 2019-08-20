@@ -12,6 +12,7 @@
     </div>
     <div class="ui segment">
         <button class="ui button small blue" (click)="filter()">Filter</button>
+        <button class="ui button small blue" (click)="test_sort()">Test sort</button>
     </div>
     <div class="ui segment" *ngIf="clonotypes$ | async as clonotypes" [ngClass]="{ 'loading': clonotypes.updating.active }">
         <ng-container *ngIf="clonotypes.data as data else info">

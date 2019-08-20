@@ -1,3 +1,17 @@
+export interface ClonotypeTableAnalysisOptions {
+  sort: string;
+}
+
+export function CreateClonotypeTableAnalysisMarker(options: ClonotypeTableAnalysisOptions): string {
+  return btoa(JSON.stringify(options)).replace(/=/g, '');
+}
+
+export function CreateClonotypeTableAnalysisDefaultOptions(): ClonotypeTableAnalysisOptions {
+  return {
+    sort: 'none'
+  };
+}
+
 export interface ClonotypeTableRow {
   readonly index: number;
   readonly count: number;

@@ -20,7 +20,7 @@ object AnalysisCacheHelper {
     cacheProvider.findForSampleForAnalysisWithMarkerAndTouch(sampleFile.uuid, analysisType, marker) flatMap {
       case Some(c) => Future.successful(c.cache)
       case None =>
-        val cachePath = s"${sampleFile.folder}/cache-$analysisType-$marker.cache"
+        val cachePath = s"${sampleFile.folder}/$analysisType-$marker.cache"
         Using(new GZIPOutputStream(new FileOutputStream(cachePath), 262144)) { output =>
           write(output)
         }

@@ -1,4 +1,4 @@
-import { ClonotypeTableView } from 'pages/dashboard/services/analysis/analysis-clonotypes';
+import { ClonotypeTableAnalysisOptions, ClonotypeTableView } from 'pages/dashboard/services/analysis/analysis-clonotypes';
 
 export namespace AnalysisAPI {
 
@@ -6,6 +6,8 @@ export namespace AnalysisAPI {
     page: number;
     pageSize: number;
     pagesRegion: number;
+    marker: string;
+    options: ClonotypeTableAnalysisOptions;
   }
 
   export interface ClonotypesResponse {

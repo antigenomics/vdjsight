@@ -1,4 +1,5 @@
 import { Action, createReducer, on } from '@ngrx/store';
+import { AnalysisClonotypesEntity } from 'pages/dashboard/models/analysis/analysis';
 import { AnalysisActions } from 'pages/dashboard/models/analysis/analysis.actions';
 import { __AnalysisState, __fromDashboardAnalysisState, AnalysisStateAdapter } from 'pages/dashboard/models/analysis/analysis.state';
 
@@ -10,28 +11,38 @@ const analysisReducer = createReducer(
   }),
 
   /** Clonotypes actions */
-  on(AnalysisActions.clonotypesLocalPageFound, (state, { analysis, page }) => {
+  on(AnalysisActions.clonotypesLocalPageFound, (state, { analysisId, page }) => {
+    const current = __fromDashboardAnalysisState.selectByID(state, { id: analysisId }) as AnalysisClonotypesEntity;
     return AnalysisStateAdapter.updateOne({
-      id:      analysis.id,
-      changes: { data: { view: analysis.data.view, selectedPage: page } }
+      id:      analysisId,
+      changes: { data: { view: current.data.view, selectedPage: page, marker: current.data.marker } }
     }, state);
   }),
-  on(AnalysisActions.clonotypesUpdate, (state, { analysis }) => {
+  on(AnalysisActions.clonotypesUpdate, (state, { analysisId }) => {
     return AnalysisStateAdapter.updateOne({
-      id:      analysis.id,
+      id:      analysisId,
       changes: { updating: { active: true } }
     }, state);
   }),
-  on(AnalysisActions.clonotypesUpdateSuccess, (state, { analysisId, view }) => {
+  on(AnalysisActions.clonotypesUpdateSuccess, (state, { analysisId, view, marker }) => {
     return AnalysisStateAdapter.updateOne({
       id:      analysisId,
-      changes: { updating: { active: false }, data: { view, selectedPage: view.pages.find((p) => p.page === view.defaultPage) } }
+      changes: { updating: { active: false }, data: { view, selectedPage: view.pages.find((p) => p.page === view.defaultPage), marker } }
     }, state);
   }),
   on(AnalysisActions.clonotypesUpdateFailed, (state, { analysisId, error }) => {
     return AnalysisStateAdapter.updateOne({
       id:      analysisId,
       changes: { updating: { active: false, error: error.error } }
+    }, state);
+  }),
+
+  /** Options actions */
+  on(AnalysisActions.clonotypesChangeOptions, (state, { analysisId, options }) => {
+    const current = __fromDashboardAnalysisState.selectByID(state, { id: analysisId }) as AnalysisClonotypesEntity;
+    return AnalysisStateAdapter.updateOne({
+      id:      analysisId,
+      changes: { options: { ...current.options, ...options } }
     }, state);
   }),
 

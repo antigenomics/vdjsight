@@ -874,3 +874,6 @@ java.lang.IllegalAccessException: class play.shaded.ahc.io.netty.util.internal.P
 2019-08-20 10:12:55 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
 2019-08-20 10:12:56 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
 2019-08-20 10:12:56 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 10:45:32 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 10:45:32 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-9 - db - Shutdown initiated...
+2019-08-20 10:45:32 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-9 - db - Shutdown completed.
