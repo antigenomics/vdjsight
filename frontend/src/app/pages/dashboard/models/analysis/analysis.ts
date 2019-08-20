@@ -27,8 +27,8 @@ export interface AnalysisEntityBase<Data, Options> {
 
 export interface AnalysisClonotypesEntityData {
   view: ClonotypeTableView;
-  selectedPage: ClonotypeTablePage;
   marker: string;
+  selectedPage: ClonotypeTablePage;
 }
 
 export interface AnalysisClonotypesEntity extends AnalysisEntityBase<AnalysisClonotypesEntityData, ClonotypeTableAnalysisOptions> {
@@ -54,16 +54,6 @@ export namespace AnalysisEntity {
 }
 
 const AnalysisEntitiesLocalUUIDGenerator = new IncrementalUUIDGenerator();
-
-export function CreateEmptyAnalysisEntity(projectLinkUUID: string, sampleLinkUUID: string, type: AnalysisType): AnalysisEntity {
-  return {
-    id:              AnalysisEntitiesLocalUUIDGenerator.next(),
-    projectLinkUUID: projectLinkUUID,
-    sampleLinkUUID:  sampleLinkUUID,
-    updating:        { active: false },
-    analysisType:    type
-  };
-}
 
 export function CreateClonotypesAnalysisEntity(projectLinkUUID: string, sampleLinkUUID: string, options?: ClonotypeTableAnalysisOptions): AnalysisClonotypesEntity {
   return {

@@ -77,7 +77,7 @@ class AnalysisController @Inject()(
         case Some(sampleFile) =>
           clonotypesAnalysis.clonotypes(sampleFile, clonotypes.marker, clonotypes.options) map { table =>
             Using(table) { t =>
-              val view = t.view(clonotypes.page, clonotypes.pageSize, clonotypes.pagesRegion)
+              val view = t.view(clonotypes.page, clonotypes.options.pageSize, clonotypes.options.pagesRegion)
               ServerResponse(AnalysisClonotypesResponse(view))
             } match {
               case Success(response) => Ok(response)

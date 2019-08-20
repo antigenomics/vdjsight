@@ -9,23 +9,9 @@ export namespace AnalysisActions {
   export const createIfNotExist = createAction('[Analysis] Create If Not Exist', props<{ sample: SampleEntity, analysis: AnalysisEntity }>());
   export const create           = createAction('[Analysis] Create', props<{ sample: SampleEntity, analysis: AnalysisEntity }>());
 
-  export const clonotypesSelectPage     = createAction('[Analysis] Clonotypes Select Page', props<{
-    analysisId: number;
-    page: number;
-    pageSize: number;
-    pagesRegion: number;
-    forceUpdate?: boolean;
-  }>());
-  export const clonotypesLocalPageFound = createAction('[Analysis] Clonotypes Local Page Found', props<{
-    analysisId: number,
-    page: ClonotypeTablePage
-  }>());
-  export const clonotypesUpdate         = createAction('[Analysis] Clonotypes', props<{
-    analysisId: number;
-    page: number;
-    pageSize: number;
-    pagesRegion: number;
-  }>());
+  export const clonotypesSelectPage     = createAction('[Analysis] Clonotypes Select Page', props<{ analysisId: number; page: number; forceUpdate?: boolean; }>());
+  export const clonotypesLocalPageFound = createAction('[Analysis] Clonotypes Local Page Found', props<{ analysisId: number, page: ClonotypeTablePage }>());
+  export const clonotypesUpdate         = createAction('[Analysis] Clonotypes', props<{ analysisId: number; page: number; }>());
   export const clonotypesUpdateSuccess  = createAction('[Analysis] Clonotypes Success', props<{ analysisId: number, view: ClonotypeTableView, marker: string }>());
   export const clonotypesUpdateFailed   = createAction('[Analysis] Clonotypes Failed', props<{ analysisId: number, error: BackendErrorResponse }>());
 

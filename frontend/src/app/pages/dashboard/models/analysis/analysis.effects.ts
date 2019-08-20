@@ -31,7 +31,7 @@ export class AnalysisEffects {
 
   public clonotypesSelectPage$ = createEffect(() => this.actions$.pipe(
     ofType(AnalysisActions.clonotypesSelectPage),
-    mergeMap(({ analysisId, page, pageSize, pagesRegion, forceUpdate }) => {
+    mergeMap(({ analysisId, page, forceUpdate }) => {
       return this.store.pipe(select(fromDashboard.getAnalysisByID, { id: analysisId }), first(), map((analysis: AnalysisClonotypesEntity) => {
         const isForcedUpdate  = forceUpdate !== undefined && forceUpdate;
         const isViewExist     = analysis.data !== undefined && analysis.data !== null && analysis.data.view !== undefined && analysis.data.view !== null;
@@ -44,22 +44,20 @@ export class AnalysisEffects {
           }
         }
 
-        return AnalysisActions.clonotypesUpdate({ analysisId: analysisId, page, pageSize, pagesRegion });
+        return AnalysisActions.clonotypesUpdate({ analysisId: analysisId, page });
       }));
     })
   ));
 
   public clonotypesUpdate$ = createEffect(() => this.actions$.pipe(
     ofType(AnalysisActions.clonotypesUpdate),
-    mergeMap(({ analysisId, page, pageSize, pagesRegion }) => {
+    mergeMap(({ analysisId, page }) => {
       return this.store.pipe(select(fromDashboard.getAnalysisByID, { id: analysisId }), first(), mergeMap((analysis: AnalysisClonotypesEntity) => {
         const marker = CreateClonotypeTableAnalysisMarker(analysis.options);
         return this.analysis.clonotypes(analysis.projectLinkUUID, analysis.sampleLinkUUID, {
-          page:        page,
-          pageSize:    pageSize,
-          pagesRegion: pagesRegion,
-          marker:      marker,
-          options:     analysis.options
+          page:    page,
+          marker:  marker,
+          options: analysis.options
         }).pipe(
           map(({ view }) => AnalysisActions.clonotypesUpdateSuccess({ analysisId: analysis.id, view, marker })),
           catchError((error) => of(AnalysisActions.clonotypesUpdateFailed({ analysisId: analysis.id, error })))
@@ -71,7 +69,7 @@ export class AnalysisEffects {
   public clonotypesChangeOptions$ = createEffect(() => this.actions$.pipe(
     ofType(AnalysisActions.clonotypesChangeOptions),
     filter(({ forceUpdate }) => forceUpdate !== undefined && forceUpdate),
-    map(({ analysisId }) => AnalysisActions.clonotypesSelectPage({ analysisId: analysisId, page: 0, pageSize: 10, pagesRegion: 5 }))
+    map(({ analysisId }) => AnalysisActions.clonotypesSelectPage({ analysisId: analysisId, page: 1, forceUpdate: true }))
   ));
 
   public clear$ = createEffect(() => this.actions$.pipe(
