@@ -24,8 +24,8 @@ export class SampleClonotypesWrapperComponent {
     this.page(1);
   }
 
-  public test_sort(): void {
-    this.store.dispatch(AnalysisActions.clonotypesChangeOptions({ analysisId: this.clonotypes.id, options: { sort: 'cdr3aa:asc' }, forceUpdate: true }));
+  public sort(sort: string): void {
+    this.store.dispatch(AnalysisActions.clonotypesChangeOptions({ analysisId: this.clonotypes.id, options: { sort }, forceUpdate: true }));
   }
 
   public page(p: number): void {

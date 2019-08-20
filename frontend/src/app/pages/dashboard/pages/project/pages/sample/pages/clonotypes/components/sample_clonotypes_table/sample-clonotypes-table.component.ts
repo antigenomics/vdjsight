@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { ClonotypeTablePage } from 'pages/dashboard/services/analysis/analysis-clonotypes';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ClonotypeTableAnalysisOptions, ClonotypeTablePage } from 'pages/dashboard/services/analysis/analysis-clonotypes';
 
 @Component({
   selector:        'vs-sample-clonotypes-table',
@@ -10,4 +10,24 @@ import { ClonotypeTablePage } from 'pages/dashboard/services/analysis/analysis-c
 export class SampleClonotypesTableComponent {
   @Input()
   public page: ClonotypeTablePage;
+
+  @Input()
+  public options: ClonotypeTableAnalysisOptions;
+
+  @Output()
+  public onSort = new EventEmitter<string>();
+
+  public onHeaderSelect(column: string): void {
+    const sort = this.options.sort;
+    if (sort === 'none') {
+      this.onSort.emit(`${column}:asc`);
+    } else {
+      const [ s, d ] = sort.split(':');
+      if (s === column) {
+        this.onSort.emit(d === 'desc' ? `${column}:asc` : `${column}:desc`);
+      } else {
+        this.onSort.emit(`${column}:asc`);
+      }
+    }
+  }
 }

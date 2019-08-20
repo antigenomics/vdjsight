@@ -1,15 +1,6 @@
-<table class="ui table" *ngIf="page">
+<table class="ui sortable celled table" *ngIf="page">
     <thead>
-    <tr>
-        <th>Index</th>
-        <th>Count</th>
-        <th>Frequency</th>
-        <th>cdr3aa</th>
-        <th>cdr3nt</th>
-        <th>V</th>
-        <th>D</th>
-        <th>J</th>
-    </tr>
+    <tr vs-sample-clonotypes-table-header [sort]="options.sort" (onHeaderSelect)="onHeaderSelect($event)"></tr>
     </thead>
     <tbody>
     <tr *ngFor="let row of page.rows" vs-sample-clonotypes-table-row [row]="row"></tr>
