@@ -13,16 +13,15 @@ services:
     restart: always
 
   frontend:
-    image: bvdmitri/vdjsight-frontend:develop
+    image: bvdmitri/vdjsight-frontend:${COMPOSE_FRONTEND_IMAGE_TAG}
     networks:
       proxy-network:
     restart: always
 
   backend:
-    image: bvdmitri/vdjsight-backend:develop
+    image: bvdmitri/vdjsight-backend:${COMPOSE_BACKEND_IMAGE_TAG}
     volumes:
-      - ./backend/backend.conf:/home/vdjsight/environment/application.conf:ro
-      - ./backend/backend-logs.xml:/home/vdjsight/environment/logback.xml:ro
+      - ./backend/environment:/home/vdjsight/environment:ro
       - ./backend/logs:/home/vdjsight/logs
     networks:
       database-backend:

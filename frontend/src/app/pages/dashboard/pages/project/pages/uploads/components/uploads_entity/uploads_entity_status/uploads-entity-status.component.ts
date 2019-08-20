@@ -24,6 +24,9 @@ export class UploadsEntityStatusComponent {
   public uploaded: boolean;
 
   @Input()
+  public uploading: boolean;
+
+  @Input()
   public progress: number;
 
   public get progressBarState() {

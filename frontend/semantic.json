@@ -15,7 +15,7 @@
     },
     "clean": "dist/"
   },
-  "components": ["reset", "site", "button", "container", "divider", "header", "icon", "image", "input", "label", "list", "loader", "segment", "form", "grid", "menu", "item", "message", "table", "card", "checkbox", "dimmer", "dropdown", "modal", "popup", "progress", "sidebar", "sticky", "tab"],
+  "components": ["reset", "site", "button", "container", "divider", "header", "icon", "image", "input", "label", "list", "loader", "segment", "form", "grid", "menu", "item", "message", "table", "card", "checkbox", "dimmer", "dropdown", "modal", "popup", "progress"],
   "permission": false,
   "autoInstall": true,
   "rtl": false,

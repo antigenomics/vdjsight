@@ -14,8 +14,18 @@ server {
   proxy_pass_header  Set-Cookie;
 
   location / {
-    limit_req                  zone=frontend burst=20 delay=10;
-    proxy_pass                 http://frontend:80;
+    limit_req          zone=frontend burst=20 delay=10;
+
+    gzip               on;
+    gzip_vary          on;
+    gzip_comp_level    9;
+    gzip_http_version  1.1;
+    gzip_proxied       expired no-cache no-store private auth;
+    gzip_types         text/plain text/css application/json application/javascript text/javascript application/x-font-ttf font/opentype image/svg+xml image/x-icon
+    gunzip             on;
+    gzip_static        on;
+
+    proxy_pass         http://frontend:80;
   }
 
   location /api {

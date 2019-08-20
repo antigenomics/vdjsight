@@ -1,0 +1,876 @@
+2019-08-20 08:28:53 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-3 - Slf4jLogger started
+2019-08-20 08:28:53 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-4 - Slf4jLogger started
+2019-08-20 08:28:55 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 08:28:55 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 08:28:55 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 08:28:55 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 08:28:57 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 08:28:57 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 08:28:58 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 08:28:58 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 08:31:44 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 08:31:44 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 08:31:44 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-9 - db - Shutdown initiated...
+2019-08-20 08:31:44 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-8 - db - Shutdown initiated...
+2019-08-20 08:31:44 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-8 - db - Shutdown completed.
+2019-08-20 08:31:44 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-9 - db - Shutdown completed.
+2019-08-20 08:51:42 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-2 - Slf4jLogger started
+2019-08-20 08:51:43 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 08:51:43 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 08:51:44 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 08:51:44 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 08:51:55 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-2 - Slf4jLogger started
+2019-08-20 08:51:55 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 08:51:55 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 08:51:56 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 08:51:56 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 08:52:41 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 08:52:41 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-9 - db - Shutdown initiated...
+2019-08-20 08:52:41 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-9 - db - Shutdown completed.
+2019-08-20 08:54:28 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-3 - Slf4jLogger started
+2019-08-20 08:54:28 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 08:54:28 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 08:54:29 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 08:54:30 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 08:54:31 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 08:54:31 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-4 - db - Shutdown initiated...
+2019-08-20 08:54:31 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-4 - db - Shutdown completed.
+2019-08-20 08:54:38 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-4 - Slf4jLogger started
+2019-08-20 08:54:39 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 08:54:39 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 08:54:40 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 08:54:40 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 08:58:20 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 08:58:20 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-16 - db - Shutdown initiated...
+2019-08-20 08:58:20 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-16 - db - Shutdown completed.
+2019-08-20 09:00:18 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-3 - Slf4jLogger started
+2019-08-20 09:00:18 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:00:18 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:00:19 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 09:00:19 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 09:00:20 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 09:00:21 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-4 - db - Shutdown initiated...
+2019-08-20 09:00:21 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-4 - db - Shutdown completed.
+2019-08-20 09:00:28 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-2 - Slf4jLogger started
+2019-08-20 09:00:29 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:00:29 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:00:29 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 09:00:30 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 09:12:52 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 09:12:52 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-35 - db - Shutdown initiated...
+2019-08-20 09:12:52 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-35 - db - Shutdown completed.
+2019-08-20 09:12:59 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-4 - Slf4jLogger started
+2019-08-20 09:13:00 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:13:00 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:13:01 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 09:13:01 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 09:17:22 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-2 - Slf4jLogger started
+2019-08-20 09:17:22 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:17:22 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:17:23 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 09:17:24 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 09:17:48 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 09:17:48 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-4 - db - Shutdown initiated...
+2019-08-20 09:17:48 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-4 - db - Shutdown completed.
+2019-08-20 09:17:56 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-4 - Slf4jLogger started
+2019-08-20 09:17:57 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:17:57 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:17:58 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 09:17:58 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 09:36:09 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 09:36:09 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-19 - db - Shutdown initiated...
+2019-08-20 09:36:09 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-19 - db - Shutdown completed.
+2019-08-20 09:50:53 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-6 - Slf4jLogger started
+2019-08-20 09:50:53 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:50:53 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:51:53 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-6 - Slf4jLogger started
+2019-08-20 09:51:53 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:51:53 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:52:24 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-6 - Slf4jLogger started
+2019-08-20 09:52:25 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:52:25 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:52:37 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-3 - Slf4jLogger started
+2019-08-20 09:52:37 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:52:37 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:53:12 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-3 - Slf4jLogger started
+2019-08-20 09:53:13 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:53:13 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:53:37 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-4 - Slf4jLogger started
+2019-08-20 09:53:38 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:53:38 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:54:10 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-3 - Slf4jLogger started
+2019-08-20 09:54:11 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:54:11 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:54:46 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-4 - Slf4jLogger started
+2019-08-20 09:54:46 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:54:46 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:55:21 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-4 - Slf4jLogger started
+2019-08-20 09:55:22 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:55:22 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:55:56 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-5 - Slf4jLogger started
+2019-08-20 09:55:57 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:55:57 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:56:33 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-5 - Slf4jLogger started
+2019-08-20 09:56:34 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:56:34 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:56:48 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-4 - Slf4jLogger started
+2019-08-20 09:56:48 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:56:48 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:56:57 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-3 - Slf4jLogger started
+2019-08-20 09:56:57 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:56:57 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:57:32 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-3 - Slf4jLogger started
+2019-08-20 09:57:32 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 09:57:33 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 09:57:33 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:57:33 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:58:08 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-4 - Slf4jLogger started
+2019-08-20 09:58:08 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 09:58:08 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 09:58:08 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:58:08 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:58:43 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-6 - Slf4jLogger started
+2019-08-20 09:58:43 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 09:58:43 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 09:58:43 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:58:43 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:59:18 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-3 - Slf4jLogger started
+2019-08-20 09:59:18 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 09:59:19 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 09:59:19 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:59:19 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 09:59:49 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-3 - Slf4jLogger started
+2019-08-20 09:59:49 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 09:59:49 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 09:59:49 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 09:59:49 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 10:00:09 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-2 - Slf4jLogger started
+2019-08-20 10:00:09 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 10:00:09 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 10:00:09 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:00:09 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.logging.InternalLoggerFactory in main - Using SLF4J as the default logging framework
+2019-08-20 10:00:09 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.ResourceLeakDetector in main - -Dplay.shaded.ahc.io.netty.leakDetection.level: simple
+2019-08-20 10:00:09 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.ResourceLeakDetector in main - -Dplay.shaded.ahc.io.netty.leakDetection.targetRecords: 4
+2019-08-20 10:00:09 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - -Dio.netty.noUnsafe: false
+2019-08-20 10:00:09 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - Java version: 11
+2019-08-20 10:00:09 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - sun.misc.Unsafe.theUnsafe: available
+2019-08-20 10:00:09 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - sun.misc.Unsafe.copyMemory: available
+2019-08-20 10:00:09 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - java.nio.Buffer.address: available
+2019-08-20 10:00:09 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - direct buffer constructor: unavailable
+java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
+	at play.shaded.ahc.io.netty.util.internal.ReflectionUtil.trySetAccessible(ReflectionUtil.java:31)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0$4.run(PlatformDependent0.java:224)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:218)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:212)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:80)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:162)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:207)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetectorFactory$DefaultResourceLeakDetectorFactory.newResourceLeakDetector(ResourceLeakDetectorFactory.java:201)
+	at play.shaded.ahc.io.netty.util.HashedWheelTimer.<clinit>(HashedWheelTimer.java:88)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.newNettyTimer(DefaultAsyncHttpClient.java:97)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.<init>(DefaultAsyncHttpClient.java:87)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get$lzycompute(AhcWSModule.scala:60)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:57)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:50)
+	at com.google.inject.internal.ProviderInternalFactory.provision(ProviderInternalFactory.java:85)
+	at com.google.inject.internal.BoundProviderFactory.provision(BoundProviderFactory.java:77)
+	at com.google.inject.internal.ProviderInternalFactory.circularGet(ProviderInternalFactory.java:59)
+	at com.google.inject.internal.BoundProviderFactory.get(BoundProviderFactory.java:61)
+	at com.google.inject.internal.SingleParameterInjector.inject(SingleParameterInjector.java:42)
+	at com.google.inject.internal.SingleParameterInjector.getAll(SingleParameterInjector.java:65)
+	at com.google.inject.internal.ConstructorInjector.provision(ConstructorInjector.java:113)
+	at com.google.inject.internal.ConstructorInjector.construct(ConstructorInjector.java:91)
+	at com.google.inject.internal.ConstructorBindingImpl$Factory.get(ConstructorBindingImpl.java:306)
+	at com.google.inject.internal.ProviderToInternalFactoryAdapter.get(ProviderToInternalFactoryAdapter.java:40)
+	at com.google.inject.internal.SingletonScope$1.get(SingletonScope.java:168)
+	at com.google.inject.internal.InternalFactoryToProviderAdapter.get(InternalFactoryToProviderAdapter.java:39)
+	at com.google.inject.internal.InternalInjectorCreator.loadEagerSingletons(InternalInjectorCreator.java:211)
+	at com.google.inject.internal.InternalInjectorCreator.injectDynamically(InternalInjectorCreator.java:182)
+	at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:109)
+	at com.google.inject.Guice.createInjector(Guice.java:87)
+	at com.google.inject.Guice.createInjector(Guice.java:78)
+	at play.api.inject.guice.GuiceBuilder.injector(GuiceInjectorBuilder.scala:201)
+	at play.api.inject.guice.GuiceApplicationBuilder.build(GuiceApplicationBuilder.scala:156)
+	at play.api.inject.guice.GuiceApplicationLoader.load(GuiceApplicationLoader.scala:22)
+	at play.core.server.ProdServerStart$.start(ProdServerStart.scala:59)
+	at play.core.server.ProdServerStart$.main(ProdServerStart.scala:31)
+	at play.core.server.ProdServerStart.main(ProdServerStart.scala)
+2019-08-20 10:00:09 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - java.nio.Bits.unaligned: available, true
+2019-08-20 10:00:09 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable
+java.lang.IllegalAccessException: class play.shaded.ahc.io.netty.util.internal.PlatformDependent0$6 cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to unnamed module @529cfee5
+	at java.base/jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:361)
+	at java.base/java.lang.reflect.AccessibleObject.checkAccess(AccessibleObject.java:591)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:558)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0$6.run(PlatformDependent0.java:334)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:325)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:212)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:80)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:162)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:207)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetectorFactory$DefaultResourceLeakDetectorFactory.newResourceLeakDetector(ResourceLeakDetectorFactory.java:201)
+	at play.shaded.ahc.io.netty.util.HashedWheelTimer.<clinit>(HashedWheelTimer.java:88)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.newNettyTimer(DefaultAsyncHttpClient.java:97)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.<init>(DefaultAsyncHttpClient.java:87)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get$lzycompute(AhcWSModule.scala:60)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:57)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:50)
+	at com.google.inject.internal.ProviderInternalFactory.provision(ProviderInternalFactory.java:85)
+	at com.google.inject.internal.BoundProviderFactory.provision(BoundProviderFactory.java:77)
+	at com.google.inject.internal.ProviderInternalFactory.circularGet(ProviderInternalFactory.java:59)
+	at com.google.inject.internal.BoundProviderFactory.get(BoundProviderFactory.java:61)
+	at com.google.inject.internal.SingleParameterInjector.inject(SingleParameterInjector.java:42)
+	at com.google.inject.internal.SingleParameterInjector.getAll(SingleParameterInjector.java:65)
+	at com.google.inject.internal.ConstructorInjector.provision(ConstructorInjector.java:113)
+	at com.google.inject.internal.ConstructorInjector.construct(ConstructorInjector.java:91)
+	at com.google.inject.internal.ConstructorBindingImpl$Factory.get(ConstructorBindingImpl.java:306)
+	at com.google.inject.internal.ProviderToInternalFactoryAdapter.get(ProviderToInternalFactoryAdapter.java:40)
+	at com.google.inject.internal.SingletonScope$1.get(SingletonScope.java:168)
+	at com.google.inject.internal.InternalFactoryToProviderAdapter.get(InternalFactoryToProviderAdapter.java:39)
+	at com.google.inject.internal.InternalInjectorCreator.loadEagerSingletons(InternalInjectorCreator.java:211)
+	at com.google.inject.internal.InternalInjectorCreator.injectDynamically(InternalInjectorCreator.java:182)
+	at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:109)
+	at com.google.inject.Guice.createInjector(Guice.java:87)
+	at com.google.inject.Guice.createInjector(Guice.java:78)
+	at play.api.inject.guice.GuiceBuilder.injector(GuiceInjectorBuilder.scala:201)
+	at play.api.inject.guice.GuiceApplicationBuilder.build(GuiceApplicationBuilder.scala:156)
+	at play.api.inject.guice.GuiceApplicationLoader.load(GuiceApplicationLoader.scala:22)
+	at play.core.server.ProdServerStart$.start(ProdServerStart.scala:59)
+	at play.core.server.ProdServerStart$.main(ProdServerStart.scala:31)
+	at play.core.server.ProdServerStart.main(ProdServerStart.scala)
+2019-08-20 10:00:09 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - java.nio.DirectByteBuffer.<init>(long, int): unavailable
+2019-08-20 10:00:09 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - sun.misc.Unsafe: available
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - maxDirectMemory: 524288000 bytes (maybe)
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.tmpdir: /tmp (java.io.tmpdir)
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.bitMode: 64 (sun.arch.data.model)
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.maxDirectMemory: -1 bytes
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.uninitializedArrayAllocationThreshold: -1
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.CleanerJava9 in main - java.nio.ByteBuffer.cleaner(): available
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.noPreferDirect: false
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.ResourceLeakDetectorFactory in main - Loaded default ResourceLeakDetector: play.shaded.ahc.io.netty.util.ResourceLeakDetector@2ee4706d
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - org.jctools-core.MpscChunkedArrayQueue: available
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.channel.MultithreadEventLoopGroup in main - -Dio.netty.eventLoopThreads: 4
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.channel.nio.NioEventLoop in main - -Dio.netty.noKeySetOptimization: false
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.channel.nio.NioEventLoop in main - -Dio.netty.selectorAutoRebuildThreshold: 512
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.InternalThreadLocalMap in main - -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.InternalThreadLocalMap in main - -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.numHeapArenas: 4
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.numDirectArenas: 4
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.pageSize: 8192
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.maxOrder: 11
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.chunkSize: 16777216
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.tinyCacheSize: 512
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.smallCacheSize: 256
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.normalCacheSize: 64
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.cacheTrimInterval: 8192
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.useCacheForAllThreads: true
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.ByteBufUtil in main - -Dio.netty.allocator.type: pooled
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.ByteBufUtil in main - -Dio.netty.threadLocalDirectBufferSize: 0
+2019-08-20 10:00:10 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.ByteBufUtil in main - -Dio.netty.maxThreadLocalCharBufferSize: 16384
+2019-08-20 10:00:14 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-6 - Slf4jLogger started
+2019-08-20 10:00:14 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 10:00:14 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 10:00:15 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.logging.InternalLoggerFactory in main - Using SLF4J as the default logging framework
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.ResourceLeakDetector in main - -Dplay.shaded.ahc.io.netty.leakDetection.level: simple
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.ResourceLeakDetector in main - -Dplay.shaded.ahc.io.netty.leakDetection.targetRecords: 4
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - -Dio.netty.noUnsafe: false
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - Java version: 11
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - sun.misc.Unsafe.theUnsafe: available
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - sun.misc.Unsafe.copyMemory: available
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - java.nio.Buffer.address: available
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - direct buffer constructor: unavailable
+java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
+	at play.shaded.ahc.io.netty.util.internal.ReflectionUtil.trySetAccessible(ReflectionUtil.java:31)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0$4.run(PlatformDependent0.java:224)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:218)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:212)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:80)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:162)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:207)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetectorFactory$DefaultResourceLeakDetectorFactory.newResourceLeakDetector(ResourceLeakDetectorFactory.java:201)
+	at play.shaded.ahc.io.netty.util.HashedWheelTimer.<clinit>(HashedWheelTimer.java:88)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.newNettyTimer(DefaultAsyncHttpClient.java:97)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.<init>(DefaultAsyncHttpClient.java:87)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get$lzycompute(AhcWSModule.scala:60)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:57)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:50)
+	at com.google.inject.internal.ProviderInternalFactory.provision(ProviderInternalFactory.java:85)
+	at com.google.inject.internal.BoundProviderFactory.provision(BoundProviderFactory.java:77)
+	at com.google.inject.internal.ProviderInternalFactory.circularGet(ProviderInternalFactory.java:59)
+	at com.google.inject.internal.BoundProviderFactory.get(BoundProviderFactory.java:61)
+	at com.google.inject.internal.SingleParameterInjector.inject(SingleParameterInjector.java:42)
+	at com.google.inject.internal.SingleParameterInjector.getAll(SingleParameterInjector.java:65)
+	at com.google.inject.internal.ConstructorInjector.provision(ConstructorInjector.java:113)
+	at com.google.inject.internal.ConstructorInjector.construct(ConstructorInjector.java:91)
+	at com.google.inject.internal.ConstructorBindingImpl$Factory.get(ConstructorBindingImpl.java:306)
+	at com.google.inject.internal.ProviderToInternalFactoryAdapter.get(ProviderToInternalFactoryAdapter.java:40)
+	at com.google.inject.internal.SingletonScope$1.get(SingletonScope.java:168)
+	at com.google.inject.internal.InternalFactoryToProviderAdapter.get(InternalFactoryToProviderAdapter.java:39)
+	at com.google.inject.internal.InternalInjectorCreator.loadEagerSingletons(InternalInjectorCreator.java:211)
+	at com.google.inject.internal.InternalInjectorCreator.injectDynamically(InternalInjectorCreator.java:182)
+	at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:109)
+	at com.google.inject.Guice.createInjector(Guice.java:87)
+	at com.google.inject.Guice.createInjector(Guice.java:78)
+	at play.api.inject.guice.GuiceBuilder.injector(GuiceInjectorBuilder.scala:201)
+	at play.api.inject.guice.GuiceApplicationBuilder.build(GuiceApplicationBuilder.scala:156)
+	at play.api.inject.guice.GuiceApplicationLoader.load(GuiceApplicationLoader.scala:22)
+	at play.core.server.ProdServerStart$.start(ProdServerStart.scala:59)
+	at play.core.server.ProdServerStart$.main(ProdServerStart.scala:31)
+	at play.core.server.ProdServerStart.main(ProdServerStart.scala)
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - java.nio.Bits.unaligned: available, true
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable
+java.lang.IllegalAccessException: class play.shaded.ahc.io.netty.util.internal.PlatformDependent0$6 cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to unnamed module @529cfee5
+	at java.base/jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:361)
+	at java.base/java.lang.reflect.AccessibleObject.checkAccess(AccessibleObject.java:591)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:558)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0$6.run(PlatformDependent0.java:334)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:325)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:212)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:80)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:162)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:207)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetectorFactory$DefaultResourceLeakDetectorFactory.newResourceLeakDetector(ResourceLeakDetectorFactory.java:201)
+	at play.shaded.ahc.io.netty.util.HashedWheelTimer.<clinit>(HashedWheelTimer.java:88)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.newNettyTimer(DefaultAsyncHttpClient.java:97)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.<init>(DefaultAsyncHttpClient.java:87)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get$lzycompute(AhcWSModule.scala:60)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:57)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:50)
+	at com.google.inject.internal.ProviderInternalFactory.provision(ProviderInternalFactory.java:85)
+	at com.google.inject.internal.BoundProviderFactory.provision(BoundProviderFactory.java:77)
+	at com.google.inject.internal.ProviderInternalFactory.circularGet(ProviderInternalFactory.java:59)
+	at com.google.inject.internal.BoundProviderFactory.get(BoundProviderFactory.java:61)
+	at com.google.inject.internal.SingleParameterInjector.inject(SingleParameterInjector.java:42)
+	at com.google.inject.internal.SingleParameterInjector.getAll(SingleParameterInjector.java:65)
+	at com.google.inject.internal.ConstructorInjector.provision(ConstructorInjector.java:113)
+	at com.google.inject.internal.ConstructorInjector.construct(ConstructorInjector.java:91)
+	at com.google.inject.internal.ConstructorBindingImpl$Factory.get(ConstructorBindingImpl.java:306)
+	at com.google.inject.internal.ProviderToInternalFactoryAdapter.get(ProviderToInternalFactoryAdapter.java:40)
+	at com.google.inject.internal.SingletonScope$1.get(SingletonScope.java:168)
+	at com.google.inject.internal.InternalFactoryToProviderAdapter.get(InternalFactoryToProviderAdapter.java:39)
+	at com.google.inject.internal.InternalInjectorCreator.loadEagerSingletons(InternalInjectorCreator.java:211)
+	at com.google.inject.internal.InternalInjectorCreator.injectDynamically(InternalInjectorCreator.java:182)
+	at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:109)
+	at com.google.inject.Guice.createInjector(Guice.java:87)
+	at com.google.inject.Guice.createInjector(Guice.java:78)
+	at play.api.inject.guice.GuiceBuilder.injector(GuiceInjectorBuilder.scala:201)
+	at play.api.inject.guice.GuiceApplicationBuilder.build(GuiceApplicationBuilder.scala:156)
+	at play.api.inject.guice.GuiceApplicationLoader.load(GuiceApplicationLoader.scala:22)
+	at play.core.server.ProdServerStart$.start(ProdServerStart.scala:59)
+	at play.core.server.ProdServerStart$.main(ProdServerStart.scala:31)
+	at play.core.server.ProdServerStart.main(ProdServerStart.scala)
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - java.nio.DirectByteBuffer.<init>(long, int): unavailable
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - sun.misc.Unsafe: available
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - maxDirectMemory: 524288000 bytes (maybe)
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.tmpdir: /tmp (java.io.tmpdir)
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.bitMode: 64 (sun.arch.data.model)
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.maxDirectMemory: -1 bytes
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.uninitializedArrayAllocationThreshold: -1
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.CleanerJava9 in main - java.nio.ByteBuffer.cleaner(): available
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.noPreferDirect: false
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.ResourceLeakDetectorFactory in main - Loaded default ResourceLeakDetector: play.shaded.ahc.io.netty.util.ResourceLeakDetector@a91119b
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - org.jctools-core.MpscChunkedArrayQueue: available
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.channel.MultithreadEventLoopGroup in main - -Dio.netty.eventLoopThreads: 4
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.channel.nio.NioEventLoop in main - -Dio.netty.noKeySetOptimization: false
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.channel.nio.NioEventLoop in main - -Dio.netty.selectorAutoRebuildThreshold: 512
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.InternalThreadLocalMap in main - -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.InternalThreadLocalMap in main - -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.numHeapArenas: 4
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.numDirectArenas: 4
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.pageSize: 8192
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.maxOrder: 11
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.chunkSize: 16777216
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.tinyCacheSize: 512
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.smallCacheSize: 256
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.normalCacheSize: 64
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.cacheTrimInterval: 8192
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.useCacheForAllThreads: true
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.ByteBufUtil in main - -Dio.netty.allocator.type: pooled
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.ByteBufUtil in main - -Dio.netty.threadLocalDirectBufferSize: 0
+2019-08-20 10:00:15 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.ByteBufUtil in main - -Dio.netty.maxThreadLocalCharBufferSize: 16384
+2019-08-20 10:00:20 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-2 - Slf4jLogger started
+2019-08-20 10:00:20 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 10:00:20 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 10:00:20 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.logging.InternalLoggerFactory in main - Using SLF4J as the default logging framework
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.ResourceLeakDetector in main - -Dplay.shaded.ahc.io.netty.leakDetection.level: simple
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.ResourceLeakDetector in main - -Dplay.shaded.ahc.io.netty.leakDetection.targetRecords: 4
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - -Dio.netty.noUnsafe: false
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - Java version: 11
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - sun.misc.Unsafe.theUnsafe: available
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - sun.misc.Unsafe.copyMemory: available
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - java.nio.Buffer.address: available
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - direct buffer constructor: unavailable
+java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
+	at play.shaded.ahc.io.netty.util.internal.ReflectionUtil.trySetAccessible(ReflectionUtil.java:31)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0$4.run(PlatformDependent0.java:224)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:218)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:212)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:80)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:162)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:207)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetectorFactory$DefaultResourceLeakDetectorFactory.newResourceLeakDetector(ResourceLeakDetectorFactory.java:201)
+	at play.shaded.ahc.io.netty.util.HashedWheelTimer.<clinit>(HashedWheelTimer.java:88)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.newNettyTimer(DefaultAsyncHttpClient.java:97)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.<init>(DefaultAsyncHttpClient.java:87)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get$lzycompute(AhcWSModule.scala:60)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:57)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:50)
+	at com.google.inject.internal.ProviderInternalFactory.provision(ProviderInternalFactory.java:85)
+	at com.google.inject.internal.BoundProviderFactory.provision(BoundProviderFactory.java:77)
+	at com.google.inject.internal.ProviderInternalFactory.circularGet(ProviderInternalFactory.java:59)
+	at com.google.inject.internal.BoundProviderFactory.get(BoundProviderFactory.java:61)
+	at com.google.inject.internal.SingleParameterInjector.inject(SingleParameterInjector.java:42)
+	at com.google.inject.internal.SingleParameterInjector.getAll(SingleParameterInjector.java:65)
+	at com.google.inject.internal.ConstructorInjector.provision(ConstructorInjector.java:113)
+	at com.google.inject.internal.ConstructorInjector.construct(ConstructorInjector.java:91)
+	at com.google.inject.internal.ConstructorBindingImpl$Factory.get(ConstructorBindingImpl.java:306)
+	at com.google.inject.internal.ProviderToInternalFactoryAdapter.get(ProviderToInternalFactoryAdapter.java:40)
+	at com.google.inject.internal.SingletonScope$1.get(SingletonScope.java:168)
+	at com.google.inject.internal.InternalFactoryToProviderAdapter.get(InternalFactoryToProviderAdapter.java:39)
+	at com.google.inject.internal.InternalInjectorCreator.loadEagerSingletons(InternalInjectorCreator.java:211)
+	at com.google.inject.internal.InternalInjectorCreator.injectDynamically(InternalInjectorCreator.java:182)
+	at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:109)
+	at com.google.inject.Guice.createInjector(Guice.java:87)
+	at com.google.inject.Guice.createInjector(Guice.java:78)
+	at play.api.inject.guice.GuiceBuilder.injector(GuiceInjectorBuilder.scala:201)
+	at play.api.inject.guice.GuiceApplicationBuilder.build(GuiceApplicationBuilder.scala:156)
+	at play.api.inject.guice.GuiceApplicationLoader.load(GuiceApplicationLoader.scala:22)
+	at play.core.server.ProdServerStart$.start(ProdServerStart.scala:59)
+	at play.core.server.ProdServerStart$.main(ProdServerStart.scala:31)
+	at play.core.server.ProdServerStart.main(ProdServerStart.scala)
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - java.nio.Bits.unaligned: available, true
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable
+java.lang.IllegalAccessException: class play.shaded.ahc.io.netty.util.internal.PlatformDependent0$6 cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to unnamed module @529cfee5
+	at java.base/jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:361)
+	at java.base/java.lang.reflect.AccessibleObject.checkAccess(AccessibleObject.java:591)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:558)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0$6.run(PlatformDependent0.java:334)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:325)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:212)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:80)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:162)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:207)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetectorFactory$DefaultResourceLeakDetectorFactory.newResourceLeakDetector(ResourceLeakDetectorFactory.java:201)
+	at play.shaded.ahc.io.netty.util.HashedWheelTimer.<clinit>(HashedWheelTimer.java:88)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.newNettyTimer(DefaultAsyncHttpClient.java:97)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.<init>(DefaultAsyncHttpClient.java:87)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get$lzycompute(AhcWSModule.scala:60)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:57)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:50)
+	at com.google.inject.internal.ProviderInternalFactory.provision(ProviderInternalFactory.java:85)
+	at com.google.inject.internal.BoundProviderFactory.provision(BoundProviderFactory.java:77)
+	at com.google.inject.internal.ProviderInternalFactory.circularGet(ProviderInternalFactory.java:59)
+	at com.google.inject.internal.BoundProviderFactory.get(BoundProviderFactory.java:61)
+	at com.google.inject.internal.SingleParameterInjector.inject(SingleParameterInjector.java:42)
+	at com.google.inject.internal.SingleParameterInjector.getAll(SingleParameterInjector.java:65)
+	at com.google.inject.internal.ConstructorInjector.provision(ConstructorInjector.java:113)
+	at com.google.inject.internal.ConstructorInjector.construct(ConstructorInjector.java:91)
+	at com.google.inject.internal.ConstructorBindingImpl$Factory.get(ConstructorBindingImpl.java:306)
+	at com.google.inject.internal.ProviderToInternalFactoryAdapter.get(ProviderToInternalFactoryAdapter.java:40)
+	at com.google.inject.internal.SingletonScope$1.get(SingletonScope.java:168)
+	at com.google.inject.internal.InternalFactoryToProviderAdapter.get(InternalFactoryToProviderAdapter.java:39)
+	at com.google.inject.internal.InternalInjectorCreator.loadEagerSingletons(InternalInjectorCreator.java:211)
+	at com.google.inject.internal.InternalInjectorCreator.injectDynamically(InternalInjectorCreator.java:182)
+	at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:109)
+	at com.google.inject.Guice.createInjector(Guice.java:87)
+	at com.google.inject.Guice.createInjector(Guice.java:78)
+	at play.api.inject.guice.GuiceBuilder.injector(GuiceInjectorBuilder.scala:201)
+	at play.api.inject.guice.GuiceApplicationBuilder.build(GuiceApplicationBuilder.scala:156)
+	at play.api.inject.guice.GuiceApplicationLoader.load(GuiceApplicationLoader.scala:22)
+	at play.core.server.ProdServerStart$.start(ProdServerStart.scala:59)
+	at play.core.server.ProdServerStart$.main(ProdServerStart.scala:31)
+	at play.core.server.ProdServerStart.main(ProdServerStart.scala)
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - java.nio.DirectByteBuffer.<init>(long, int): unavailable
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - sun.misc.Unsafe: available
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - maxDirectMemory: 524288000 bytes (maybe)
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.tmpdir: /tmp (java.io.tmpdir)
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.bitMode: 64 (sun.arch.data.model)
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.maxDirectMemory: -1 bytes
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.uninitializedArrayAllocationThreshold: -1
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.CleanerJava9 in main - java.nio.ByteBuffer.cleaner(): available
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.noPreferDirect: false
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.ResourceLeakDetectorFactory in main - Loaded default ResourceLeakDetector: play.shaded.ahc.io.netty.util.ResourceLeakDetector@6650a6c
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - org.jctools-core.MpscChunkedArrayQueue: available
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.channel.MultithreadEventLoopGroup in main - -Dio.netty.eventLoopThreads: 4
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.channel.nio.NioEventLoop in main - -Dio.netty.noKeySetOptimization: false
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.channel.nio.NioEventLoop in main - -Dio.netty.selectorAutoRebuildThreshold: 512
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.InternalThreadLocalMap in main - -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.InternalThreadLocalMap in main - -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.numHeapArenas: 4
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.numDirectArenas: 4
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.pageSize: 8192
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.maxOrder: 11
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.chunkSize: 16777216
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.tinyCacheSize: 512
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.smallCacheSize: 256
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.normalCacheSize: 64
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.cacheTrimInterval: 8192
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.useCacheForAllThreads: true
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.ByteBufUtil in main - -Dio.netty.allocator.type: pooled
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.ByteBufUtil in main - -Dio.netty.threadLocalDirectBufferSize: 0
+2019-08-20 10:00:21 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.ByteBufUtil in main - -Dio.netty.maxThreadLocalCharBufferSize: 16384
+2019-08-20 10:00:48 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-2 - Slf4jLogger started
+2019-08-20 10:00:48 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 10:00:49 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 10:00:49 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:00:49 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 10:01:00 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-5 - Slf4jLogger started
+2019-08-20 10:01:00 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 10:01:00 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 10:01:00 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:01:00 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 10:02:36 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-5 - Slf4jLogger started
+2019-08-20 10:02:36 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 10:02:36 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 10:02:36 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:02:36 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 10:03:11 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-2 - Slf4jLogger started
+2019-08-20 10:03:11 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 10:03:11 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 10:03:11 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:03:11 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 10:03:59 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-3 - Slf4jLogger started
+2019-08-20 10:03:59 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 10:03:59 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 10:03:59 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:03:59 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 10:04:09 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-2 - Slf4jLogger started
+2019-08-20 10:04:09 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 10:04:10 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 10:04:10 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:04:10 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 10:04:24 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-2 - Slf4jLogger started
+2019-08-20 10:04:25 +0000 [DEBUG] from play.api.libs.concurrent.ActorSystemProvider in main - Starting application default Akka system: application
+2019-08-20 10:04:25 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in main - Created Slick database config for key default.
+2019-08-20 10:04:25 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:04:25 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 10:04:25 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create table "user"
+(
+uuid     uuid         not null primary key,
+login    varchar(64)  not null unique,
+email    varchar(255) not null unique,
+verified boolean      not null,
+password varchar(255) not null
+)
+2019-08-20 10:04:25 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 31ms
+2019-08-20 10:04:25 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create table "user_permissions"
+(
+uuid                       uuid   not null primary key,
+user_id                    uuid   not null unique,
+max_projects_count         bigint not null,
+max_samples_count          bigint not null,
+max_sample_size            bigint not null,
+max_dangling_project_links bigint not null,
+max_dangling_sample_links  bigint not null,
+constraint user_permissions_table_user_fk foreign key (user_id) references "user" (uuid) on update cascade on delete cascade
+)
+2019-08-20 10:04:25 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 18ms
+2019-08-20 10:04:25 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create index user_permissions_table_user_id_idx on "user_permissions" (user_id)
+2019-08-20 10:04:25 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 5ms
+2019-08-20 10:04:25 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create table "project"
+(
+uuid        uuid         not null primary key,
+name        varchar(255) not null,
+description text         not null,
+owner_id    uuid         not null,
+folder      text         not null,
+is_dangling boolean      not null,
+constraint project_table_owner_fk foreign key (owner_id) references "user" (uuid) on update cascade on delete restrict
+)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 14ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create index project_table_owner_index on "project" (owner_id)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 6ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create table "project_link"
+(
+uuid                    uuid    not null primary key,
+project_id              uuid    not null,
+user_id                 uuid    not null,
+is_shared               boolean not null,
+is_upload_allowed       boolean not null,
+is_delete_allowed       boolean not null,
+is_modification_allowed boolean not null,
+delete_on               timestamp default null,
+constraint project_link_table_project_fk foreign key (project_id) REFERENCES "project" (uuid) on update cascade on delete cascade,
+constraint project_link_table_user_fk foreign key (user_id) REFERENCES "user" (uuid) on update cascade on delete cascade
+)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 8ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create index project_link_table_project_id_idx on "project_link" (project_id)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 3ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create index project_link_table_user_id_idx on "project_link" (user_id)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 12ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: -- noinspection SqlResolve
+
+create table "sample_file"
+(
+uuid        uuid         not null primary key,
+owner_id    uuid         not null,
+name        varchar(255) not null,
+software    varchar(64)  not null,
+size        bigint       not null,
+extension   varchar(32)  not null,
+hash        text         not null,
+folder      text         not null,
+is_uploaded boolean      not null,
+is_dangling boolean      not null,
+constraint sample_file_table_owner_fk foreign key (owner_id) references "user" (uuid) on update cascade on delete restrict
+)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 10ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: -- noinspection SqlResolve
+
+create table "sample_file_link"
+(
+uuid       uuid not null primary key,
+sample_id  uuid not null,
+project_id uuid not null,
+delete_on  timestamp default null,
+
+constraint sample_file_link_table_sample_fk foreign key (sample_id) references "sample_file" (uuid) on update cascade on delete restrict,
+constraint sample_file_link_table_project_fk foreign key (project_id) references "project" (uuid) on update cascade on delete restrict
+)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 3ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create index sample_file_link_table_sample_id_idx on "sample_file_link" (sample_id)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 2ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create index sample_file_link_table_project_id_idx on "sample_file_link" (project_id)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 2ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create table "verification_token"
+(
+token      uuid      not null primary key,
+user_id    uuid      not null,
+expired_at timestamp not null,
+constraint verification_token_table_user_fk foreign key (user_id) references "user" (uuid) on update cascade on delete cascade
+)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 4ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create table "reset_token"
+(
+token      uuid      not null primary key,
+user_id    uuid      not null,
+expired_at timestamp not null,
+constraint reset_token_table_user_fk foreign key (user_id) references "user" (uuid) on update cascade on delete cascade
+)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 2ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create table "analysis_cache"
+(
+uuid             uuid         not null primary key,
+sample_file_id   uuid         not null,
+analysis_type    varchar(32)  not null,
+marker           varchar(255) not null,
+cache            text         not null,
+expired_at       timestamp    not null,
+last_accessed_at timestamp    not null,
+expired_action   text         not null,
+constraint sample_file_table_sample_id_fk foreign key (sample_file_id) references "sample_file" (uuid) on update cascade on delete restrict
+)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 4ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create index analysis_cache_table_analysis_index on "analysis_cache" (analysis_type)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 2ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: create index analysis_cache_table_marker_index on "analysis_cache" (marker)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 2ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: alter table "sample_file"
+add column species varchar(32) not null default 'undefined'
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 2ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: alter table "sample_file"
+alter column species drop default
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 1ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: alter table "sample_file"
+add column gene varchar(16) not null default 'undefined'
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 1ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Execute: alter table "sample_file"
+alter column gene drop default
+2019-08-20 10:04:26 +0000 [DEBUG] from play.api.db.evolutions.DefaultEvolutionsApi in main - Finished in 1ms
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.logging.InternalLoggerFactory in main - Using SLF4J as the default logging framework
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.ResourceLeakDetector in main - -Dplay.shaded.ahc.io.netty.leakDetection.level: simple
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.ResourceLeakDetector in main - -Dplay.shaded.ahc.io.netty.leakDetection.targetRecords: 4
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - -Dio.netty.noUnsafe: false
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - Java version: 11
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - sun.misc.Unsafe.theUnsafe: available
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - sun.misc.Unsafe.copyMemory: available
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - java.nio.Buffer.address: available
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - direct buffer constructor: unavailable
+java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
+	at play.shaded.ahc.io.netty.util.internal.ReflectionUtil.trySetAccessible(ReflectionUtil.java:31)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0$4.run(PlatformDependent0.java:224)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:218)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:212)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:80)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:162)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:207)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetectorFactory$DefaultResourceLeakDetectorFactory.newResourceLeakDetector(ResourceLeakDetectorFactory.java:201)
+	at play.shaded.ahc.io.netty.util.HashedWheelTimer.<clinit>(HashedWheelTimer.java:88)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.newNettyTimer(DefaultAsyncHttpClient.java:97)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.<init>(DefaultAsyncHttpClient.java:87)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get$lzycompute(AhcWSModule.scala:60)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:57)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:50)
+	at com.google.inject.internal.ProviderInternalFactory.provision(ProviderInternalFactory.java:85)
+	at com.google.inject.internal.BoundProviderFactory.provision(BoundProviderFactory.java:77)
+	at com.google.inject.internal.ProviderInternalFactory.circularGet(ProviderInternalFactory.java:59)
+	at com.google.inject.internal.BoundProviderFactory.get(BoundProviderFactory.java:61)
+	at com.google.inject.internal.SingleParameterInjector.inject(SingleParameterInjector.java:42)
+	at com.google.inject.internal.SingleParameterInjector.getAll(SingleParameterInjector.java:65)
+	at com.google.inject.internal.ConstructorInjector.provision(ConstructorInjector.java:113)
+	at com.google.inject.internal.ConstructorInjector.construct(ConstructorInjector.java:91)
+	at com.google.inject.internal.ConstructorBindingImpl$Factory.get(ConstructorBindingImpl.java:306)
+	at com.google.inject.internal.ProviderToInternalFactoryAdapter.get(ProviderToInternalFactoryAdapter.java:40)
+	at com.google.inject.internal.SingletonScope$1.get(SingletonScope.java:168)
+	at com.google.inject.internal.InternalFactoryToProviderAdapter.get(InternalFactoryToProviderAdapter.java:39)
+	at com.google.inject.internal.InternalInjectorCreator.loadEagerSingletons(InternalInjectorCreator.java:211)
+	at com.google.inject.internal.InternalInjectorCreator.injectDynamically(InternalInjectorCreator.java:182)
+	at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:109)
+	at com.google.inject.Guice.createInjector(Guice.java:87)
+	at com.google.inject.Guice.createInjector(Guice.java:78)
+	at play.api.inject.guice.GuiceBuilder.injector(GuiceInjectorBuilder.scala:201)
+	at play.api.inject.guice.GuiceApplicationBuilder.build(GuiceApplicationBuilder.scala:156)
+	at play.api.inject.guice.GuiceApplicationLoader.load(GuiceApplicationLoader.scala:22)
+	at play.core.server.ProdServerStart$.start(ProdServerStart.scala:59)
+	at play.core.server.ProdServerStart$.main(ProdServerStart.scala:31)
+	at play.core.server.ProdServerStart.main(ProdServerStart.scala)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - java.nio.Bits.unaligned: available, true
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - jdk.internal.misc.Unsafe.allocateUninitializedArray(int): unavailable
+java.lang.IllegalAccessException: class play.shaded.ahc.io.netty.util.internal.PlatformDependent0$6 cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to unnamed module @529cfee5
+	at java.base/jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:361)
+	at java.base/java.lang.reflect.AccessibleObject.checkAccess(AccessibleObject.java:591)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:558)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0$6.run(PlatformDependent0.java:334)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent0.<clinit>(PlatformDependent0.java:325)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.isAndroid(PlatformDependent.java:212)
+	at play.shaded.ahc.io.netty.util.internal.PlatformDependent.<clinit>(PlatformDependent.java:80)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:162)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetector.<init>(ResourceLeakDetector.java:207)
+	at play.shaded.ahc.io.netty.util.ResourceLeakDetectorFactory$DefaultResourceLeakDetectorFactory.newResourceLeakDetector(ResourceLeakDetectorFactory.java:201)
+	at play.shaded.ahc.io.netty.util.HashedWheelTimer.<clinit>(HashedWheelTimer.java:88)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.newNettyTimer(DefaultAsyncHttpClient.java:97)
+	at play.shaded.ahc.org.asynchttpclient.DefaultAsyncHttpClient.<init>(DefaultAsyncHttpClient.java:87)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get$lzycompute(AhcWSModule.scala:60)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:57)
+	at play.api.libs.ws.ahc.AsyncHttpClientProvider.get(AhcWSModule.scala:50)
+	at com.google.inject.internal.ProviderInternalFactory.provision(ProviderInternalFactory.java:85)
+	at com.google.inject.internal.BoundProviderFactory.provision(BoundProviderFactory.java:77)
+	at com.google.inject.internal.ProviderInternalFactory.circularGet(ProviderInternalFactory.java:59)
+	at com.google.inject.internal.BoundProviderFactory.get(BoundProviderFactory.java:61)
+	at com.google.inject.internal.SingleParameterInjector.inject(SingleParameterInjector.java:42)
+	at com.google.inject.internal.SingleParameterInjector.getAll(SingleParameterInjector.java:65)
+	at com.google.inject.internal.ConstructorInjector.provision(ConstructorInjector.java:113)
+	at com.google.inject.internal.ConstructorInjector.construct(ConstructorInjector.java:91)
+	at com.google.inject.internal.ConstructorBindingImpl$Factory.get(ConstructorBindingImpl.java:306)
+	at com.google.inject.internal.ProviderToInternalFactoryAdapter.get(ProviderToInternalFactoryAdapter.java:40)
+	at com.google.inject.internal.SingletonScope$1.get(SingletonScope.java:168)
+	at com.google.inject.internal.InternalFactoryToProviderAdapter.get(InternalFactoryToProviderAdapter.java:39)
+	at com.google.inject.internal.InternalInjectorCreator.loadEagerSingletons(InternalInjectorCreator.java:211)
+	at com.google.inject.internal.InternalInjectorCreator.injectDynamically(InternalInjectorCreator.java:182)
+	at com.google.inject.internal.InternalInjectorCreator.build(InternalInjectorCreator.java:109)
+	at com.google.inject.Guice.createInjector(Guice.java:87)
+	at com.google.inject.Guice.createInjector(Guice.java:78)
+	at play.api.inject.guice.GuiceBuilder.injector(GuiceInjectorBuilder.scala:201)
+	at play.api.inject.guice.GuiceApplicationBuilder.build(GuiceApplicationBuilder.scala:156)
+	at play.api.inject.guice.GuiceApplicationLoader.load(GuiceApplicationLoader.scala:22)
+	at play.core.server.ProdServerStart$.start(ProdServerStart.scala:59)
+	at play.core.server.ProdServerStart$.main(ProdServerStart.scala:31)
+	at play.core.server.ProdServerStart.main(ProdServerStart.scala)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent0 in main - java.nio.DirectByteBuffer.<init>(long, int): unavailable
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - sun.misc.Unsafe: available
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - maxDirectMemory: 524288000 bytes (maybe)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.tmpdir: /tmp (java.io.tmpdir)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.bitMode: 64 (sun.arch.data.model)
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.maxDirectMemory: -1 bytes
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.uninitializedArrayAllocationThreshold: -1
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.CleanerJava9 in main - java.nio.ByteBuffer.cleaner(): available
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - -Dio.netty.noPreferDirect: false
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.ResourceLeakDetectorFactory in main - Loaded default ResourceLeakDetector: play.shaded.ahc.io.netty.util.ResourceLeakDetector@1eb85a47
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.PlatformDependent in main - org.jctools-core.MpscChunkedArrayQueue: available
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.channel.MultithreadEventLoopGroup in main - -Dio.netty.eventLoopThreads: 4
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.channel.nio.NioEventLoop in main - -Dio.netty.noKeySetOptimization: false
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.channel.nio.NioEventLoop in main - -Dio.netty.selectorAutoRebuildThreshold: 512
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.InternalThreadLocalMap in main - -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.util.internal.InternalThreadLocalMap in main - -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.numHeapArenas: 4
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.numDirectArenas: 4
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.pageSize: 8192
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.maxOrder: 11
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.chunkSize: 16777216
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.tinyCacheSize: 512
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.smallCacheSize: 256
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.normalCacheSize: 64
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.maxCachedBufferCapacity: 32768
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.cacheTrimInterval: 8192
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.PooledByteBufAllocator in main - -Dio.netty.allocator.useCacheForAllThreads: true
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.ByteBufUtil in main - -Dio.netty.allocator.type: pooled
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.ByteBufUtil in main - -Dio.netty.threadLocalDirectBufferSize: 0
+2019-08-20 10:04:26 +0000 [DEBUG] from play.shaded.ahc.io.netty.buffer.ByteBufUtil in main - -Dio.netty.maxThreadLocalCharBufferSize: 16384
+2019-08-20 10:04:26 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 10:04:27 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 10:04:33 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-5 - Host not allowed: backend:9000
+2019-08-20 10:04:40 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 10:04:40 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-3 - db - Shutdown initiated...
+2019-08-20 10:04:40 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-3 - db - Shutdown completed.
+2019-08-20 10:04:40 +0000 [DEBUG] from play.api.db.slick.DefaultSlickApi in application-akka.actor.default-dispatcher-3 - Database default was successfully closed.
+2019-08-20 10:04:40 +0000 [DEBUG] from play.api.libs.Files$DefaultTemporaryFileCreator in application-akka.actor.default-dispatcher-3 - deletePath: deleting = /tmp/playtemp4029573700524527738
+2019-08-20 10:04:53 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-4 - Slf4jLogger started
+2019-08-20 10:04:54 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:04:54 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 10:04:55 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 10:04:55 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 10:05:03 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-3 - Host not allowed: backend:9000
+2019-08-20 10:05:18 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-2 - Host not allowed: backend:9000
+2019-08-20 10:05:24 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-7 - Host not allowed: backend:9000
+2019-08-20 10:05:40 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-2 - Host not allowed: backend:9000
+2019-08-20 10:05:55 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-2 - Host not allowed: backend:9000
+2019-08-20 10:06:10 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-6 - Host not allowed: backend:9000
+2019-08-20 10:06:25 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-13 - Host not allowed: backend:9000
+2019-08-20 10:06:40 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-4 - Host not allowed: backend:9000
+2019-08-20 10:06:55 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-2 - Host not allowed: backend:9000
+2019-08-20 10:07:00 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 10:07:00 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-16 - db - Shutdown initiated...
+2019-08-20 10:07:00 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-16 - db - Shutdown completed.
+2019-08-20 10:08:37 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-7 - Slf4jLogger started
+2019-08-20 10:08:38 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:08:38 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 10:08:39 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 10:08:39 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 10:08:41 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-2 - Host not allowed: backend:9000
+2019-08-20 10:08:44 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-9 - Host not allowed: backend:9000
+2019-08-20 10:08:46 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-6 - Host not allowed: backend:9000
+2019-08-20 10:08:59 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-2 - Host not allowed: backend:9000
+2019-08-20 10:09:20 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-14 - Host not allowed: backend:9000
+2019-08-20 10:09:29 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-3 - Host not allowed: backend:9000
+2019-08-20 10:09:46 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-17 - Host not allowed: backend:9000
+2019-08-20 10:09:59 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-5 - Host not allowed: backend:9000
+2019-08-20 10:10:05 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 10:10:05 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-11 - db - Shutdown initiated...
+2019-08-20 10:10:05 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-11 - db - Shutdown completed.
+2019-08-20 10:10:13 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-2 - Slf4jLogger started
+2019-08-20 10:10:14 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:10:14 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 10:10:14 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 10:10:15 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000
+2019-08-20 10:10:15 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-4 - Host not allowed: backend:9000
+2019-08-20 10:10:15 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-3 - Host not allowed: backend:9000
+2019-08-20 10:10:29 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-9 - Host not allowed: backend:9000
+2019-08-20 10:10:44 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-7 - Host not allowed: backend:9000
+2019-08-20 10:10:59 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-11 - Host not allowed: backend:9000
+2019-08-20 10:11:14 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-8 - Host not allowed: backend:9000
+2019-08-20 10:11:29 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-11 - Host not allowed: backend:9000
+2019-08-20 10:11:44 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-8 - Host not allowed: backend:9000
+2019-08-20 10:11:59 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-17 - Host not allowed: backend:9000
+2019-08-20 10:12:14 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-16 - Host not allowed: backend:9000
+2019-08-20 10:12:29 +0000 [WARN] from play.filters.hosts.AllowedHostsFilter in application-akka.actor.default-dispatcher-9 - Host not allowed: backend:9000
+2019-08-20 10:12:39 +0000 [INFO] from play.core.server.AkkaHttpServer in Thread-2 - Stopping server...
+2019-08-20 10:12:39 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-15 - db - Shutdown initiated...
+2019-08-20 10:12:39 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in application-akka.actor.default-dispatcher-15 - db - Shutdown completed.
+2019-08-20 10:12:45 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-5 - Slf4jLogger started
+2019-08-20 10:12:54 +0000 [INFO] from akka.event.slf4j.Slf4jLogger in application-akka.actor.default-dispatcher-2 - Slf4jLogger started
+2019-08-20 10:12:55 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Starting...
+2019-08-20 10:12:55 +0000 [INFO] from com.zaxxer.hikari.HikariDataSource in main - db - Start completed.
+2019-08-20 10:12:56 +0000 [INFO] from play.api.Play in main - Application started (Prod) (no global state)
+2019-08-20 10:12:56 +0000 [INFO] from play.core.server.AkkaHttpServer in main - Listening for HTTP on /0.0.0.0:9000

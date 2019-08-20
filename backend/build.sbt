@@ -95,7 +95,7 @@ daemonUser in Docker := "daemon"
 dockerBaseImage := "azul/zulu-openjdk-alpine:11"
 dockerEntrypoint := Seq(
   "bin/vdjsight-backend",
-  "-Dconfig.file=/home/vdjsight/environment/application.conf",
+  "-Dconfig.file=/home/vdjsight/environment/configuration.conf",
   "-Dlogger.file=/home/vdjsight/environment/logback.xml",
   "-Dpidfile.path=/dev/null")
 dockerExposedPorts := Seq(9000)
