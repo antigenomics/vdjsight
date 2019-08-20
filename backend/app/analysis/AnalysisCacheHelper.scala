@@ -1,6 +1,7 @@
 package analysis
 
 import java.io.{FileInputStream, FileOutputStream, InputStream, OutputStream}
+import java.nio.file.{Files, Paths}
 import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
 import models.cache.AnalysisCacheExpiredAction.AnalysisCacheExpiredAction
@@ -17,19 +18,18 @@ object AnalysisCacheHelper {
   )(
     read: InputStream => T
   )(implicit cacheProvider: AnalysisCacheProvider, ex: ExecutionContext): Future[T] = {
-    cacheProvider.findForSampleForAnalysisWithMarkerAndTouch(sampleFile.uuid, analysisType, marker) flatMap {
-      case Some(c) => Future.successful(c.cache)
-      case None =>
-        val cachePath = s"${sampleFile.folder}/$analysisType-$marker.cache"
-        Using(new GZIPOutputStream(new FileOutputStream(cachePath), 262144)) { output =>
-          write(output)
-        }
-        cacheProvider.create(sampleFile.uuid, analysisType, marker, action, cachePath) map { _ =>
-          cachePath
-        }
-    } map { cache =>
-      read(new GZIPInputStream(new FileInputStream(cache), 262144))
+
+    val create: String => Future[String] = (path: String) => {
+      Using(new GZIPOutputStream(new FileOutputStream(path), 262144))(output => write(output))
+      cacheProvider.create(sampleFile.uuid, analysisType, marker, action, path).map(_ => path)
     }
+
+    val cachePath = s"${sampleFile.folder}/$analysisType-$marker.cache"
+    cacheProvider.findForSampleForAnalysisWithMarkerAndTouch(sampleFile.uuid, analysisType, marker) flatMap {
+      case Some(c) if Files.exists(Paths.get(c.cache)) => Future.successful(c.cache)
+      case Some(c)                                     => cacheProvider.delete(c.uuid).flatMap(_ => create(cachePath))
+      case None                                        => create(cachePath)
+    } map (validatedCachePath => read(new GZIPInputStream(new FileInputStream(validatedCachePath), 262144)))
   }
 
 }

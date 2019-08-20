@@ -44,7 +44,7 @@ class ClonotypeTableAnalysisSpec extends BaseTestSpec {
       val bytes  = new ByteArrayOutputStream(10485760)
       val output = new BufferedOutputStream(bytes, 4096)
 
-      CachedClonotypeTable.write(output, table)
+      CachedClonotypeTable.write(output, table.getClonotypes)
 
       val input1  = new BufferedInputStream(new ByteArrayInputStream(bytes.toByteArray), 4096)
       val cached1 = CachedClonotypeTable.read(input1)

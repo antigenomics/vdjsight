@@ -1,5 +1,6 @@
 package analysis.clonotypes
 
+import java.io.{InputStream, OutputStream}
 import java.util.stream.Collectors
 
 import analysis.{AnalysisCacheHelper, AnalysisService}
@@ -18,12 +19,9 @@ class ClonotypeTableAnalysisService @Inject()(analysis: AnalysisService)(implici
   implicit val ec: ExecutionContext = analysis.executionContext
 
   def clonotypes(sampleFile: SampleFile, marker: String, options: ClonotypeTableAnalysisOptions): Future[CachedClonotypeTable] = {
-    AnalysisCacheHelper.validateCache(
-      sampleFile,
-      ClonotypeTableAnalysisService.ANALYSIS_TYPE,
-      s"$marker-${CachedClonotypeTable.VERSION}",
-      AnalysisCacheExpiredAction.DELETE_FILE
-    ) { output =>
+
+    val readProcedure: InputStream => CachedClonotypeTable = (input) => CachedClonotypeTable.read(input)
+    val writeProcedure: OutputStream => Unit = (output) => {
       val clonotypesStream = ClonotypeTableParserUtils.streamFrom(
         CommonUtils.getFileAsStream(sampleFile.locations.sample, sampleFile.extension == ".gz"),
         Software.valueOf(sampleFile.software),
@@ -61,9 +59,14 @@ class ClonotypeTableAnalysisService @Inject()(analysis: AnalysisService)(implici
       }
 
       CachedClonotypeTable.write(output, clonotypes)
-    } { input =>
-      CachedClonotypeTable.read(input)
     }
+
+    AnalysisCacheHelper.validateCache(
+      sampleFile,
+      ClonotypeTableAnalysisService.ANALYSIS_TYPE,
+      s"$marker-${CachedClonotypeTable.VERSION}",
+      AnalysisCacheExpiredAction.DELETE_FILE
+    )(writeProcedure)(readProcedure)
   }
 }
 
