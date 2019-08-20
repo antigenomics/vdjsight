@@ -60,8 +60,6 @@ class ProjectTable(tag: Tag)(implicit up: UserProvider) extends Table[Project](t
     onUpdate = ForeignKeyAction.Cascade,
     onDelete = ForeignKeyAction.Restrict
   )
-
-  def owner_idx = index("project_table_owner_index", ownerID, unique = false)
 }
 
 object ProjectTable {

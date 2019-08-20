@@ -1,10 +1,10 @@
 <div class="project container">
     <vs-project-loaded-check [status]="loadingStatus$ | async" (onReload)="reload()">
         <div class="ui grid">
-            <div class="two wide sidebar column" @sidebar>
+            <div class="three wide sidebar column" @sidebar>
                 <vs-project-sidebar></vs-project-sidebar>
             </div>
-            <div class="fourteen wide main column" @content>
+            <div class="thirteen wide main column" @content>
                 <div class="content container">
                     <router-outlet></router-outlet>
                 </div>

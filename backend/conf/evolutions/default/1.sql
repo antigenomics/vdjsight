@@ -38,8 +38,6 @@ create table "project"
     constraint project_table_owner_fk foreign key (owner_id) references "user" (uuid) on update cascade on delete restrict
 );
 
-create index project_table_owner_index on "project" (owner_id);
-
 create table "project_link"
 (
     uuid                    uuid    not null primary key,
@@ -69,7 +67,6 @@ drop table "project_link";
 
 alter table "project"
     drop constraint project_table_owner_fk;
-drop index project_table_owner_index;
 drop table "project";
 
 alter table "user_permissions"

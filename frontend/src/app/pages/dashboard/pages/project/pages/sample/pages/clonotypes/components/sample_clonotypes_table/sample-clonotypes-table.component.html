@@ -12,15 +12,6 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let row of page.rows">
-        <td>{{ row.index }}</td>
-        <td>{{ row.count }}</td>
-        <td>{{ row.freq }}</td>
-        <td>{{ row.cdr3aa }}</td>
-        <td>{{ row.cdr3nt }}</td>
-        <td>{{ row.v }}</td>
-        <td>{{ row.d }}</td>
-        <td>{{ row.j }}</td>
-    </tr>
+    <tr *ngFor="let row of page.rows" vs-sample-clonotypes-table-row [row]="row"></tr>
     </tbody>
 </table>
