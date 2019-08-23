@@ -1,0 +1,26 @@
+<div class="ui grid">
+    <div class="four wide column">
+        <vs-sample-clonotypes-table-gene-filter
+                [gene]="'V'"
+                [selected]="clonotypes.options.vFilters"
+                (onSelect)="selectGeneFilter('V', $event)"
+                (onRemove)="removeGeneFilter('V', $event)">
+        </vs-sample-clonotypes-table-gene-filter>
+    </div>
+    <div class="four wide column">
+        <vs-sample-clonotypes-table-gene-filter
+                [gene]="'D'"
+                [selected]="clonotypes.options.dFilters"
+                (onSelect)="selectGeneFilter('D', $event)"
+                (onRemove)="removeGeneFilter('D', $event)">
+        </vs-sample-clonotypes-table-gene-filter>
+    </div>
+    <div class="four wide column">
+        <vs-sample-clonotypes-table-gene-filter
+                [gene]="'J'"
+                [selected]="clonotypes.options.jFilters"
+                (onSelect)="selectGeneFilter('J', $event)"
+                (onRemove)="removeGeneFilter('J', $event)">
+        </vs-sample-clonotypes-table-gene-filter>
+    </div>
+</div>

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { DropdownAnimation, DropdownIconAnimation, DropdownListAnimation } from 'components/input/dropdown/dropdown.animations';
+import { DropdownAnimation, DropdownIconAnimation, DropdownListAnimation } from 'components/input/input.animations';
 import { fromEvent, ReplaySubject, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 

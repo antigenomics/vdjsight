@@ -6,10 +6,10 @@ import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
 import analysis.AnalysisCacheHelper.{AnalysisCacheReader, AnalysisCacheValidator, AnalysisCacheWriter}
 import analysis.{AnalysisCacheHelper, AnalysisService}
+import com.antigenomics.mir.clonotype.ClonotypeCall
 import com.antigenomics.mir.clonotype.io.ClonotypeTablePipe
 import com.antigenomics.mir.clonotype.parser.{ClonotypeTableParserUtils, Software}
 import com.antigenomics.mir.clonotype.rearrangement.ReadlessClonotypeImpl
-import com.antigenomics.mir.clonotype.{Clonotype, ClonotypeCall}
 import com.antigenomics.mir.segment.Gene
 import com.antigenomics.mir.{CommonUtils, Species}
 import com.google.inject.{Inject, Singleton}
@@ -39,7 +39,7 @@ class ClonotypeTableAnalysisService @Inject()(analysis: AnalysisService)(implici
       case _: Throwable => throw BadRequestException("Clonotypes", "Invalid sample file format. Consider to check sample's software type")
     }
 
-    val clonotypesStream = StreamUtils.makeLazyList(new StreamUtils.StreamLike[ClonotypeCall[ReadlessClonotypeImpl]] {
+    var clonotypesStream = StreamUtils.makeLazyList(new StreamUtils.StreamLike[ClonotypeCall[ReadlessClonotypeImpl]] {
       override def hasNext: Boolean = stream.hasNext
       override def next: ClonotypeCall[ReadlessClonotypeImpl] = {
         try {
@@ -49,6 +49,30 @@ class ClonotypeTableAnalysisService @Inject()(analysis: AnalysisService)(implici
         }
       }
     })
+
+    if (options.vFilters.nonEmpty) {
+      clonotypesStream = clonotypesStream.filter { c =>
+        options.vFilters.map(_.toUpperCase).exists { f =>
+          c.getVariableSegmentCalls.stream().anyMatch(s => s.toString.toUpperCase.contains(f))
+        }
+      }
+    }
+
+    if (options.dFilters.nonEmpty) {
+      clonotypesStream = clonotypesStream.filter { c =>
+        options.dFilters.map(_.toUpperCase).exists { f =>
+          c.getDiversitySegmentCalls.stream().anyMatch(s => s.toString.toUpperCase.contains(f))
+        }
+      }
+    }
+
+    if (options.jFilters.nonEmpty) {
+      clonotypesStream = clonotypesStream.filter { c =>
+        options.jFilters.map(_.toUpperCase).exists { f =>
+          c.getJoiningSegmentCalls.stream().anyMatch(s => s.toString.toUpperCase.contains(f))
+        }
+      }
+    }
 
     if (options.sort != "none") {
       val s"$column:$direction" = options.sort

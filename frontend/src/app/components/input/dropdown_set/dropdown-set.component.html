@@ -1,0 +1,22 @@
+<div class="ui multiple fluid search normal selection dropdown visible" (click)="switch($event)" [@dropdown]="state | async">
+    <i class="dropdown icon" [@icon]="state | async"></i>
+    <a class="ui label transition visible" style="display: inline-block !important;" *ngFor="let s of selected">
+        {{ s }}<i class="delete icon" (click)="remove(s, $event)"></i>
+    </a>
+    <input class="search" autocomplete="off" [(ngModel)]="value" style="min-width: 100px" #inputRef>
+    <span class="sizer" style=""></span>
+    <div class="default text" *ngIf="value === ''">{{ title }}</div>
+    <div class="menu transition visible" tabindex="-1" style="display: block !important;" [@list]="state | async">
+        <div class="item" *ngIf="allowSelectionNotFromAvailableList" (click)="select(value, $event)">
+            {{ notFromListSelectionPrefix }} {{ value !== '' ? value : 'Start typing...' }}
+        </div>
+    </div>
+</div>
+
+<!--<div class="ui fluid dropdown selection" (click)="switch($event)" [@dropdown]="state | async">-->
+<!--    <i class="dropdown icon" [@icon]="state | async"></i>-->
+<!--    <div class="text">{{ title !== undefined ? title : value }}</div>-->
+<!--    <div class="menu transition visible" tabindex="-1" style="display: block" [@list]="state | async">-->
+<!--        <div class="item" *ngFor="let item of values" (click)="select(item, $event)">{{ item }}</div>-->
+<!--    </div>-->
+<!--</div>-->

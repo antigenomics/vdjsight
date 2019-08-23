@@ -14,16 +14,16 @@ export const DropdownAnimation = trigger('dropdown', [
   transition('inactive => active', [
     style({ 'z-index': 11 }),
     group([
-      query('@list', animateChild()),
-      query('@icon', animateChild()),
+      query('@list', animateChild(), { optional: true }),
+      query('@icon', animateChild(), { optional: true }),
       animate('150ms')
     ])
   ]),
   transition('active => inactive', [
     style({ 'z-index': 11 }),
     group([
-      query('@list', animateChild()),
-      query('@icon', animateChild())
+      query('@list', animateChild(), { optional: true }),
+      query('@icon', animateChild(), { optional: true })
     ]),
     animate('50ms'),
     style({ 'z-index': 1 })

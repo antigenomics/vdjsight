@@ -1,0 +1,8 @@
+<vs-dropdown-set
+        [title]="gene + ' gene filter'"
+        [notFromListSelectionPrefix]="'Filter ' + gene + ' gene by substring:'"
+        [forceUpperCase]="true"
+        [selected]="selected"
+        (onSelect)="onSelect.emit($event)"
+        (onRemove)="onRemove.emit($event)">
+</vs-dropdown-set>

@@ -17,10 +17,9 @@ export class SampleClonotypesWrapperComponent {
   @Input()
   public clonotypes: AnalysisClonotypesEntity;
 
-
   constructor(private readonly store: Store<DashboardModuleState>) {}
 
-  public filter(): void {
+  public search(): void {
     this.page(1);
   }
 

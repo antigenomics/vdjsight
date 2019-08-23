@@ -11,7 +11,10 @@
         </h4>
     </div>
     <div class="ui segment">
-        <button class="ui button small blue" (click)="filter()">Filter</button>
+        <vs-sample-clonotypes-table-filters [clonotypes]="clonotypes"></vs-sample-clonotypes-table-filters>
+    </div>
+    <div class="ui segment">
+        <button class="ui button small blue" (click)="search()">Search</button>
     </div>
     <div class="ui segment" *ngIf="clonotypes.updating.error as error">
         <div class="ui negative message">

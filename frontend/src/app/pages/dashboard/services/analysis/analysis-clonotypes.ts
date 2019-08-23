@@ -1,12 +1,18 @@
 export interface ClonotypeTableAnalysisOptions {
-  pageSize: number;
-  pagesRegion: number;
-  sort: string;
+  readonly pageSize: number;
+  readonly pagesRegion: number;
+  readonly sort: string;
+  readonly vFilters: string[];
+  readonly dFilters: string[];
+  readonly jFilters: string[];
 }
 
 export function CreateClonotypeTableAnalysisMarker(options: ClonotypeTableAnalysisOptions): string {
   return btoa(JSON.stringify({
-    sort: options.sort
+    sort:     options.sort,
+    vFilters: options.vFilters,
+    dFilters: options.dFilters,
+    jFilters: options.jFilters
   })).replace(/=/g, '');
 }
 
@@ -17,7 +23,10 @@ export function CreateClonotypeTableAnalysisDefaultOptions(): ClonotypeTableAnal
   return {
     pageSize:    DEFAULT_CLONOTYPES_TABLE_PAGE_SIZE,
     pagesRegion: DEFAULT_CLONOTYPES_TABLE_PAGES_RANGE,
-    sort:        'none'
+    sort:        'none',
+    vFilters:    [],
+    dFilters:    [],
+    jFilters:    []
   };
 }
 
