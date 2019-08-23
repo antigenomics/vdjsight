@@ -3,9 +3,10 @@ package analysis.clonotypes
 import java.io.{BufferedInputStream, BufferedOutputStream, ByteArrayInputStream, ByteArrayOutputStream}
 
 import analysis.AnalysisTestTag
+import com.antigenomics.mir.clonotype.ClonotypeCall
 import com.antigenomics.mir.clonotype.io.ClonotypeTablePipe
 import com.antigenomics.mir.clonotype.parser.{ClonotypeTableParserUtils, Software}
-import com.antigenomics.mir.clonotype.{Clonotype, ClonotypeCall}
+import com.antigenomics.mir.clonotype.rearrangement.ReadlessClonotypeImpl
 import com.antigenomics.mir.segment.{Gene, MissingDiversitySegment, MissingJoiningSegment, MissingVariableSegment}
 import com.antigenomics.mir.{CommonUtils, Species}
 import org.scalatest.{Assertion, Assertions}
@@ -18,7 +19,7 @@ class ClonotypeTableAnalysisSpec extends BaseTestSpec {
 
     "be able to create and verify cache for clonotype table" taggedAs AnalysisTestTag in {
 
-      def checkEquality[C <: Clonotype](index: Int, cc: ClonotypeCall[C], r: CachedClonotypeTableRow): Assertion = {
+      def checkEquality(index: Int, cc: ClonotypeCall[ReadlessClonotypeImpl], r: CachedClonotypeTableRow): Assertion = {
         val bv = cc.getBestVariableSegment
         val bd = cc.getBestDiversitySegment
         val bj = cc.getBestJoiningSegment
@@ -31,6 +32,10 @@ class ClonotypeTableAnalysisSpec extends BaseTestSpec {
         r.v shouldEqual (if (bv != MissingVariableSegment.INSTANCE) bv.getId else "")
         r.d shouldEqual (if (bd != MissingDiversitySegment.INSTANCE) bd.getId else "")
         r.j shouldEqual (if (bj != MissingJoiningSegment.INSTANCE) bj.getId else "")
+        r.markup.vend shouldEqual cc.getClonotype.getJunctionMarkup.getVEnd
+        r.markup.dstart shouldEqual cc.getClonotype.getJunctionMarkup.getDStart
+        r.markup.dend shouldEqual cc.getClonotype.getJunctionMarkup.getDEnd
+        r.markup.jstart shouldEqual cc.getClonotype.getJunctionMarkup.getJStart
       }
 
       val clonotypesStream = ClonotypeTableParserUtils
@@ -40,11 +45,11 @@ class ClonotypeTableAnalysisSpec extends BaseTestSpec {
           Species.Human,
           Gene.TRB
         )
-        .asInstanceOf[ClonotypeTablePipe[Clonotype]]
+        .asInstanceOf[ClonotypeTablePipe[ReadlessClonotypeImpl]]
 
-      val stream = StreamUtils.makeLazyList(new StreamUtils.StreamLike[ClonotypeCall[Clonotype]] {
-        override def hasNext: Boolean               = clonotypesStream.hasNext
-        override def next: ClonotypeCall[Clonotype] = clonotypesStream.next()
+      val stream = StreamUtils.makeLazyList(new StreamUtils.StreamLike[ClonotypeCall[ReadlessClonotypeImpl]] {
+        override def hasNext: Boolean                           = clonotypesStream.hasNext
+        override def next: ClonotypeCall[ReadlessClonotypeImpl] = clonotypesStream.next()
       })
 
       val bytes  = new ByteArrayOutputStream(10485760)
