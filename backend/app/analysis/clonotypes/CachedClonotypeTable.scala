@@ -95,31 +95,31 @@ object CachedClonotypeTable {
 
   implicit val liteClonotypeTableReleasable: Releasable[CachedClonotypeTable] = (resource: CachedClonotypeTable) => resource.close()
 
-  def write[C <: Clonotype](output: OutputStream, clonotypes: java.util.List[ClonotypeCall[C]]): Unit = {
+  def write[C <: Clonotype](output: OutputStream, clonotypes: LazyList[ClonotypeCall[C]]): Int = {
     val binaryOutput = BinaryWriter(output)
 
     binaryOutput.writeLong(CachedClonotypeTable.VERSION)
-    binaryOutput.writeInt(clonotypes.size())
 
     val clonotypeBinaryWriter = CachedClonotypeTableWriter(binaryOutput)
 
     var index = 1
-    clonotypes.forEach(cc => {
+    clonotypes.foreach(cc => {
       clonotypeBinaryWriter.write(index, cc)
       index += 1
     })
 
     clonotypeBinaryWriter.flush()
+
+    index - 1
   }
 
-  def read(input: InputStream): CachedClonotypeTable = {
+  def read(size: Int, input: InputStream): CachedClonotypeTable = {
     val binaryInput = BinaryReader(input)
 
     val version = binaryInput.readLong()
     if (version != CachedClonotypeTable.VERSION) {
       throw new RuntimeException("Invalid cache version")
     } else {
-      val size                  = binaryInput.readInt()
       val clonotypeBinaryReader = CachedClonotypeTableReader(binaryInput)
       CachedClonotypeTable(size, clonotypeBinaryReader)
     }

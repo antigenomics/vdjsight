@@ -1,72 +1,100 @@
 package analysis.clonotypes
 
-import java.io.{InputStream, OutputStream}
-import java.util.stream.Collectors
+import java.io.{FileInputStream, FileOutputStream}
+import java.nio.file.{Files, Paths}
+import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
+import analysis.AnalysisCacheHelper.{AnalysisCacheReader, AnalysisCacheValidator, AnalysisCacheWriter}
 import analysis.{AnalysisCacheHelper, AnalysisService}
+import com.antigenomics.mir.clonotype.io.ClonotypeTablePipe
 import com.antigenomics.mir.clonotype.parser.{ClonotypeTableParserUtils, Software}
-import com.antigenomics.mir.clonotype.table.ClonotypeTable
+import com.antigenomics.mir.clonotype.{Clonotype, ClonotypeCall}
 import com.antigenomics.mir.segment.Gene
 import com.antigenomics.mir.{CommonUtils, Species}
 import com.google.inject.{Inject, Singleton}
 import models.cache.{AnalysisCacheExpiredAction, AnalysisCacheProvider}
 import models.sample.SampleFile
+import utils.StreamUtils
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Using
 
 @Singleton
 class ClonotypeTableAnalysisService @Inject()(analysis: AnalysisService)(implicit cache: AnalysisCacheProvider) {
   implicit val ec: ExecutionContext = analysis.executionContext
 
-  def clonotypes(sampleFile: SampleFile, marker: String, options: ClonotypeTableAnalysisOptions): Future[CachedClonotypeTable] = {
-
-    val readProcedure: InputStream => CachedClonotypeTable = (input) => CachedClonotypeTable.read(input)
-    val writeProcedure: OutputStream => Unit = (output) => {
-      val clonotypesStream = ClonotypeTableParserUtils.streamFrom(
+  def makeClonotypesStream(sampleFile: SampleFile, options: ClonotypeTableAnalysisOptions): LazyList[ClonotypeCall[Clonotype]] = {
+    val stream = ClonotypeTableParserUtils
+      .streamFrom(
         CommonUtils.getFileAsStream(sampleFile.locations.sample, sampleFile.extension == ".gz"),
         Software.valueOf(sampleFile.software),
         Species.valueOf(sampleFile.species),
         Gene.valueOf(sampleFile.gene)
       )
+      .asInstanceOf[ClonotypeTablePipe[Clonotype]]
 
-      val table = new ClonotypeTable(clonotypesStream)
+    var clonotypesStream = StreamUtils.makeLazyList(new StreamUtils.StreamLike[ClonotypeCall[Clonotype]] {
+      override def hasNext: Boolean               = stream.hasNext
+      override def next: ClonotypeCall[Clonotype] = stream.next()
+    })
 
-      val clonotypes = if (options.sort != "none") {
-        val s"$column:$direction" = options.sort
-        table
-          .stream()
-          .sorted((left, right) => {
-            val check = column match {
-              case "count"  => left.getCount.compareTo(right.getCount)
-              case "freq"   => left.getFrequency.compareTo(right.getCount)
-              case "cdr3aa" => left.getCdr3Aa.compareTo(right.getCdr3Aa)
-              case "v"      => left.getBestVariableSegment.toString.compareTo(right.getBestVariableSegment.toString)
-              case "d"      => left.getBestDiversitySegment.toString.compareTo(right.getBestDiversitySegment.toString)
-              case "j"      => left.getBestJoiningSegment.toString.compareTo(right.getBestJoiningSegment.toString)
-              case _        => 0
-            }
+    // clonotypesStream = clonotypesStream.filter(c => c.getCount > 10)
 
-            direction match {
-              case "asc"  => check
-              case "desc" => -check
-              case _      => 0
-            }
+    if (options.sort != "none") {
+      val s"$column:$direction" = options.sort
+      clonotypesStream.sortWith((left, right) => {
+        val check = column match {
+          case "count"  => left.getCount.compareTo(right.getCount)
+          case "freq"   => left.getFrequency.compareTo(right.getCount)
+          case "cdr3aa" => left.getCdr3Aa.compareTo(right.getCdr3Aa)
+          case "v"      => left.getBestVariableSegment.toString.compareTo(right.getBestVariableSegment.toString)
+          case "d"      => left.getBestDiversitySegment.toString.compareTo(right.getBestDiversitySegment.toString)
+          case "j"      => left.getBestJoiningSegment.toString.compareTo(right.getBestJoiningSegment.toString)
+          case _        => 0
+        }
 
-          })
-          .collect(Collectors.toList())
-      } else {
-        table.getClonotypes
-      }
+        direction match {
+          case "asc"  => check < 0
+          case "desc" => check > 0
+          case _      => false
+        }
 
-      CachedClonotypeTable.write(output, clonotypes)
+      })
+    } else {
+      clonotypesStream
     }
+  }
 
-    AnalysisCacheHelper.validateCache(
+  def makeReader: AnalysisCacheHelper.AnalysisCacheReader[CachedClonotypeTable] = (cache) => {
+    val s"$size:$path" = cache
+    val input          = new GZIPInputStream(new FileInputStream(path), 262144)
+    CachedClonotypeTable.read(size.toInt, input)
+  }
+
+  def makeValidator: AnalysisCacheHelper.AnalysisCacheValidator = (cache) => {
+    val s"$size:$path" = cache
+    Files.exists(Paths.get(path))
+  }
+
+  def makeWriter(sampleFile: SampleFile, marker: String, options: ClonotypeTableAnalysisOptions): AnalysisCacheHelper.AnalysisCacheWriter = () => {
+    val cachePath = s"${sampleFile.folder}/${ClonotypeTableAnalysisService.ANALYSIS_TYPE}-$marker-${CachedClonotypeTable.VERSION}.cache"
+    Using(new GZIPOutputStream(new FileOutputStream(cachePath), 262144)) { output =>
+      CachedClonotypeTable.write(output, makeClonotypesStream(sampleFile, options))
+    } map (size => s"$size:$cachePath")
+  }
+
+  def clonotypes(sampleFile: SampleFile, marker: String, options: ClonotypeTableAnalysisOptions): Future[CachedClonotypeTable] = {
+
+    implicit val reader: AnalysisCacheReader[CachedClonotypeTable] = makeReader
+    implicit val validator: AnalysisCacheValidator                 = makeValidator
+    implicit val writer: AnalysisCacheWriter                       = makeWriter(sampleFile, marker, options)
+
+    AnalysisCacheHelper.validateAndGetFromCache[CachedClonotypeTable](
       sampleFile,
       ClonotypeTableAnalysisService.ANALYSIS_TYPE,
       s"$marker-${CachedClonotypeTable.VERSION}",
       AnalysisCacheExpiredAction.DELETE_FILE
-    )(writeProcedure)(readProcedure)
+    )
   }
 }
 
