@@ -1,6 +1,6 @@
 package analysis.clonotypes.iocache
 
-import analysis.clonotypes.CachedClonotypeTableRow
+import analysis.clonotypes.{CachedClonotypeTableRow, CachedClonotypeTableRowMarkup}
 import utils.binary.BinaryReader
 
 case class CachedClonotypeTableReader(reader: BinaryReader) {
@@ -15,7 +15,13 @@ case class CachedClonotypeTableReader(reader: BinaryReader) {
       cdr3nt = reader.readSmallString(),
       v      = reader.readSmallString(),
       d      = reader.readSmallString(),
-      j      = reader.readSmallString()
+      j      = reader.readSmallString(),
+      markup = CachedClonotypeTableRowMarkup(
+        vend   = reader.readByte().toInt,
+        dstart = reader.readByte().toInt,
+        dend   = reader.readByte().toInt,
+        jstart = reader.readByte().toInt
+      )
     )
   }
 

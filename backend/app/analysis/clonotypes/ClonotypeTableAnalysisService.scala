@@ -8,6 +8,7 @@ import analysis.AnalysisCacheHelper.{AnalysisCacheReader, AnalysisCacheValidator
 import analysis.{AnalysisCacheHelper, AnalysisService}
 import com.antigenomics.mir.clonotype.io.ClonotypeTablePipe
 import com.antigenomics.mir.clonotype.parser.{ClonotypeTableParserUtils, Software}
+import com.antigenomics.mir.clonotype.rearrangement.ReadlessClonotypeImpl
 import com.antigenomics.mir.clonotype.{Clonotype, ClonotypeCall}
 import com.antigenomics.mir.segment.Gene
 import com.antigenomics.mir.{CommonUtils, Species}
@@ -24,7 +25,7 @@ import scala.util.Using
 class ClonotypeTableAnalysisService @Inject()(analysis: AnalysisService)(implicit cache: AnalysisCacheProvider) {
   implicit val ec: ExecutionContext = analysis.executionContext
 
-  def makeClonotypesStream(sampleFile: SampleFile, options: ClonotypeTableAnalysisOptions): LazyList[ClonotypeCall[Clonotype]] = {
+  def makeClonotypesStream(sampleFile: SampleFile, options: ClonotypeTableAnalysisOptions): LazyList[ClonotypeCall[ReadlessClonotypeImpl]] = {
     val stream = try {
       ClonotypeTableParserUtils
         .streamFrom(
@@ -33,14 +34,14 @@ class ClonotypeTableAnalysisService @Inject()(analysis: AnalysisService)(implici
           Species.valueOf(sampleFile.species),
           Gene.valueOf(sampleFile.gene)
         )
-        .asInstanceOf[ClonotypeTablePipe[Clonotype]]
+        .asInstanceOf[ClonotypeTablePipe[ReadlessClonotypeImpl]]
     } catch {
       case _: Throwable => throw BadRequestException("Clonotypes", "Invalid sample file format. Consider to check sample's software type")
     }
 
-    val clonotypesStream = StreamUtils.makeLazyList(new StreamUtils.StreamLike[ClonotypeCall[Clonotype]] {
+    val clonotypesStream = StreamUtils.makeLazyList(new StreamUtils.StreamLike[ClonotypeCall[ReadlessClonotypeImpl]] {
       override def hasNext: Boolean = stream.hasNext
-      override def next: ClonotypeCall[Clonotype] = {
+      override def next: ClonotypeCall[ReadlessClonotypeImpl] = {
         try {
           stream.next()
         } catch {

@@ -2,6 +2,8 @@ package analysis.clonotypes
 
 import play.api.libs.json.{Json, Writes}
 
+case class CachedClonotypeTableRowMarkup(vend: Int, dstart: Int, dend: Int, jstart: Int)
+
 case class CachedClonotypeTableRow(
   index: Int,
   count: Long,
@@ -10,9 +12,11 @@ case class CachedClonotypeTableRow(
   cdr3nt: String,
   v: String,
   d: String,
-  j: String
+  j: String,
+  markup: CachedClonotypeTableRowMarkup
 )
 
 object CachedClonotypeTableRow {
-  implicit val clonotypesTableRowWrites: Writes[CachedClonotypeTableRow] = Json.writes[CachedClonotypeTableRow]
+  implicit val clonotypesTableRowMarkupWrites: Writes[CachedClonotypeTableRowMarkup] = Json.writes[CachedClonotypeTableRowMarkup]
+  implicit val clonotypesTableRowWrites: Writes[CachedClonotypeTableRow]             = Json.writes[CachedClonotypeTableRow]
 }

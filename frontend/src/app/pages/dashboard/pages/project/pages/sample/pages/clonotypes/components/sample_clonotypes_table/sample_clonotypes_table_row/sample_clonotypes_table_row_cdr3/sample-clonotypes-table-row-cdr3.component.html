@@ -1,0 +1,8 @@
+<div class="cdr3" [vs-tooltip]="cdr3Tooltip" [vs-tooltip-options]="{ trigger: 'mouseenter focus', maxWidth: 800 }">
+    <span *ngFor="let region of cdr3aaRegions" [ngStyle]="{ 'color': region.color }">{{ region.part }}</span>
+</div>
+<ng-template #cdr3Tooltip>
+    <div class="ui raised segment">
+        <span *ngFor="let region of cdr3ntRegions" [ngStyle]="{ 'color': region.color }">{{ region.part }}</span>
+    </div>
+</ng-template>

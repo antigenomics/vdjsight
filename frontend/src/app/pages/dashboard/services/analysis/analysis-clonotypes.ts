@@ -21,6 +21,13 @@ export function CreateClonotypeTableAnalysisDefaultOptions(): ClonotypeTableAnal
   };
 }
 
+export interface ClonotypeTableRowMarkup {
+  readonly vend: number;
+  readonly dstart: number;
+  readonly dend: number;
+  readonly jstart: number;
+}
+
 export interface ClonotypeTableRow {
   readonly index: number;
   readonly count: number;
@@ -30,6 +37,7 @@ export interface ClonotypeTableRow {
   readonly v: string;
   readonly d: string;
   readonly j: string;
+  readonly markup: ClonotypeTableRowMarkup;
 }
 
 export interface ClonotypeTablePage {

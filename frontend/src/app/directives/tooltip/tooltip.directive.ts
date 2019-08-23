@@ -38,6 +38,10 @@ export class TooltipDirective<T> implements OnInit, OnDestroy, AfterViewChecked 
     this.instance = this.element.nativeElement._tippy;
   }
 
+  public getInstance(): Instance {
+    return this.instance;
+  }
+
   public ngOnDestroy(): void {
     this.instance.destroy();
     this.view.destroy();

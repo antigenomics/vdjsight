@@ -3,6 +3,7 @@ package analysis.clonotypes
 import java.io.{InputStream, OutputStream}
 
 import analysis.clonotypes.iocache.{CachedClonotypeTableReader, CachedClonotypeTableWriter}
+import com.antigenomics.mir.clonotype.rearrangement.ReadlessClonotypeImpl
 import com.antigenomics.mir.clonotype.{Clonotype, ClonotypeCall}
 import utils.CommonUtils
 import utils.binary.{BinaryReader, BinaryWriter}
@@ -83,7 +84,7 @@ case class CachedClonotypeTable(size: Int, private val reader: CachedClonotypeTa
 }
 
 object CachedClonotypeTable {
-  final val VERSION: Long = 1L
+  final val VERSION: Long = 2L
 
   final val TABLE_PAGE_SIZE_MIN: Int     = 1
   final val TABLE_PAGE_SIZE_MAX: Int     = 50
@@ -95,7 +96,7 @@ object CachedClonotypeTable {
 
   implicit val liteClonotypeTableReleasable: Releasable[CachedClonotypeTable] = (resource: CachedClonotypeTable) => resource.close()
 
-  def write[C <: Clonotype](output: OutputStream, clonotypes: LazyList[ClonotypeCall[C]]): Int = {
+  def write(output: OutputStream, clonotypes: LazyList[ClonotypeCall[ReadlessClonotypeImpl]]): Int = {
     val binaryOutput = BinaryWriter(output)
 
     binaryOutput.writeLong(CachedClonotypeTable.VERSION)

@@ -1,7 +1,9 @@
-<td>{{ row.index }}</td>
-<td>{{ row.count }}</td>
-<td>{{ ((row.freq * 100) | precisionNumber:2) + '%' }}</td>
-<td>{{ row.cdr3aa }}</td>
+<td class="collapsing">{{ row.index }}</td>
+<td class="collapsing">{{ row.count }}</td>
+<td class="collapsing">{{ ((row.freq * 100) | precisionNumber:2) + '%' }}</td>
+<td>
+    <vs-sample-clonotypes-table-row-cdr3 [cdr3aa]="row.cdr3aa" [cdr3nt]="row.cdr3nt" [markup]="row.markup"></vs-sample-clonotypes-table-row-cdr3>
+</td>
 <td>{{ row.v }}</td>
 <td>{{ row.d }}</td>
 <td>{{ row.j }}</td>
