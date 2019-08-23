@@ -13,6 +13,14 @@
     <div class="ui segment">
         <button class="ui button small blue" (click)="filter()">Filter</button>
     </div>
+    <div class="ui segment" *ngIf="clonotypes.updating.error as error">
+        <div class="ui negative message">
+            <div class="header">
+                An error occurred while updating the clonotype table for this sample
+            </div>
+            <p>{{ error }}</p>
+        </div>
+    </div>
     <div class="ui segment" [ngClass]="{ 'loading': clonotypes.updating.active }">
         <ng-container *ngIf="clonotypes.data as data else info">
             <vs-sample-clonotypes-table-pagination

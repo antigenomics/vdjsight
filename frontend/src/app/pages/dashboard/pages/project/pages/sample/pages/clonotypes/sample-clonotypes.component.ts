@@ -20,8 +20,10 @@ export class SampleClonotypesComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.subscription = this.sample$.subscribe((sample) => {
-      const analysis = CreateClonotypesAnalysisEntity(sample.projectLinkUUID, sample.link.uuid);
-      this.store.dispatch(AnalysisActions.createIfNotExist({ sample, analysis: analysis }));
+      if (sample && sample.link) {
+        const analysis = CreateClonotypesAnalysisEntity(sample.projectLinkUUID, sample.link.uuid);
+        this.store.dispatch(AnalysisActions.createIfNotExist({ sample, analysis: analysis }));
+      }
     });
   }
 

@@ -14,6 +14,7 @@ import com.antigenomics.mir.{CommonUtils, Species}
 import com.google.inject.{Inject, Singleton}
 import models.cache.{AnalysisCacheExpiredAction, AnalysisCacheProvider}
 import models.sample.SampleFile
+import server.BadRequestException
 import utils.StreamUtils
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -24,21 +25,29 @@ class ClonotypeTableAnalysisService @Inject()(analysis: AnalysisService)(implici
   implicit val ec: ExecutionContext = analysis.executionContext
 
   def makeClonotypesStream(sampleFile: SampleFile, options: ClonotypeTableAnalysisOptions): LazyList[ClonotypeCall[Clonotype]] = {
-    val stream = ClonotypeTableParserUtils
-      .streamFrom(
-        CommonUtils.getFileAsStream(sampleFile.locations.sample, sampleFile.extension == ".gz"),
-        Software.valueOf(sampleFile.software),
-        Species.valueOf(sampleFile.species),
-        Gene.valueOf(sampleFile.gene)
-      )
-      .asInstanceOf[ClonotypeTablePipe[Clonotype]]
+    val stream = try {
+      ClonotypeTableParserUtils
+        .streamFrom(
+          CommonUtils.getFileAsStream(sampleFile.locations.sample, sampleFile.extension == ".gz"),
+          Software.valueOf(sampleFile.software),
+          Species.valueOf(sampleFile.species),
+          Gene.valueOf(sampleFile.gene)
+        )
+        .asInstanceOf[ClonotypeTablePipe[Clonotype]]
+    } catch {
+      case _: Throwable => throw BadRequestException("Clonotypes", "Invalid sample file format. Consider to check sample's software type")
+    }
 
-    var clonotypesStream = StreamUtils.makeLazyList(new StreamUtils.StreamLike[ClonotypeCall[Clonotype]] {
-      override def hasNext: Boolean               = stream.hasNext
-      override def next: ClonotypeCall[Clonotype] = stream.next()
+    val clonotypesStream = StreamUtils.makeLazyList(new StreamUtils.StreamLike[ClonotypeCall[Clonotype]] {
+      override def hasNext: Boolean = stream.hasNext
+      override def next: ClonotypeCall[Clonotype] = {
+        try {
+          stream.next()
+        } catch {
+          case _: Throwable => throw BadRequestException("Clonotypes", "Sample parse error")
+        }
+      }
     })
-
-    // clonotypesStream = clonotypesStream.filter(c => c.getCount > 10)
 
     if (options.sort != "none") {
       val s"$column:$direction" = options.sort

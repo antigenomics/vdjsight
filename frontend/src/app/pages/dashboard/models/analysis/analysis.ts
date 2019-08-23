@@ -18,7 +18,6 @@ export interface AnalysisEntityBase<Data, Options> {
   readonly sampleLinkUUID: string;
 
   readonly updating: EntityStatus;
-
   readonly analysisType: AnalysisType;
 
   readonly options?: Options;
